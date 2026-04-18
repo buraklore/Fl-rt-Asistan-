@@ -1,0 +1,100 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply bg-ink-950 text-ink-100 font-sans;
+    font-feature-settings: "ss01", "cv11";
+  }
+
+  /* Editorial-quality text rendering */
+  h1, h2, h3, h4, h5, h6 {
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Focus rings — brand-colored, generous */
+  *:focus-visible {
+    @apply outline-none ring-2 ring-brand-500/50 ring-offset-2 ring-offset-ink-950 rounded;
+  }
+
+  ::selection {
+    background-color: rgb(255 107 107 / 0.3);
+    color: rgb(255 255 255);
+  }
+}
+
+@layer components {
+  /* Grain overlay — applied as a utility to any container for film-grain texture.
+     Low opacity, multiply blend. Makes flat dark backgrounds feel analog. */
+  .grain::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 100;
+    opacity: 0.035;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  }
+
+  /* Soft radial spotlight — editorial hero background */
+  .spotlight {
+    background:
+      radial-gradient(ellipse 80% 50% at 50% 0%, rgba(255, 107, 107, 0.08), transparent 60%),
+      radial-gradient(ellipse 60% 40% at 50% 100%, rgba(255, 107, 107, 0.04), transparent 70%);
+  }
+
+  /* Dot grid — minimal background for section breaks */
+  .dot-grid {
+    background-image: radial-gradient(
+      circle at 1px 1px,
+      rgba(255, 255, 255, 0.04) 1px,
+      transparent 0
+    );
+    background-size: 24px 24px;
+  }
+
+  /* Hairline divider */
+  .divider {
+    @apply h-px w-full bg-gradient-to-r from-transparent via-ink-700 to-transparent;
+  }
+
+  /* Italic serif inline callout — signature typographic move */
+  .callout {
+    @apply font-display italic text-brand-400;
+    font-weight: 400;
+  }
+}
+
+@layer utilities {
+  /* Balanced text wrap for headlines */
+  .text-balance {
+    text-wrap: balance;
+  }
+  .text-pretty {
+    text-wrap: pretty;
+  }
+
+  /* Stagger children animations — used on page load */
+  .stagger > * {
+    opacity: 0;
+    animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+  .stagger > *:nth-child(1) { animation-delay: 0.05s; }
+  .stagger > *:nth-child(2) { animation-delay: 0.15s; }
+  .stagger > *:nth-child(3) { animation-delay: 0.25s; }
+  .stagger > *:nth-child(4) { animation-delay: 0.35s; }
+  .stagger > *:nth-child(5) { animation-delay: 0.45s; }
+  .stagger > *:nth-child(6) { animation-delay: 0.55s; }
+}
