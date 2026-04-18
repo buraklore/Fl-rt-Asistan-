@@ -11,26 +11,22 @@ import { requireUser } from "@/lib/auth";
 import { enforceQuota } from "@/lib/quota";
 import { fail, ok, parseBody } from "@/lib/http";
 
-// Running on the Node runtime (not edge) because the Anthropic SDK + Supabase
-// server client are Node-first.
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function POST(request: NextRequest) {
-  // 1. Auth
   const authed = await requireUser();
   if (authed instanceof Response) return authed;
   const { user, supabase } = authed;
 
-  // 2. Validate body
   const body = await parseBody(request, GenerateMessageRequestSchema);
   if (body instanceof Response) return body;
 
-  // 3. Quota check
   const quota = await enforceQuota(user.id, "message_generate");
   if (!quota.ok) return quota.response;
 
-  // 4. Load target profile if provided
+  const tones = body.tones ?? ["cool", "flirty", "confident"];
+
   let target: TargetProfileForPrompt | null = null;
   if (body.targetId) {
     const { data: t } = await supabase
@@ -63,7 +59,6 @@ export async function POST(request: NextRequest) {
     }
   }
 
-  // 5. Generate
   const provider = new AnthropicProvider({
     apiKey: process.env.ANTHROPIC_API_KEY ?? "",
     defaultModel: process.env.LLM_PRIMARY_MODEL,
@@ -72,7 +67,7 @@ export async function POST(request: NextRequest) {
 
   const result = await generator.run({
     incomingMessage: body.incomingMessage,
-    tones: body.tones ?? ["cool", "flirty", "confident"],
+    tones,
     target,
     userNote: body.context ?? null,
   });
@@ -89,7 +84,6 @@ export async function POST(request: NextRequest) {
     });
   }
 
-  // 6. Persist generation
   const { data: saved, error: saveError } = await supabase
     .from("message_generations")
     .insert({
@@ -97,7 +91,7 @@ export async function POST(request: NextRequest) {
       target_id: body.targetId ?? null,
       incoming_message: body.incomingMessage,
       context_note: body.context ?? null,
-      tones_requested: body.tones ?? ["cool", "flirty", "confident"],
+      tones_requested: tones,
       replies: result.replies,
       model: result.telemetry.model,
       prompt_version: result.telemetry.promptVersion,
@@ -109,4 +103,18 @@ export async function POST(request: NextRequest) {
     .single();
 
   if (saveError) {
-    console.error("Failed to persist generati
+    console.error("persist failed:", saveError);
+  }
+
+  return ok(
+    {
+      generationId: saved?.id ?? null,
+      replies: result.replies,
+    },
+    {
+      usage: quota.unlimited
+        ? { unlimited: true }
+        : { remaining: quota.remaining, resetAt: quota.resetAt },
+    },
+  );
+}
