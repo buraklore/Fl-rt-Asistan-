@@ -72,13 +72,12 @@ export async function POST(request: NextRequest) {
 
   const result = await generator.run({
     incomingMessage: body.incomingMessage,
-    tones: body.tones,
+    tones: body.tones ?? ["cool", "flirty", "confident"],
     target,
     userNote: body.context ?? null,
   });
 
   if (!result.ok) {
-    // Log moderation event (bypass RLS via service client for audit)
     await supabase.from("moderation_logs").insert({
       user_id: user.id,
       input: body.incomingMessage,
@@ -98,7 +97,7 @@ export async function POST(request: NextRequest) {
       target_id: body.targetId ?? null,
       incoming_message: body.incomingMessage,
       context_note: body.context ?? null,
-      tones_requested: body.tones,
+      tones_requested: body.tones ?? ["cool", "flirty", "confident"],
       replies: result.replies,
       model: result.telemetry.model,
       prompt_version: result.telemetry.promptVersion,
@@ -110,18 +109,4 @@ export async function POST(request: NextRequest) {
     .single();
 
   if (saveError) {
-    console.error("Failed to persist generation:", saveError);
-  }
-
-  return ok(
-    {
-      generationId: saved?.id ?? null,
-      replies: result.replies,
-    },
-    {
-      usage: quota.unlimited
-        ? { unlimited: true }
-        : { remaining: quota.remaining, resetAt: quota.resetAt },
-    },
-  );
-}
+    console.error("Failed to persist generati
