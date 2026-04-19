@@ -2,10 +2,18 @@
 
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 
 export default function SignInPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-ink-950" />}>
+      <SignInContent />
+    </Suspense>
+  );
+}
+
+function SignInContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [email, setEmail] = useState("");
@@ -54,11 +62,11 @@ export default function SignInPage() {
           </Link>
           <div className="my-auto max-w-sm">
             <blockquote className="font-display text-4xl italic leading-tight text-ink-100">
-              &ldquo;Arkadaşına danışmak gibi — sadece arkadaşın senin yerine
-              beş saniyede üç farklı cevap hazırlamış.&rdquo;
+              &ldquo;Arkadasina danismak gibi — sadece arkadasin senin yerine
+              bes saniyede uc farkli cevap hazirlamis.&rdquo;
             </blockquote>
             <p className="mt-6 text-sm text-ink-400">
-              — erken beta kullanıcısı, 24
+              — erken beta kullanicisi, 24
             </p>
           </div>
         </div>
@@ -77,10 +85,10 @@ export default function SignInPage() {
           </Link>
 
           <p className="mb-3 font-display italic text-xl text-brand-400">
-            tekrar hoş geldin —
+            tekrar hos geldin —
           </p>
           <h1 className="mb-10 font-display text-4xl leading-tight sm:text-5xl">
-            Giriş yap.
+            Giris yap.
           </h1>
 
           <form className="space-y-4" onSubmit={submit}>
@@ -93,11 +101,11 @@ export default function SignInPage() {
               required
             />
             <Field
-              label="Şifre"
+              label="Sifre"
               type="password"
               value={password}
               onChange={setPassword}
-              placeholder="••••••••"
+              placeholder="********"
               required
             />
 
@@ -112,7 +120,7 @@ export default function SignInPage() {
               disabled={loading}
               className="w-full rounded-xl bg-brand-500 py-3.5 text-sm font-medium text-white shadow-lg shadow-brand-500/20 transition hover:bg-brand-600 disabled:opacity-50"
             >
-              {loading ? "giriş yapılıyor…" : "Giriş yap"}
+              {loading ? "giris yapiliyor..." : "Giris yap"}
             </button>
           </form>
 
@@ -131,12 +139,12 @@ export default function SignInPage() {
           </button>
 
           <p className="mt-10 text-center text-sm text-ink-300">
-            Hesabın yok mu?{" "}
+            Hesabin yok mu?{" "}
             <Link
               href="/sign-up"
               className="font-medium text-brand-400 hover:text-brand-500"
             >
-              Hemen oluştur
+              Hemen olustur
             </Link>
           </p>
         </div>
