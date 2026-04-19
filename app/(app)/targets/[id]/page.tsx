@@ -240,7 +240,7 @@ export default async function TargetDetailPage({ params }: Params) {
       {/* Archetype + compatibility grid */}
       {hasArchetype && (
         <section className="mb-12">
-          <h2 className="mb-4 font-display text-2xl">Arketip</h2>
+          <h2 className="m-0 font-display text-ink-100" style={{ fontWeight: 400, fontSize: 28, letterSpacing: "-0.01em", marginBottom: 16 }}>Arketip</h2>
           <div className="grid gap-4 md:grid-cols-3">
             <ArchetypeCard
               axis="Dinamik"
@@ -285,7 +285,7 @@ export default async function TargetDetailPage({ params }: Params) {
 
       {/* Analysis */}
       <section className="mb-12">
-        <h2 className="mb-4 font-display text-2xl">Kişilik Analizi</h2>
+        <h2 className="m-0 font-display text-ink-100" style={{ fontWeight: 400, fontSize: 28, letterSpacing: "-0.01em", marginBottom: 16 }}>Kişilik Analizi</h2>
         {hasAnalysis ? (
           <div className="space-y-4">
             {target.confidence_detail && (
@@ -380,7 +380,7 @@ export default async function TargetDetailPage({ params }: Params) {
       {coachingAdvice && (
         <section className="mb-12">
           <div className="mb-4 flex items-baseline justify-between">
-            <h2 className="font-display text-2xl">Sana Özel Koçluk</h2>
+            <h2 className="m-0 font-display text-ink-100" style={{ fontWeight: 400, fontSize: 28, letterSpacing: "-0.01em" }}>Sana Özel Koçluk</h2>
             <p className="text-xs italic text-ink-500">
               senin profiline göre üretildi
             </p>
@@ -391,7 +391,7 @@ export default async function TargetDetailPage({ params }: Params) {
 
       {/* Quick actions */}
       <section className="mb-12">
-        <h2 className="mb-4 font-display text-2xl">Hızlı eylem</h2>
+        <h2 className="m-0 font-display text-ink-100" style={{ fontWeight: 400, fontSize: 28, letterSpacing: "-0.01em", marginBottom: 16 }}>Hızlı eylem</h2>
         <div className="grid gap-3 md:grid-cols-3">
           <ButtonLink href={`/generate?targetId=${target.id}`} variant="primary">
             ✻ Mesaj üret
@@ -411,7 +411,7 @@ export default async function TargetDetailPage({ params }: Params) {
       {/* Context notes */}
       {target.context_notes && (
         <section className="mb-10">
-          <h2 className="mb-4 font-display text-2xl">Bağlam notları</h2>
+          <h2 className="m-0 font-display text-ink-100" style={{ fontWeight: 400, fontSize: 28, letterSpacing: "-0.01em", marginBottom: 16 }}>Bağlam notları</h2>
           <SectionCard className="p-6">
             <p className="whitespace-pre-line text-sm leading-relaxed text-ink-200">
               {target.context_notes}

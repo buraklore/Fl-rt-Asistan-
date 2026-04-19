@@ -15,7 +15,7 @@ export default function LandingPage() {
         style={{
           minHeight: "calc(100vh - 73px)",
           background:
-            "linear-gradient(135deg, #6B0F2A 0%, #140A10 55%, #140A10 100%)",
+            "linear-gradient(135deg, #6B0F2A 0%, #0A0A0F 55%, #0A0A0F 100%)",
         }}
       >
         {/* Decorative giant italic "flört" */}
@@ -153,7 +153,7 @@ export default function LandingPage() {
       <section
         className="border-t border-ink-800 px-6 py-[100px] sm:px-12"
         style={{
-          background: "linear-gradient(180deg, #140A10, #1F1023)",
+          background: "linear-gradient(180deg, #0A0A0F, #111118)",
         }}
       >
         <div className="mx-auto max-w-[1200px] text-center">

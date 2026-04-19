@@ -56,7 +56,7 @@ function SignInContent() {
         className="relative hidden overflow-hidden md:flex md:flex-col md:justify-between md:p-16"
         style={{
           background:
-            "linear-gradient(145deg, #881337 0%, #6B0F2A 40%, #1F1023 100%)",
+            "linear-gradient(145deg, #881337 0%, #6B0F2A 40%, #111118 100%)",
         }}
       >
         <Link

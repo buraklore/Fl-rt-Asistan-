@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { api, ApiError } from "@/lib/api";
 import {
   SectionCard,
@@ -268,6 +269,9 @@ export default function OnboardingPage() {
         <div className="font-display text-[20px] text-ink-100">
           Flört<span className="italic text-brand-500"> asistanı</span>
         </div>
+        <Link href="/dashboard" className="text-[12px] text-ink-400 hover:text-ink-200">
+          sonra yap →
+        </Link>
       </div>
 
       {/* Progress */}

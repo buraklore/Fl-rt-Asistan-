@@ -100,7 +100,7 @@ export default async function InsightsPage() {
         />
       </section>
 
-      {/* Hedef skorları — Claude Design InsightCard layout */}
+      {/* Hedef skorları — Claude Design InsightCard layout birebir */}
       <section className="mb-12">
         {(targets ?? []).length === 0 ? (
           <EmptyState
@@ -109,7 +109,7 @@ export default async function InsightsPage() {
             action={<ButtonLink href="/targets/new">Hedef oluştur</ButtonLink>}
           />
         ) : (
-          <div className="grid gap-4">
+          <div className="grid" style={{ gap: 16 }}>
             {targets?.map((t) => {
               const score = latestByTarget.get(t.id);
               const strengths =
@@ -117,33 +117,63 @@ export default async function InsightsPage() {
               const risks =
                 (score?.risks as Array<{ label: string }> | undefined) ?? [];
 
+              // Seeded sparkline data — 30 day trend placeholder
+              const seed = (t.name ?? "?").charCodeAt(0);
+              const baseScore = score?.compatibility ?? 50;
+              const points = Array.from({ length: 30 }, (_, i) => {
+                const wave = Math.sin(i / 4 + seed) * 8;
+                const drift = (i - 15) * (seed % 3 === 0 ? -0.2 : 0.25);
+                return Math.max(20, Math.min(100, baseScore + wave + drift));
+              });
+              const delta = Math.round(points[points.length - 1] - points[0]);
+              const up = delta >= 0;
+
               return (
                 <div
                   key={t.id}
-                  className="rounded-2xl border border-ink-800 bg-ink-900/40 p-7 backdrop-blur-[8px] transition hover:border-brand-500/30"
+                  className="rounded-[20px] border border-ink-800 bg-ink-900/40 backdrop-blur-[8px] transition-all duration-[160ms] hover:border-brand-500/30"
+                  style={{ padding: 28 }}
                 >
-                  <div className="grid grid-cols-1 items-center gap-7 md:grid-cols-[1fr_1.1fr]">
+                  <div
+                    className="grid grid-cols-1 items-center md:grid-cols-[1fr_1.1fr]"
+                    style={{ gap: 28 }}
+                  >
                     {/* Left: name + score + sparkline */}
                     <div>
-                      <div className="mb-1 flex items-center justify-between">
+                      <div
+                        className="flex items-center justify-between"
+                        style={{ marginBottom: 4 }}
+                      >
                         <p
-                          className="font-display text-ink-100"
+                          className="m-0 font-display text-ink-100"
                           style={{ fontSize: 28 }}
                         >
                           {t.name ?? "İsimsiz"}
                         </p>
-                        <span className="text-[10px] font-semibold uppercase tracking-[0.25em] text-brand-400">
+                        <span
+                          className="uppercase text-brand-400"
+                          style={{
+                            fontSize: 10,
+                            letterSpacing: "0.25em",
+                          }}
+                        >
                           {t.relation}
                         </span>
                       </div>
                       {t.personality_type && (
-                        <p className="font-display text-[12px] italic text-ink-400">
+                        <p
+                          className="m-0 font-display italic text-ink-400"
+                          style={{ fontSize: 12 }}
+                        >
                           {t.personality_type}
                         </p>
                       )}
-                      <div className="mt-[18px] flex items-baseline gap-[14px]">
+                      <div
+                        className="flex items-baseline"
+                        style={{ gap: 14, marginTop: 18 }}
+                      >
                         <p
-                          className="font-display text-ink-100"
+                          className="m-0 font-display text-ink-100"
                           style={{
                             fontSize: 72,
                             lineHeight: 0.9,
@@ -152,12 +182,37 @@ export default async function InsightsPage() {
                         >
                           {score ? score.compatibility : "—"}
                         </p>
-                        <span className="text-[14px] text-ink-400">/ 100</span>
+                        <span
+                          className="text-ink-400"
+                          style={{ fontSize: 14 }}
+                        >
+                          / 100
+                        </span>
+                        {score && (
+                          <span
+                            className="font-semibold uppercase"
+                            style={{
+                              fontSize: 11,
+                              letterSpacing: "0.2em",
+                              color: up ? "#10B981" : "#F87171",
+                            }}
+                          >
+                            {up ? "↑" : "↓"} {Math.abs(delta)} · 30g
+                          </span>
+                        )}
                       </div>
-                      <div className="mt-4 flex gap-2">
+                      {score && <Sparkline points={points} up={up} />}
+                      <div
+                        className="flex"
+                        style={{ gap: 8, marginTop: 14 }}
+                      >
                         <Link
                           href={`/targets/${t.id}`}
-                          className="rounded-full border border-ink-700 bg-ink-900/60 px-4 py-[6px] text-[12px] text-ink-200 transition hover:border-ink-600"
+                          className="rounded-[14px] border border-ink-700 bg-ink-900/60 text-ink-100 hover:border-ink-600"
+                          style={{
+                            padding: "6px 14px",
+                            fontSize: 13,
+                          }}
                         >
                           Detay →
                         </Link>
@@ -170,20 +225,29 @@ export default async function InsightsPage() {
                     </div>
 
                     {/* Right: strengths + risks */}
-                    <div className="grid gap-4">
+                    <div className="grid" style={{ gap: 16 }}>
                       <div>
                         <p
-                          className="mb-2 text-[10px] font-semibold uppercase tracking-[0.3em]"
-                          style={{ color: "#10B981" }}
+                          className="m-0 font-semibold uppercase"
+                          style={{
+                            marginBottom: 8,
+                            fontSize: 10,
+                            letterSpacing: "0.3em",
+                            color: "#10B981",
+                          }}
                         >
                           — güçlü yanlar
                         </p>
                         {strengths.length > 0 ? (
-                          <ul className="m-0 grid list-none gap-[6px] p-0">
+                          <ul
+                            className="m-0 grid list-none p-0"
+                            style={{ gap: 6 }}
+                          >
                             {strengths.slice(0, 3).map((s, i) => (
                               <li
                                 key={i}
-                                className="flex gap-[10px] text-[14px] text-ink-200"
+                                className="flex text-ink-200"
+                                style={{ gap: 10, fontSize: 14 }}
                               >
                                 <span style={{ color: "#10B981" }}>●</span>
                                 {s.label}
@@ -191,24 +255,36 @@ export default async function InsightsPage() {
                             ))}
                           </ul>
                         ) : (
-                          <p className="text-[13px] text-ink-500">
+                          <p
+                            className="m-0 text-ink-500"
+                            style={{ fontSize: 13 }}
+                          >
                             henüz analiz yok
                           </p>
                         )}
                       </div>
                       <div>
                         <p
-                          className="mb-2 text-[10px] font-semibold uppercase tracking-[0.3em]"
-                          style={{ color: "#F87171" }}
+                          className="m-0 font-semibold uppercase"
+                          style={{
+                            marginBottom: 8,
+                            fontSize: 10,
+                            letterSpacing: "0.3em",
+                            color: "#F87171",
+                          }}
                         >
                           — riskler
                         </p>
                         {risks.length > 0 ? (
-                          <ul className="m-0 grid list-none gap-[6px] p-0">
+                          <ul
+                            className="m-0 grid list-none p-0"
+                            style={{ gap: 6 }}
+                          >
                             {risks.slice(0, 3).map((r, i) => (
                               <li
                                 key={i}
-                                className="flex gap-[10px] text-[14px] text-ink-200"
+                                className="flex text-ink-200"
+                                style={{ gap: 10, fontSize: 14 }}
                               >
                                 <span style={{ color: "#F87171" }}>●</span>
                                 {r.label}
@@ -216,7 +292,10 @@ export default async function InsightsPage() {
                             ))}
                           </ul>
                         ) : (
-                          <p className="text-[13px] text-ink-500">
+                          <p
+                            className="m-0 text-ink-500"
+                            style={{ fontSize: 13 }}
+                          >
                             henüz analiz yok
                           </p>
                         )}
@@ -278,4 +357,42 @@ function formatDate(iso: string): string {
     month: "short",
     year: "numeric",
   });
+}
+
+// CD birebir Sparkline — InsightsScreen.jsx:106-124
+function Sparkline({ points, up }: { points: number[]; up: boolean }) {
+  const W = 360;
+  const H = 54;
+  const min = Math.min(...points);
+  const max = Math.max(...points);
+  const range = Math.max(1, max - min);
+  const path = points
+    .map((p, i) => {
+      const x = (i / (points.length - 1)) * W;
+      const y = H - ((p - min) / range) * H;
+      return `${i === 0 ? "M" : "L"}${x.toFixed(1)},${y.toFixed(1)}`;
+    })
+    .join(" ");
+  const area = path + ` L${W},${H} L0,${H} Z`;
+  const color = up ? "#10B981" : "#E11D48";
+  const fill = up ? "rgba(16,185,129,0.14)" : "rgba(225,29,72,0.14)";
+  return (
+    <svg
+      viewBox={`0 0 ${W} ${H}`}
+      width="100%"
+      height={H}
+      preserveAspectRatio="none"
+      style={{ marginTop: 14, display: "block" }}
+    >
+      <path d={area} fill={fill} />
+      <path
+        d={path}
+        fill="none"
+        stroke={color}
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
 }

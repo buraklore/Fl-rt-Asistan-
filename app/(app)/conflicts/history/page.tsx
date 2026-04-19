@@ -82,7 +82,7 @@ export default function ConflictsHistoryPage() {
 
   if (loading) {
     return (
-      <div className="mx-auto max-w-4xl px-6 py-12 md:px-10">
+      <div className="mx-auto max-w-[900px] px-10 py-12 pb-20">
         <div className="space-y-3">
           <div className="h-24 animate-pulse rounded-2xl bg-ink-800" />
           <div className="h-24 animate-pulse rounded-2xl bg-ink-800" />

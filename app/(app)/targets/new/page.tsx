@@ -137,218 +137,323 @@ export default function NewTargetPage() {
     }
   };
 
+
   return (
-    <div className="mx-auto max-w-3xl px-6 py-12 md:px-10">
-      <div className="mb-6">
-        <Link href="/targets" className="text-sm text-ink-400 hover:text-brand-400">
-          ← hedefler
-        </Link>
+    <div className="mx-auto max-w-[820px] px-10 py-12 pb-20">
+      <Link href="/targets" className="text-[13px] text-ink-400 hover:text-ink-200">
+        ← Hedefler
+      </Link>
+      <div className="mt-4">
+        <PageHeader
+          kicker="yeni analiz —"
+          title="Yeni hedef oluştur."
+          description="Ne kadar bilgi verirsen analiz o kadar güvenilir olur. En az bağlam 80 karakter, 3 davranış gözlemi önerilir."
+        />
       </div>
-      <PageHeader
-        kicker="yeni hedef"
-        title="Kim bu?"
-        description="Ne kadar çok detay verirsen, analiz o kadar keskin olur. Her alan zorunlu — doğru analiz için zengin veriye ihtiyaç duyar."
-      />
 
-      <SectionCard className="space-y-8 p-6 md:p-8">
+      <div className="grid gap-8">
         {/* BASICS */}
-        <div>
-          <Label required>İsim veya takma ad</Label>
-          <Input
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Örn: Ayşe"
-            maxLength={40}
-          />
-          <p className="mt-1 text-xs text-ink-500">En az 2 karakter.</p>
-        </div>
+        <Section title="temel">
+          <div className="grid gap-4">
+            <div>
+              <Label required>isim (takma olabilir)</Label>
+              <Input
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Ayşe"
+                maxLength={40}
+              />
+            </div>
 
-        <div>
-          <Label required>Bu kişiyle ilişkin</Label>
-          <div className="flex flex-wrap gap-2">
-            {RELATIONS.map((r) => (
-              <Chip key={r.key} active={relation === r.key} onClick={() => setRelation(r.key)}>
-                {r.label}
-              </Chip>
-            ))}
-          </div>
-        </div>
+            <div>
+              <Label required>ilişki türü</Label>
+              <div className="grid grid-cols-3 gap-2 sm:grid-cols-5">
+                {RELATIONS.map((r) => (
+                  <MiniCard
+                    key={r.key}
+                    active={relation === r.key}
+                    onClick={() => setRelation(r.key)}
+                  >
+                    {r.label}
+                  </MiniCard>
+                ))}
+              </div>
+            </div>
 
-        <div>
-          <Label required>Cinsiyeti</Label>
-          <div className="flex flex-wrap gap-2">
-            {GENDERS.map((g) => (
-              <Chip key={g.key} active={gender === g.key} onClick={() => setGender(g.key)}>
-                {g.label}
-              </Chip>
-            ))}
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div>
+                <Label>cinsiyet</Label>
+                <div className="flex flex-wrap gap-2">
+                  {GENDERS.map((g) => (
+                    <Chip
+                      key={g.key}
+                      active={gender === g.key}
+                      onClick={() => setGender(g.key)}
+                    >
+                      {g.label}
+                    </Chip>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <Label>yaş aralığı</Label>
+                <div className="flex flex-wrap gap-2">
+                  {AGE_RANGES.map((a) => (
+                    <Chip
+                      key={a.key}
+                      active={ageRange === a.key}
+                      onClick={() => setAgeRange(a.key)}
+                    >
+                      {a.label}
+                    </Chip>
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
-
-        <div>
-          <Label required>Yaş aralığı</Label>
-          <div className="flex flex-wrap gap-2">
-            {AGE_RANGES.map((a) => (
-              <Chip key={a.key} active={ageRange === a.key} onClick={() => setAgeRange(a.key)}>
-                {a.label}
-              </Chip>
-            ))}
-          </div>
-        </div>
+        </Section>
 
         {/* INTERESTS */}
-        <div>
-          <Label required>İlgi alanları (virgülle ayır)</Label>
+        <Section title="ilgi alanları" hint="en az 3 ekle — koç konu önerileri üretir">
           <Textarea
             value={interestsRaw}
             onChange={(e) => setInterestsRaw(e.target.value)}
-            placeholder="Örn: yoga, gitar çalmak, kedisi Pamuk, arkeoloji, seyahat"
+            placeholder="Virgülle ayır: matcha, vintage, gece yürüyüşü, psikoloji..."
             rows={3}
             maxLength={600}
           />
-          <p className="mt-1 text-xs text-ink-500">
+          <p className="mt-2 text-[11px] text-ink-500">
             {interests.length} geçerli — en az 3 gerekli, her biri 4+ karakter
           </p>
           {interests.length > 0 && (
-            <div className="mt-2 flex flex-wrap gap-2">
+            <div className="mt-3 flex flex-wrap gap-2">
               {interests.map((i, idx) => (
-                <span key={idx} className="rounded-full bg-brand-500/10 px-3 py-1 text-xs text-brand-400">
+                <span
+                  key={idx}
+                  className="rounded-full border border-brand-700 bg-brand-500/10 px-[12px] py-[6px] text-[13px] text-brand-300"
+                >
                   {i}
                 </span>
               ))}
             </div>
           )}
-        </div>
+        </Section>
 
         {/* BEHAVIORS */}
-        <div>
-          <Label required>Davranış gözlemleri (her satıra bir tane)</Label>
+        <Section
+          title="davranış kalıpları"
+          hint="en az 3 gözlem — ne yapar, nasıl tepki verir"
+        >
           <Textarea
             value={behaviorsRaw}
             onChange={(e) => setBehaviorsRaw(e.target.value)}
-            placeholder={"Örn:\nKişisel konularda açılmayı zor buluyor\nHafta sonları sosyal olmayı seviyor, hafta içi içine kapanık\nKariyerine çok odaklı, iş konusunda tutkulu"}
+            placeholder={"Her satıra bir tane:\nmesaja geç cevap verir, önce üç nokta\ntartışmada sessizleşir\nhafta sonları sosyal, hafta içi içine kapanık"}
             rows={6}
             maxLength={2000}
           />
-          <p className="mt-1 text-xs text-ink-500">
-            {behaviors.length} geçerli davranış — en az 3 gerekli, her biri 15+ karakter
+          <p className="mt-2 text-[11px] text-ink-500">
+            {behaviors.length} geçerli davranış — en az 3 gerekli, her biri 15+
+            karakter
           </p>
-        </div>
+          {behaviors.length > 0 && (
+            <div className="mt-3 grid gap-2">
+              {behaviors.map((p, idx) => (
+                <div
+                  key={idx}
+                  className="flex items-center gap-3 rounded-[12px] border border-ink-800 bg-ink-900/40 px-[14px] py-[10px]"
+                >
+                  <span className="text-brand-500">◆</span>
+                  <span className="flex-1 text-[14px] text-ink-200">{p}</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </Section>
 
         {/* CONTEXT */}
-        <div>
-          <Label required>Nasıl tanıştınız, bağlam</Label>
+        <Section
+          title="bağlam notları"
+          hint="min 80 karakter — nerede tanıştınız, son ne oldu, ne hissediyorsun"
+        >
           <Textarea
             value={contextNotes}
             onChange={(e) => setContextNotes(e.target.value)}
-            placeholder="Örn: Geçen ay bir arkadaşımın doğum gününde tanıştık. 3 haftadır konuşuyoruz, birkaç kez randevuya çıktık. İlk izlenim iyiydi ama son zamanlarda mesajları seyrekleşti."
+            placeholder="bir arkadaş ortamında tanıştık. 3 haftadır konuşuyoruz, 2 kez buluştuk. son buluşmadan sonra mesajları soğudu…"
             rows={5}
             maxLength={2000}
           />
-          <p className="mt-1 text-xs text-ink-500">
-            {contextNotes.length} / 2000 — en az 80 karakter
+          <p
+            className="mt-2 text-[11px]"
+            style={{
+              color: contextNotes.length < 80 ? "#fbbf24" : "#10B981",
+            }}
+          >
+            {contextNotes.length} / 80 karakter{" "}
+            {contextNotes.length < 80 ? "· biraz daha" : "· yeterli"}
           </p>
-        </div>
+        </Section>
 
         {/* ARCHETYPE */}
-        <div className="space-y-6 rounded-xl border border-brand-500/20 bg-brand-500/5 p-5">
-          <div>
-            <p className="font-display italic text-brand-400 mb-2">arketip gözlemin —</p>
-            <p className="text-xs text-ink-400">
-              Bu kişiyi 3 boyutta tanımla. uyum analizinde senin profilin ile karşılaştırır.
-            </p>
-          </div>
+        <Section title="arketip (onu tarif et)">
+          <div className="grid gap-5">
+            <div>
+              <Label required>dinamik</Label>
+              <div className="space-y-2">
+                {DYNAMIC_STYLES.map((s) => (
+                  <button
+                    key={s.key}
+                    type="button"
+                    onClick={() => setDynamicStyle(s.key)}
+                    className={`w-full rounded-[12px] border px-4 py-3 text-left transition ${
+                      dynamicStyle === s.key
+                        ? "border-brand-500 bg-brand-500/10"
+                        : "border-ink-700 bg-ink-900/40 hover:border-ink-600"
+                    }`}
+                  >
+                    <p
+                      className={`text-[14px] font-medium ${
+                        dynamicStyle === s.key ? "text-brand-400" : "text-ink-100"
+                      }`}
+                    >
+                      {s.label}
+                    </p>
+                    <p className="mt-1 text-[12px] text-ink-400">{s.desc}</p>
+                  </button>
+                ))}
+              </div>
+            </div>
 
-          <div>
-            <Label required>Dinamik tarzı</Label>
-            <div className="space-y-2">
-              {DYNAMIC_STYLES.map((s) => (
-                <button
-                  key={s.key}
-                  type="button"
-                  onClick={() => setDynamicStyle(s.key)}
-                  className={`w-full rounded-lg border px-4 py-3 text-left transition ${
-                    dynamicStyle === s.key
-                      ? "border-brand-500 bg-brand-500/10"
-                      : "border-ink-700 bg-ink-900/40 hover:border-ink-600"
-                  }`}
-                >
-                  <p className={`text-sm font-medium ${dynamicStyle === s.key ? "text-brand-400" : "text-ink-100"}`}>
+            <div>
+              <Label required>ifade</Label>
+              <div className="grid grid-cols-3 gap-2">
+                {EXPRESSION_STYLES.map((s) => (
+                  <MiniCard
+                    key={s.key}
+                    active={expressionStyle === s.key}
+                    onClick={() => setExpressionStyle(s.key)}
+                  >
                     {s.label}
-                  </p>
-                  <p className="mt-0.5 text-xs text-ink-400">{s.desc}</p>
-                </button>
-              ))}
+                  </MiniCard>
+                ))}
+              </div>
+              {expressionStyle && (
+                <p className="mt-2 text-[12px] text-ink-400">
+                  {EXPRESSION_STYLES.find((s) => s.key === expressionStyle)?.desc}
+                </p>
+              )}
+            </div>
+
+            <div>
+              <Label required>enerji</Label>
+              <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+                {ENERGY_STYLES.map((s) => (
+                  <MiniCard
+                    key={s.key}
+                    active={relationshipEnergy === s.key}
+                    onClick={() => setRelationshipEnergy(s.key)}
+                  >
+                    {s.label}
+                  </MiniCard>
+                ))}
+              </div>
+              {relationshipEnergy && (
+                <p className="mt-2 text-[12px] text-ink-400">
+                  {ENERGY_STYLES.find((s) => s.key === relationshipEnergy)?.desc}
+                </p>
+              )}
             </div>
           </div>
+        </Section>
 
-          <div>
-            <Label required>İfade tarzı</Label>
-            <div className="flex flex-wrap gap-2">
-              {EXPRESSION_STYLES.map((s) => (
-                <Chip
-                  key={s.key}
-                  active={expressionStyle === s.key}
-                  onClick={() => setExpressionStyle(s.key)}
-                >
-                  {s.label}
-                </Chip>
-              ))}
-            </div>
-            {expressionStyle && (
-              <p className="mt-2 text-xs text-ink-400">
-                {EXPRESSION_STYLES.find((s) => s.key === expressionStyle)?.desc}
-              </p>
-            )}
-          </div>
-
-          <div>
-            <Label required>Enerjisi</Label>
-            <div className="flex flex-wrap gap-2">
-              {ENERGY_STYLES.map((s) => (
-                <Chip
-                  key={s.key}
-                  active={relationshipEnergy === s.key}
-                  onClick={() => setRelationshipEnergy(s.key)}
-                >
-                  {s.label}
-                </Chip>
-              ))}
-            </div>
-            {relationshipEnergy && (
-              <p className="mt-2 text-xs text-ink-400">
-                {ENERGY_STYLES.find((s) => s.key === relationshipEnergy)?.desc}
-              </p>
-            )}
-          </div>
-        </div>
-
-        {/* AUTO-ANALYZE */}
-        <label className="flex cursor-pointer items-start gap-3 rounded-lg border border-ink-700 bg-ink-900/40 p-4">
+        {/* Auto-analyze */}
+        <label className="flex cursor-pointer items-start gap-3 rounded-[12px] border border-ink-700 bg-ink-900/40 p-4">
           <input
             type="checkbox"
             checked={autoAnalyze}
             onChange={(e) => setAutoAnalyze(e.target.checked)}
-            className="mt-0.5"
+            className="mt-0.5 h-4 w-4 accent-brand-500"
           />
           <div>
-            <p className="text-sm font-medium text-ink-100">Kaydettikten sonra otomatik analiz et</p>
-            <p className="mt-1 text-xs text-ink-400">
-              Koç Big5, bağlanma stili ve iletişim tarzını otomatik çıkarır. ~4 saniye.
+            <p className="text-[14px] font-medium text-ink-100">
+              Kaydettikten sonra otomatik analiz et
+            </p>
+            <p className="mt-1 text-[12px] text-ink-400">
+              Koç Big5, bağlanma stili ve iletişim tarzını otomatik çıkarır. ~4
+              saniye.
             </p>
           </div>
         </label>
 
         {error && <ErrorBanner message={error} />}
 
-        <Button onClick={submit} disabled={!canSubmit || loading} fullWidth>
-          {analyzing
-            ? "analiz ediliyor..."
-            : loading
-              ? "kaydediliyor..."
-              : "Hedefi oluştur & analiz et →"}
-        </Button>
-      </SectionCard>
+        <div className="flex gap-3">
+          <Link
+            href="/targets"
+            className="rounded-full border border-ink-700 bg-ink-900/40 px-5 py-3 text-[14px] text-ink-200 transition hover:border-ink-600"
+          >
+            İptal
+          </Link>
+          <Button onClick={submit} disabled={!canSubmit || loading} fullWidth>
+            {analyzing
+              ? "analiz ediliyor…"
+              : loading
+              ? "kaydediliyor…"
+              : "Oluştur & analiz et →"}
+          </Button>
+        </div>
+      </div>
     </div>
+  );
+}
+
+// ============================================================
+// Section wrapper — Claude Design style
+// ============================================================
+function Section({
+  title,
+  hint,
+  children,
+}: {
+  title: string;
+  hint?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div>
+      <div className="mb-4">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-brand-400">
+          — {title}
+        </p>
+        {hint && <p className="mt-[6px] text-[13px] text-ink-400">{hint}</p>}
+      </div>
+      {children}
+    </div>
+  );
+}
+
+// ============================================================
+// MiniCard
+// ============================================================
+function MiniCard({
+  active,
+  onClick,
+  children,
+}: {
+  active: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`rounded-[12px] border px-3 py-[10px] text-[13px] transition ${
+        active
+          ? "border-brand-500 bg-brand-500/10 text-brand-400"
+          : "border-ink-700 bg-ink-900/40 text-ink-200 hover:border-ink-600 hover:text-ink-100"
+      }`}
+    >
+      {children}
+    </button>
   );
 }

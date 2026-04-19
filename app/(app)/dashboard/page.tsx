@@ -196,11 +196,11 @@ export default async function DashboardPage() {
                   </div>
 
                   {t.personality_type ? (
-                    <p className="font-display text-[17px] italic leading-snug text-brand-400">
+                    <p className="font-display text-[17px] italic text-brand-400" style={{ lineHeight: 1.45 }}>
                       {t.personality_type}
                     </p>
                   ) : (
-                    <p className="text-[13px] leading-relaxed text-ink-500">
+                    <p className="text-[13px] text-ink-500" style={{ lineHeight: 1.5 }}>
                       henüz yeterli veri yok — profili doldur
                     </p>
                   )}
@@ -296,7 +296,7 @@ export default async function DashboardPage() {
                       </span>
                     )}
                   </div>
-                  <p className="mb-[10px] line-clamp-1 text-[12px] leading-relaxed text-ink-400">
+                  <p className="mb-[10px] line-clamp-1 text-[12px] text-ink-400" style={{ lineHeight: 1.5 }}>
                     <span className="text-ink-500">Gelen:</span>{" "}
                     {g.incoming_message}
                   </p>
@@ -328,14 +328,18 @@ function SectionHeader({
   linkHref?: string;
 }) {
   return (
-    <div className="mb-4 flex items-baseline justify-between">
-      <h2 className="font-display text-[28px] tracking-tight text-ink-100">
+    <div className="flex items-baseline justify-between" style={{ marginBottom: 16 }}>
+      <h2
+        className="m-0 font-display text-ink-100"
+        style={{ fontWeight: 400, fontSize: 28, letterSpacing: "-0.01em" }}
+      >
         {title}
       </h2>
       {linkLabel && linkHref && (
         <Link
           href={linkHref}
-          className="text-[12px] lowercase text-ink-400 hover:text-ink-200"
+          className="lowercase text-ink-400 hover:text-ink-200"
+          style={{ fontSize: 12 }}
         >
           {linkLabel}
         </Link>
@@ -360,23 +364,37 @@ function ToolTile({
   return (
     <Link
       href={href}
-      className="group flex h-full flex-col rounded-2xl border border-ink-800 bg-ink-900/40 p-[22px] transition hover:border-brand-500/40 hover:bg-ink-900/60"
+      className="group flex h-full flex-col rounded-[20px] border border-ink-800 bg-ink-900/40 backdrop-blur-[8px] transition-all duration-[160ms] hover:border-brand-500/40 hover:bg-ink-900/60"
+      style={{ padding: 22 }}
     >
-      <div className="mb-4 flex items-start justify-between gap-3">
-        <span className="text-[34px] leading-none text-brand-500">{symbol}</span>
+      <div className="flex items-start justify-between gap-3" style={{ marginBottom: 16 }}>
+        <span className="text-brand-500" style={{ fontSize: 34, lineHeight: 1 }}>{symbol}</span>
         {stat && (
-          <span className="rounded-full border border-ink-700 bg-ink-900/60 px-[10px] py-[3px] text-[9px] font-semibold uppercase tracking-[0.22em] text-ink-400">
+          <span
+            className="rounded-full border border-ink-700 bg-ink-900/60 font-semibold uppercase text-ink-400"
+            style={{
+              fontSize: 9,
+              letterSpacing: "0.22em",
+              padding: "3px 10px",
+            }}
+          >
             {stat}
           </span>
         )}
       </div>
-      <p className="font-display text-[22px] leading-tight tracking-tight text-ink-100">
+      <p
+        className="font-display text-ink-100"
+        style={{ fontSize: 22, letterSpacing: "-0.01em" }}
+      >
         {title}
       </p>
-      <p className="mb-4 mt-[6px] flex-1 text-[13px] leading-[1.5] text-ink-400">
+      <p
+        className="flex-1 text-ink-400"
+        style={{ margin: "6px 0 16px", fontSize: 13, lineHeight: 1.5 }}
+      >
         {desc}
       </p>
-      <span className="text-[11px] lowercase text-ink-500 transition group-hover:text-brand-400">
+      <span className="lowercase text-ink-500 transition group-hover:text-brand-400" style={{ fontSize: 11 }}>
         aç →
       </span>
     </Link>

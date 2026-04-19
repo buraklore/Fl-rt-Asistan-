@@ -152,42 +152,77 @@ export default function ChatSessionPage({ params }: Params) {
   };
 
   return (
-    <div className="flex h-[calc(100vh-4rem)] flex-col md:h-screen">
-      <div className="border-b border-ink-800 px-6 py-5 md:px-10">
-        <Link
-          href="/chat"
-          className="mb-3 inline-block text-sm text-ink-400 hover:text-ink-200"
+    <div className="flex flex-col md:h-screen" style={{ height: "calc(100vh - 4rem)" }}>
+      {/* Top bar — Claude Design */}
+      <div
+        className="flex items-center justify-between border-b border-ink-800 backdrop-blur-[12px]"
+        style={{
+          padding: "16px 32px",
+          gap: 16,
+          background: "rgba(10,10,15,0.8)",
+        }}
+      >
+        <div className="flex items-center gap-[14px]">
+          <Link
+            href="/chat"
+            className="flex items-center justify-center border border-ink-800 bg-transparent text-ink-300 transition hover:border-ink-700 hover:text-ink-100"
+            style={{
+              width: 34,
+              height: 34,
+              borderRadius: 10,
+              fontSize: 16,
+            }}
+          >
+            ←
+          </Link>
+          {loading ? (
+            <div className="h-8 w-48 animate-pulse rounded bg-ink-800" />
+          ) : (
+            <div>
+              <p
+                className="m-0 font-display text-ink-100"
+                style={{ fontSize: 20 }}
+              >
+                {session?.target?.name ?? "Koç"}
+              </p>
+              <p
+                className="m-0 text-[10px] font-semibold uppercase text-brand-400"
+                style={{ letterSpacing: "0.25em" }}
+              >
+                {session?.target?.relation ?? "KOÇ"} · hafızalı sohbet
+              </p>
+            </div>
+          )}
+        </div>
+        <button
+          className="flex items-center justify-center border border-ink-800 bg-transparent text-ink-300 transition hover:border-ink-700 hover:text-ink-100"
+          style={{
+            width: 34,
+            height: 34,
+            borderRadius: 10,
+            fontSize: 16,
+          }}
         >
-          ← Sohbetler
-        </Link>
-        {loading ? (
-          <div className="h-8 w-48 animate-pulse rounded bg-ink-800" />
-        ) : (
-          <>
-            <p className="font-display italic text-brand-400">
-              {session?.target?.name
-                ? `${session.target.name} için koç seansı`
-                : "koç seansı"}{" "}
-              —
-            </p>
-            <h1 className="font-display text-2xl text-ink-100">
-              {session?.title ?? "Yeni sohbet"}
-            </h1>
-          </>
-        )}
+          ⋯
+        </button>
       </div>
 
+      {/* Messages area */}
       <div
         ref={scrollRef}
-        className="flex-1 overflow-y-auto px-6 py-8 md:px-10"
+        className="flex-1 overflow-y-auto"
+        style={{ padding: "32px 0" }}
       >
-        <div className="mx-auto max-w-3xl space-y-6">
+        <div
+          className="mx-auto grid"
+          style={{ maxWidth: 720, padding: "0 24px", gap: 16 }}
+        >
           {messages.length === 0 && !streaming && (
             <div className="rounded-2xl border border-dashed border-ink-700 bg-ink-900/30 p-8 text-center">
               <p className="mb-2 font-display italic text-brand-400">
                 koçun dinliyor —
               </p>
-              <p className="text-sm text-ink-300">
+              <p className="text-[14px] text-ink-300">
                 Ne konuşmak istersin? Bir mesaj yazmaya takıldın mı, bir durum
                 mu çözemiyorsun, ya da sadece fikir mi istiyorsun — sor.
               </p>
@@ -202,9 +237,43 @@ export default function ChatSessionPage({ params }: Params) {
             <Bubble role="assistant" content={streamBuffer} isStreaming />
           )}
           {streaming && !streamBuffer && (
-            <div className="flex items-center gap-2 text-ink-400">
-              <span className="h-2 w-2 animate-pulse rounded-full bg-brand-500" />
-              <span className="text-sm">koç düşünüyor...</span>
+            <div className="flex justify-start">
+              <div
+                className="flex gap-[6px] border border-ink-800 text-ink-400"
+                style={{
+                  padding: "14px 18px",
+                  borderRadius: 18,
+                  background: "rgba(17,17,24,0.7)",
+                }}
+              >
+                <span
+                  className="inline-block rounded-full"
+                  style={{
+                    width: 6,
+                    height: 6,
+                    background: "#F17A92",
+                    animation: "dotPulse 1.2s 0ms infinite ease-in-out",
+                  }}
+                />
+                <span
+                  className="inline-block rounded-full"
+                  style={{
+                    width: 6,
+                    height: 6,
+                    background: "#F17A92",
+                    animation: "dotPulse 1.2s 160ms infinite ease-in-out",
+                  }}
+                />
+                <span
+                  className="inline-block rounded-full"
+                  style={{
+                    width: 6,
+                    height: 6,
+                    background: "#F17A92",
+                    animation: "dotPulse 1.2s 320ms infinite ease-in-out",
+                  }}
+                />
+              </div>
             </div>
           )}
 
@@ -212,25 +281,63 @@ export default function ChatSessionPage({ params }: Params) {
         </div>
       </div>
 
-      <div className="border-t border-ink-800 bg-ink-950 px-6 py-4 md:px-10">
-        <div className="mx-auto flex max-w-3xl gap-3">
-          <Textarea
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={handleKey}
-            placeholder="mesajını yaz... (Enter = gönder, Shift+Enter = satır)"
-            rows={2}
-            disabled={streaming}
-          />
-          <Button
-            onClick={send}
-            disabled={streaming || !input.trim()}
-            className="shrink-0"
+      {/* Input bar */}
+      <div
+        className="border-t border-ink-800 bg-ink-950"
+        style={{ padding: "16px 24px 24px" }}
+      >
+        <div className="mx-auto" style={{ maxWidth: 720 }}>
+          <div className="flex items-end gap-[10px]">
+            <textarea
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={handleKey}
+              rows={1}
+              disabled={streaming}
+              placeholder="koça sor — enter ile gönder"
+              className="flex-1 resize-none border border-ink-700 text-ink-100 outline-none"
+              style={{
+                minHeight: 52,
+                maxHeight: 200,
+                padding: "16px 18px",
+                borderRadius: 16,
+                background: "rgba(17,17,24,0.6)",
+                fontSize: 15,
+                lineHeight: 1.5,
+              }}
+            />
+            <button
+              onClick={send}
+              disabled={streaming || !input.trim()}
+              className="rounded-full bg-brand-500 font-medium text-white shadow-lg shadow-brand-500/20 transition hover:bg-brand-600 disabled:cursor-not-allowed disabled:opacity-50"
+              style={{ height: 52, padding: "0 22px", fontSize: 14 }}
+            >
+              {streaming ? "…" : "Gönder →"}
+            </button>
+          </div>
+          <p
+            className="text-[11px] text-ink-500"
+            style={{ margin: "8px 4px 0" }}
           >
-            Gönder
-          </Button>
+            kısa ve olgun cevaplar verir.
+          </p>
         </div>
       </div>
+
+      <style jsx>{`
+        @keyframes dotPulse {
+          0%,
+          80%,
+          100% {
+            opacity: 0.3;
+            transform: scale(0.8);
+          }
+          40% {
+            opacity: 1;
+            transform: scale(1);
+          }
+        }
+      `}</style>
     </div>
   );
 }
@@ -248,13 +355,20 @@ function Bubble({
   return (
     <div className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
       <div
-        className={`max-w-[80%] rounded-2xl px-5 py-3 ${
-          isUser
-            ? "bg-brand-500/10 text-ink-100"
-            : "bg-ink-900/60 text-ink-100"
-        }`}
+        className={isUser ? "text-white" : "border border-ink-800 text-ink-100"}
+        style={{
+          maxWidth: "78%",
+          padding: "14px 18px",
+          borderRadius: 18,
+          background: isUser ? "#BE123C" : "rgba(17,17,24,0.7)",
+          fontSize: 15,
+          lineHeight: 1.55,
+          boxShadow: isUser ? "0 10px 24px -10px rgba(225,29,72,0.4)" : "none",
+          borderBottomRightRadius: isUser ? 6 : 18,
+          borderBottomLeftRadius: isUser ? 18 : 6,
+        }}
       >
-        <p className="whitespace-pre-wrap text-[15px] leading-relaxed">
+        <p className="whitespace-pre-wrap">
           {content}
           {isStreaming && <span className="ml-1 animate-pulse">▎</span>}
         </p>

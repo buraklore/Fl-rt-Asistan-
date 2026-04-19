@@ -222,7 +222,7 @@ function GenerateContent() {
                     rows={4}
                     maxLength={2000}
                     placeholder="örn: lol rastgele bir soru, niye soruyorsun?"
-                    className="w-full resize-y rounded-xl border border-ink-700 bg-ink-950/60 px-4 py-3 text-ink-100 placeholder-ink-500 outline-none transition focus:border-brand-500"
+                    className="w-full resize-y rounded-[14px] border border-ink-700 bg-ink-900/60 px-4 py-3 text-[15px] leading-[1.55] text-ink-100 placeholder-ink-500 outline-none transition focus:border-brand-500"
                   />
                   <p className="mt-1 text-[11px] text-ink-500">
                     {incoming.length} / 2000
@@ -235,7 +235,7 @@ function GenerateContent() {
                     value={context}
                     onChange={(e) => setContext(e.target.value)}
                     placeholder="örn: 2 gün önce eşleştik"
-                    className="w-full rounded-xl border border-ink-700 bg-ink-950/60 px-4 py-3 text-ink-100 placeholder-ink-500 outline-none transition focus:border-brand-500"
+                    className="w-full rounded-[14px] border border-ink-700 bg-ink-900/60 px-4 py-3 text-[15px] leading-[1.55] text-ink-100 placeholder-ink-500 outline-none transition focus:border-brand-500"
                   />
                 </Field>
               </>
@@ -246,7 +246,7 @@ function GenerateContent() {
                   onChange={(e) => setSituation(e.target.value)}
                   rows={3}
                   placeholder="nerede tanıştınız, son ne oldu, hedefin neresi…"
-                  className="w-full resize-y rounded-xl border border-ink-700 bg-ink-950/60 px-4 py-3 text-ink-100 placeholder-ink-500 outline-none transition focus:border-brand-500"
+                  className="w-full resize-y rounded-[14px] border border-ink-700 bg-ink-900/60 px-4 py-3 text-[15px] leading-[1.55] text-ink-100 placeholder-ink-500 outline-none transition focus:border-brand-500"
                 />
               </Field>
             )}
@@ -302,7 +302,8 @@ function GenerateContent() {
                 (mode === "reply" && !incoming.trim()) ||
                 (mode === "opener" && !targetId)
               }
-              className="w-full rounded-full bg-brand-500 py-3.5 text-sm font-medium text-white shadow-lg shadow-brand-500/20 transition hover:bg-brand-600 disabled:cursor-not-allowed disabled:opacity-50"
+              className="w-full rounded-[14px] bg-brand-500 font-medium text-white shadow-[0_10px_20px_-8px_rgba(225,29,72,0.4)] transition hover:bg-brand-600 disabled:cursor-not-allowed disabled:opacity-40"
+              style={{ padding: "12px 20px", fontSize: 14 }}
             >
               {loading
                 ? "üretiliyor…"
@@ -513,9 +514,12 @@ function Field({
 }) {
   return (
     <div>
-      <label className="mb-2 block text-[11px] font-semibold uppercase tracking-[0.25em] text-ink-400">
+      <label
+        className="mb-2 block font-semibold uppercase text-ink-300"
+        style={{ fontSize: 10, letterSpacing: "0.25em" }}
+      >
         {label}
-        {required && <span className="ml-1 text-brand-400">*</span>}
+        {required && <span className="ml-1 text-brand-500">*</span>}
       </label>
       {children}
     </div>

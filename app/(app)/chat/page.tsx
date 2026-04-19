@@ -1,15 +1,18 @@
 import Link from "next/link";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import {
-  PageHeader,
-  EmptyState,
-  ButtonLink,
-  SectionCard,
-} from "@/components/app/ui";
+import { PageHeader, EmptyState, ButtonLink } from "@/components/app/ui";
 import { NewChatButton } from "./new-chat-button";
 import { DeleteChatButton } from "./delete-chat-button";
 
 export const dynamic = "force-dynamic";
+
+const RELATION_LABELS: Record<string, string> = {
+  crush: "CRUSH",
+  partner: "PARTNER",
+  ex: "EX",
+  match: "MATCH",
+  friend: "ARKADAŞ",
+};
 
 export default async function ChatListPage() {
   const supabase = await createSupabaseServerClient();
@@ -30,11 +33,14 @@ export default async function ChatListPage() {
   const targetList = targets ?? [];
 
   return (
-    <div className="mx-auto max-w-5xl px-6 py-12 md:px-10">
+    <div
+      className="mx-auto"
+      style={{ maxWidth: 960, padding: "48px 40px 80px" }}
+    >
       <PageHeader
         kicker="hafızalı sohbet —"
-        title="Koç"
-        description="Her hedef için kalıcı bir oturum. Koç, önceki konuşmalarınızı hatırlar ve kişiye göre öneri verir."
+        title="Koç."
+        description="Her oturum bir hedefe bağlı. Koç geçmiş analizlerini ve eski mesaj kalıplarını hatırlar."
         action={
           targetList.length > 0 ? (
             <NewChatButton targets={targetList} />
@@ -59,7 +65,7 @@ export default async function ChatListPage() {
           }
         />
       ) : (
-        <div className="space-y-2">
+        <div className="grid gap-[10px]">
           {list.map((s) => {
             const target = s.target as {
               id: string;
@@ -69,28 +75,46 @@ export default async function ChatListPage() {
             return (
               <div
                 key={s.id}
-                className="group relative rounded-2xl border border-ink-800 bg-ink-900/40 p-5 transition hover:border-brand-500/40"
+                className="group relative grid items-center rounded-[16px] border border-ink-800 bg-ink-900/40 transition-all duration-[160ms] hover:border-brand-500/35 hover:bg-ink-900/70"
+                style={{
+                  gridTemplateColumns: "180px 1fr auto",
+                  gap: 20,
+                  padding: "18px 22px",
+                }}
               >
-                <Link href={`/chat/${s.id}`} className="block">
-                  <div className="mb-1 flex items-baseline justify-between pr-16">
-                    <span className="font-display text-lg text-ink-100">
+                <Link href={`/chat/${s.id}`} className="contents">
+                  <div>
+                    <p
+                      className="font-display text-ink-100"
+                      style={{ fontSize: 22, margin: 0 }}
+                    >
                       {target?.name ?? "İsimsiz"}
-                    </span>
-                    <span className="text-xs text-ink-500">
+                    </p>
+                    <p
+                      className="text-[10px] font-semibold uppercase text-brand-400"
+                      style={{
+                        letterSpacing: "0.25em",
+                        marginTop: 2,
+                      }}
+                    >
+                      {target?.relation
+                        ? RELATION_LABELS[target.relation] ?? target.relation.toUpperCase()
+                        : "KOÇ"}
+                    </p>
+                  </div>
+                  <p
+                    className="overflow-hidden text-ellipsis whitespace-nowrap text-[14px] text-ink-300"
+                    style={{ lineHeight: 1.5 }}
+                  >
+                    {s.title ?? "başlık henüz yok"}
+                  </p>
+                  <div className="flex items-center gap-3">
+                    <span className="text-[12px] text-ink-500">
                       {formatDate(s.created_at)}
                     </span>
                   </div>
-                  {s.title ? (
-                    <p className="line-clamp-1 text-sm text-ink-300 pr-16">
-                      {s.title}
-                    </p>
-                  ) : (
-                    <p className="text-sm italic text-ink-500">
-                      başlık henüz yok
-                    </p>
-                  )}
                 </Link>
-                <div className="absolute right-3 top-3 opacity-0 transition group-hover:opacity-100">
+                <div className="pointer-events-none absolute right-[22px] top-1/2 -translate-y-1/2 opacity-0 transition group-hover:pointer-events-auto group-hover:opacity-100">
                   <DeleteChatButton sessionId={s.id} />
                 </div>
               </div>
@@ -103,8 +127,12 @@ export default async function ChatListPage() {
 }
 
 function formatDate(iso: string): string {
-  return new Date(iso).toLocaleDateString("tr-TR", {
-    day: "numeric",
-    month: "short",
-  });
+  const d = new Date(iso);
+  const diff = Date.now() - d.getTime();
+  const days = Math.floor(diff / 86_400_000);
+  if (days < 1) return `bugün · ${d.toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit" })}`;
+  if (days === 1) return `dün · ${d.toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit" })}`;
+  if (days < 7) return `${days} gün önce`;
+  if (days < 30) return `${Math.floor(days / 7)} hafta önce`;
+  return d.toLocaleDateString("tr-TR", { day: "numeric", month: "short" });
 }
