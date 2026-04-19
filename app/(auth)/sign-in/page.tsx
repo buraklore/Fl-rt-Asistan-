@@ -50,58 +50,81 @@ function SignInContent() {
   };
 
   return (
-    <div className="grid min-h-screen md:grid-cols-2">
-      <aside className="relative hidden overflow-hidden bg-ink-900 md:block">
-        <div className="spotlight absolute inset-0" />
-        <div className="relative z-10 flex h-full flex-col p-10">
-          <Link
-            href="/"
-            className="text-xl font-display tracking-tight transition hover:opacity-80"
-          >
-            Flört<span className="italic text-brand-500"> asistanı</span>
-          </Link>
-          <div className="my-auto max-w-sm">
-            <blockquote className="font-display text-4xl italic leading-tight text-ink-100">
-              &ldquo;Arkadaşına danışmak gibi — sadece arkadaşın senin yerine
-              beş saniyede üç farklı cevap hazırlamış.&rdquo;
-            </blockquote>
-            <p className="mt-6 text-sm text-ink-400">
-              — erken beta kullanıcısı, 24
-            </p>
-          </div>
-        </div>
-        <div className="pointer-events-none absolute -right-20 bottom-0 font-display italic text-[18rem] leading-none text-brand-500/5">
+    <div className="grid min-h-screen md:grid-cols-[1.1fr_1fr]">
+      {/* Left — burgundy gradient poster */}
+      <aside
+        className="relative hidden overflow-hidden md:flex md:flex-col md:justify-between md:p-16"
+        style={{
+          background:
+            "linear-gradient(145deg, #881337 0%, #6B0F2A 40%, #1F1023 100%)",
+        }}
+      >
+        <Link
+          href="/"
+          className="relative z-10 font-display text-2xl tracking-tight text-ink-100 transition hover:opacity-80"
+        >
+          Flört<span className="italic text-brand-300"> asistanı</span>
+        </Link>
+
+        {/* Decorative giant italic word */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -bottom-32 -left-10 select-none font-display italic leading-[0.85] text-brand-300"
+          style={{
+            fontSize: "clamp(360px, 52vw, 680px)",
+            opacity: 0.05,
+            letterSpacing: "-0.04em",
+          }}
+        >
           flört
         </div>
+
+        <div className="relative z-10 max-w-lg">
+          <h1
+            className="font-display leading-tight tracking-tight text-ink-100"
+            style={{ fontSize: "clamp(44px, 5vw, 72px)", lineHeight: 1.02 }}
+          >
+            Geri döndün —{" "}
+            <span className="italic text-brand-300">devam edelim.</span>
+          </h1>
+          <p className="mt-6 text-base leading-relaxed text-ink-200">
+            Hafızalı koçun seni bekliyor — konuşmanın kaldığın yerde.
+          </p>
+        </div>
+
+        <p className="relative z-10 text-xs uppercase tracking-[0.3em] text-ink-300 opacity-60">
+          istanbul · olgun romantizm
+        </p>
       </aside>
 
-      <main className="flex items-center justify-center px-6 py-12">
+      {/* Right — form */}
+      <main className="flex items-center justify-center bg-ink-950 px-6 py-12 md:px-10">
         <div className="w-full max-w-sm">
           <Link
             href="/"
-            className="mb-8 inline-block text-xl font-display tracking-tight md:hidden"
+            className="mb-8 inline-block font-display text-xl tracking-tight md:hidden"
           >
             Flört<span className="italic text-brand-500"> asistanı</span>
           </Link>
 
-          <p className="mb-3 font-display italic text-xl text-brand-400">
-            tekrar hoş geldin —
+          <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.3em] text-brand-400">
+            — giriş
           </p>
-          <h1 className="mb-10 font-display text-4xl leading-tight sm:text-5xl">
+          <h2 className="mb-8 font-display text-4xl leading-tight tracking-tight">
             Giriş yap.
-          </h1>
+          </h2>
 
           <form className="space-y-4" onSubmit={submit}>
             <Field
-              label="E-posta"
+              label="e-posta"
               type="email"
               value={email}
               onChange={setEmail}
-              placeholder="seninposta@x.com"
+              placeholder="sen@ornek.com"
               required
             />
             <Field
-              label="Şifre"
+              label="şifre"
               type="password"
               value={password}
               onChange={setPassword}
@@ -120,8 +143,14 @@ function SignInContent() {
               disabled={loading}
               className="w-full rounded-xl bg-brand-500 py-3.5 text-sm font-medium text-white shadow-lg shadow-brand-500/20 transition hover:bg-brand-600 disabled:opacity-50"
             >
-              {loading ? "giriş yapılıyor…" : "Giriş yap"}
+              {loading ? "giriş yapılıyor…" : "Giriş →"}
             </button>
+
+            <p className="pt-2 text-center text-sm text-ink-400">
+              <a className="cursor-pointer hover:text-ink-200">
+                Şifremi unuttum?
+              </a>
+            </p>
           </form>
 
           <div className="my-6 flex items-center gap-4">
@@ -138,13 +167,13 @@ function SignInContent() {
             Google ile devam et
           </button>
 
-          <p className="mt-10 text-center text-sm text-ink-300">
-            Hesabın yok mu?{" "}
+          <p className="mt-10 text-center text-sm text-ink-400">
+            hesabın yok mu?{" "}
             <Link
               href="/sign-up"
-              className="font-medium text-brand-400 hover:text-brand-500"
+              className="font-medium text-brand-400 hover:text-brand-300"
             >
-              Hemen oluştur
+              kayıt ol →
             </Link>
           </p>
         </div>
@@ -178,7 +207,7 @@ function Field({
 }) {
   return (
     <label className="block">
-      <span className="mb-2 block text-xs font-semibold uppercase tracking-widest text-ink-300">
+      <span className="mb-2 block text-[11px] font-semibold uppercase tracking-[0.2em] text-ink-400">
         {label}
       </span>
       <input
@@ -187,7 +216,7 @@ function Field({
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         required={required}
-        className="w-full rounded-xl border border-ink-700 bg-ink-900/60 px-4 py-3 text-ink-100 placeholder-ink-500 outline-none transition focus:border-brand-500"
+        className="w-full rounded-xl border border-ink-700 bg-ink-900/60 px-4 py-3 text-ink-100 placeholder-ink-500 outline-none transition focus:border-brand-500 focus:bg-ink-900"
       />
     </label>
   );
