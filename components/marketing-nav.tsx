@@ -1,46 +1,31 @@
 import Link from "next/link";
 
-const NAV_ITEMS = [
-  { href: "/how-it-works", label: "Nasıl çalışır" },
-  { href: "/pricing", label: "Ücretlendirme" },
-  { href: "/blog", label: "Blog" },
-];
-
 export function MarketingNav() {
   return (
-    <header className="sticky top-0 z-40 border-b border-ink-800/50 bg-ink-950/70 backdrop-blur-lg">
-      <nav className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
+    <header
+      className="sticky top-0 z-40 border-b border-ink-800 backdrop-blur-[14px]"
+      style={{ background: "rgba(20,10,16,0.75)" }}
+    >
+      <nav className="flex items-center justify-between px-6 py-[18px] sm:px-12">
         <Link
           href="/"
-          className="text-xl font-display tracking-tight transition hover:opacity-80"
+          className="font-display text-[22px] tracking-tight transition hover:opacity-80"
         >
           Flört<span className="italic text-brand-500"> asistanı</span>
         </Link>
 
-        <div className="hidden items-center gap-8 md:flex">
-          {NAV_ITEMS.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="text-sm text-ink-300 transition hover:text-ink-100"
-            >
-              {item.label}
-            </Link>
-          ))}
-        </div>
-
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-[10px]">
           <Link
             href="/sign-in"
-            className="hidden text-sm text-ink-300 transition hover:text-ink-100 sm:inline-block"
+            className="rounded-full px-4 py-2 text-sm text-ink-200 transition hover:bg-ink-900 hover:text-ink-100"
           >
-            Giriş yap
+            Giriş
           </Link>
           <Link
-            href="/generate"
+            href="/sign-up"
             className="rounded-full bg-brand-500 px-4 py-2 text-sm font-medium text-white transition hover:bg-brand-600"
           >
-            Ücretsiz dene
+            Başla →
           </Link>
         </div>
       </nav>
