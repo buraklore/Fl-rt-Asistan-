@@ -112,7 +112,7 @@ export function DashboardHookCard({ hasTargets }: { hasTargets: boolean }) {
         className="relative overflow-hidden rounded-[20px] border border-brand-500/20 px-10 pb-8 pt-[34px] backdrop-blur-[8px]"
         style={{
           background:
-            "linear-gradient(135deg, rgba(225,29,72,0.12) 0%, rgba(225,29,72,0.04) 42%, rgba(31,16,35,0.5) 100%)",
+            "linear-gradient(135deg, rgba(225,29,72,0.12) 0%, rgba(225,29,72,0.04) 42%, rgba(17,17,24,0.5) 100%)",
         }}
       >
         <span
@@ -172,7 +172,7 @@ export function DashboardHookCard({ hasTargets }: { hasTargets: boolean }) {
       className="relative overflow-hidden rounded-[20px] border border-brand-500/35 px-10 pb-8 pt-[34px] backdrop-blur-[8px]"
       style={{
         background:
-          "linear-gradient(135deg, rgba(225,29,72,0.24) 0%, rgba(225,29,72,0.08) 42%, rgba(31,16,35,0.5) 100%)",
+          "linear-gradient(135deg, rgba(225,29,72,0.24) 0%, rgba(225,29,72,0.08) 42%, rgba(17,17,24,0.5) 100%)",
       }}
     >
       <span
