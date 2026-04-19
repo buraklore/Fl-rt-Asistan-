@@ -339,7 +339,8 @@ export default function OnboardingPage() {
 
       {step === 2 && (
         <>
-          <h1 className="mb-4 font-display text-4xl sm:text-5xl">Ne peşindesin?</h1>
+          <p className="mb-3 font-display italic text-brand-400" style={{ fontSize: 18 }}>adım 2 / 7 · niyet</p>
+          <h1 className="mb-4 font-display tracking-tight" style={{ fontSize: 52, lineHeight: 1.05, letterSpacing: "-0.02em" }}>İlişki hedefin.</h1>
           <p className="mb-10 text-ink-300">
             Ana hedefin koçun tavsiyelerinin çerçevesini belirler.
           </p>
@@ -373,7 +374,8 @@ export default function OnboardingPage() {
 
       {step === 3 && (
         <>
-          <h1 className="mb-4 font-display text-4xl sm:text-5xl">Nasıl iletişim kurarsın?</h1>
+          <p className="mb-3 font-display italic text-brand-400" style={{ fontSize: 18 }}>adım 3 / 7 · senin sesin</p>
+          <h1 className="mb-4 font-display tracking-tight" style={{ fontSize: 52, lineHeight: 1.05, letterSpacing: "-0.02em" }}>İletişim sesin.</h1>
           <p className="mb-10 text-ink-300">
             Direkt mi dolaylı mı, espirili mi ciddi mi, kısa mı uzun mu yazan
             birisin? koç senin sesinle mesaj üretebilmek için bilmek zorunda.
@@ -406,7 +408,8 @@ export default function OnboardingPage() {
 
       {step === 4 && (
         <>
-          <h1 className="mb-4 font-display text-4xl sm:text-5xl">Bağlanma stilin.</h1>
+          <p className="mb-3 font-display italic text-brand-400" style={{ fontSize: 18 }}>adım 4 / 7 · içeride ne oluyor</p>
+          <h1 className="mb-4 font-display tracking-tight" style={{ fontSize: 52, lineHeight: 1.05, letterSpacing: "-0.02em" }}>Bağlanma stilin.</h1>
           <p className="mb-10 text-ink-300">
             İlişkilerde nasıl hissedersin? Emin değilsen son kartı seç, 3 soruyla bulalım.
           </p>
@@ -488,7 +491,8 @@ export default function OnboardingPage() {
 
       {step === 5 && (
         <>
-          <h1 className="mb-4 font-display text-4xl sm:text-5xl">İlgi alanların.</h1>
+          <p className="mb-3 font-display italic text-brand-400" style={{ fontSize: 18 }}>adım 5 / 7 · kim olduğun</p>
+          <h1 className="mb-4 font-display tracking-tight" style={{ fontSize: 52, lineHeight: 1.05, letterSpacing: "-0.02em" }}>İlgi alanların.</h1>
           <p className="mb-10 text-ink-300">
             En az 3 tane yaz. Ortak zeminleri bulmak için kullanılacak.
           </p>
@@ -530,7 +534,8 @@ export default function OnboardingPage() {
       {/* STEP 6 — ARCHETYPE */}
       {step === 6 && (
         <>
-          <h1 className="mb-4 font-display text-4xl sm:text-5xl">Arketipin.</h1>
+          <p className="mb-3 font-display italic text-brand-400" style={{ fontSize: 18 }}>adım 6 / 7 · arketip</p>
+          <h1 className="mb-4 font-display tracking-tight" style={{ fontSize: 52, lineHeight: 1.05, letterSpacing: "-0.02em" }}>Arketipin — sen + çekim.</h1>
           <p className="mb-10 text-ink-300">
             Üç boyutta — hem <span className="text-brand-400">kendin</span>,
             hem <span className="text-brand-400">hoşlandığın tip</span>. koç bu eşleşmeyi
@@ -673,7 +678,8 @@ export default function OnboardingPage() {
 
       {step === 7 && (
         <>
-          <h1 className="mb-4 font-display text-4xl sm:text-5xl">Kendin hakkında.</h1>
+          <p className="mb-3 font-display italic text-brand-400" style={{ fontSize: 18 }}>adım 7 / 7 · bio</p>
+          <h1 className="mb-4 font-display tracking-tight" style={{ fontSize: 52, lineHeight: 1.05, letterSpacing: "-0.02em" }}>Kendin — senin sesin.</h1>
           <p className="mb-10 text-ink-300">
             Kim olduğun, neye değer verdiğin, nasıl bir ilişki aradığın — serbest yaz.
             Her koçluk sürecinde sana özel kalibrasyon için kullanılır.
