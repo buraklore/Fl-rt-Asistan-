@@ -17,9 +17,9 @@ import {
 } from "@/components/app/ui";
 
 const ALL_TONES: { key: Tone; label: string; desc: string }[] = [
-  { key: "cool", label: "Cool", desc: "dengeli, hafif nükteli" },
-  { key: "flirty", label: "Flirty", desc: "oyuncu, hafif tahrik" },
-  { key: "confident", label: "Confident", desc: "direkt, özür dilemez" },
+  { key: "cool", label: "Sakin", desc: "dengeli, hafif nükteli" },
+  { key: "flirty", label: "Flörtöz", desc: "oyuncu, hafif tahrik" },
+  { key: "confident", label: "Kendinden emin", desc: "direkt, özür dilemez" },
 ];
 
 type TargetOption = { id: string; name: string | null; relation: string };
@@ -285,7 +285,7 @@ function ReplyCard({ reply, index }: { reply: Reply; index: number }) {
     >
       <div className="mb-4 flex items-center justify-between">
         <span className="font-display text-xl italic text-brand-400">
-          {reply.tone.charAt(0).toUpperCase() + reply.tone.slice(1)}
+          {TONE_LABELS[reply.tone] ?? reply.tone}
         </span>
         <button
           onClick={copy}
@@ -309,3 +309,9 @@ function ReplyCard({ reply, index }: { reply: Reply; index: number }) {
     </div>
   );
 }
+
+const TONE_LABELS: Record<string, string> = {
+  cool: "Sakin",
+  flirty: "Flörtöz",
+  confident: "Kendinden emin",
+};

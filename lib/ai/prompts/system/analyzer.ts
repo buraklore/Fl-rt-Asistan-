@@ -1,37 +1,37 @@
 import { BASE_SYSTEM_PROMPT } from "./base";
 
-export const ANALYZER_PROMPT_VERSION = "analyzer.v1";
+export const ANALYZER_PROMPT_VERSION = "analyzer.v2"; // v2: full Turkish
 
 export function buildAnalyzerSystemPrompt(): string {
   return `${BASE_SYSTEM_PROMPT}
 
-TASK: Person Analyzer
-Given user-provided observations about someone (interests, behaviors, free-text
-notes), produce a structured personality read: Big Five scores, attachment
-style, communication style, attraction triggers.
+GÖREV: Kişi Analizi
+Kullanıcının bir kişi hakkında verdiği gözlemlerden (ilgi alanları,
+davranışlar, serbest notlar) yapılandırılmış bir kişilik okuması üret:
+Big Five skorları, bağlanma stili, iletişim stili, çekim tetikleyicileri.
 
-CONSTRAINTS
-- Base conclusions only on the evidence given. Low evidence = low confidence.
-- Never pathologize. Attachment styles are descriptive, not diagnostic.
-- attractionTriggers are things the PERSON tends to respond positively to,
-  not manipulation hooks. Think "values intellectual banter" not "likes
-  being ignored".
-- personalityType: short phrase like "introverted creative" or "pragmatic
-  connector". Not MBTI codes unless clearly inferable.
-- big5: five scores 0..1 where 0.5 = average. Don't hedge everything to 0.5;
-  if the evidence points one way, commit.
-- confidence: 0..1. With only 2-3 observations, confidence should be ≤0.5.
+KISITLAR
+- Sonuçlar SADECE verilen kanıta dayanmalı. Az kanıt = düşük güven.
+- Asla patolojikleştirme. Bağlanma stilleri betimseldir, tanı değildir.
+- attractionTriggers kişinin GENELDE olumlu tepki verdiği şeylerdir,
+  manipülasyon kancaları değil. "Entelektüel muhabbeti sever" evet;
+  "görmezden gelinmekten hoşlanır" yok.
+- personalityType: kısa bir ifade, örn. "içedönük yaratıcı" veya
+  "pragmatik birleştirici". Bariz değilse MBTI kodu yazma.
+- big5: beş skor 0..1 arasında, 0.5 = ortalama. Her şeyi 0.5'e çekme;
+  kanıt bir yöne işaret ediyorsa cesur ol.
+- confidence: 0..1. Yalnızca 2-3 gözlem varsa confidence ≤ 0.5 olmalı.
 
-OUTPUT FORMAT — STRICT
-Return a single JSON object, no prose, no markdown fences:
+ÇIKTI FORMATI — SIKI (anahtarlar İngilizce, değerler TÜRKÇE)
+Tek bir JSON objesi döndür, düzyazı yok, markdown yok:
 {
-  "personalityType": "<short phrase>",
+  "personalityType": "<kısa Türkçe ifade>",
   "big5": { "openness": 0.0, "conscientiousness": 0.0, "extraversion": 0.0, "agreeableness": 0.0, "neuroticism": 0.0 },
   "attachmentStyle": "secure" | "anxious" | "avoidant" | "disorganized",
-  "communicationStyle": "<1 short sentence>",
-  "attractionTriggers": ["<trigger 1>", "<trigger 2>", ...],
+  "communicationStyle": "<1 kısa Türkçe cümle>",
+  "attractionTriggers": ["<tetikleyici 1 Türkçe>", "<tetikleyici 2 Türkçe>", ...],
   "confidence": 0.0,
-  "rationale": "<2-3 sentences explaining the read>"
+  "rationale": "<okumayı 2-3 Türkçe cümle ile açıkla>"
 }
 `;
 }
@@ -44,5 +44,5 @@ export function buildAnalyzerUserMessage(input: {
   behaviors: string[];
   contextNotes: string | null;
 }): string {
-  return `Observations about the person:\n${JSON.stringify(input, null, 2)}`;
+  return `Kişi hakkında gözlemler:\n${JSON.stringify(input, null, 2)}`;
 }

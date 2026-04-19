@@ -5,25 +5,21 @@ import type {
 } from "@/lib/schemas";
 import { BASE_SYSTEM_PROMPT } from "./base";
 
-export const GENERATOR_PROMPT_VERSION = "generator.v2"; // v2: user profile injected
+export const GENERATOR_PROMPT_VERSION = "generator.v3"; // v3: full Turkish
 
 const TONE_DEFINITIONS: Record<Tone, string> = {
-  cool: "grounded, low-effort-looking, slightly witty. No eagerness. No emoji unless the incoming message used one.",
+  cool: "topraklı, zahmetsiz duran, hafif espirili. Heveskâr değil. Gelen mesajda emoji yoksa emoji yok.",
   flirty:
-    "playful, light tease, never sexual unless both sides already are. At most one emoji, and only if the incoming message used one.",
+    "oyuncu, hafif takılma, ikisi zaten öyle değilse asla cinsel değil. En fazla bir emoji, o da gelen mesajda varsa.",
   confident:
-    "direct, non-apologetic, assumes value without bragging. Short sentences.",
+    "direkt, özür dilemeyen, böbürlenmeden değer varsayan. Kısa cümleler.",
 };
 
 /**
- * Build the full system prompt for a Message Generator call.
+ * Message Generator prompt. Produces one reply per requested tone.
  *
- * v2: now receives `user` profile so replies can be calibrated to the
- * user's own communication style (direct vs indirect, playful vs reserved).
- * If the user has a defined style, the generator stays *within that voice*
- * rather than inventing a persona. This is core to the product's value —
- * we're not writing messages as a generic charismatic person, we're writing
- * them as THIS user.
+ * v3: fully Turkish prompt. Every instruction and every output value must
+ * be Turkish. JSON keys remain English (API contract).
  */
 export function buildGeneratorSystemPrompt(args: {
   tones: Tone[];
@@ -36,36 +32,38 @@ export function buildGeneratorSystemPrompt(args: {
     .join("\n");
 
   const userProfileBlock = args.user
-    ? `USER PROFILE (the person sending the message — write in their voice):\n${JSON.stringify(args.user, null, 2)}`
-    : "USER PROFILE: not provided. Default to a natural, unremarkable voice.";
+    ? `KULLANICI PROFİLİ (mesajı gönderecek kişi — onun sesiyle yaz):\n${JSON.stringify(args.user, null, 2)}`
+    : "KULLANICI PROFİLİ: yok. Doğal, göze çarpmayan bir ses kullan.";
 
   const targetBlock = args.target
-    ? `TARGET PROFILE (JSON):\n${JSON.stringify(args.target, null, 2)}`
-    : "TARGET PROFILE: unknown (the user hasn't created a profile for this person yet — stay generic, don't invent details).";
+    ? `HEDEF PROFİLİ (JSON):\n${JSON.stringify(args.target, null, 2)}`
+    : "HEDEF PROFİLİ: bilinmiyor — genel kal, detay uydurma.";
 
   const userBlock = args.userNote
-    ? `USER CONTEXT NOTE:\n${args.userNote}`
-    : "USER CONTEXT NOTE: (none)";
+    ? `KULLANICI NOTU:\n${args.userNote}`
+    : "KULLANICI NOTU: (yok)";
 
   return `${BASE_SYSTEM_PROMPT}
 
-TASK: Message Generator
-Given the last message the target sent to the user, produce one reply
-per requested tone. Replies must sound like something a real person
-in their twenties would actually send — AND they must sound like THIS user.
+GÖREV: Mesaj Üretici
+Hedeften gelen son mesaja, istenen her ton için bir cevap üret. Cevaplar
+gerçek bir 20'li yaşlardaki insanın gerçekten gönderebileceği gibi olmalı —
+ve BU kullanıcının sesinde olmalı.
 
-CONSTRAINTS
-- 1–2 sentences per reply. Shorter is usually better.
-- Match the incoming message's casing and punctuation level.
-- Never fabricate facts about the target. If uncertain, stay generic.
-- Don't start every reply the same way across tones.
-- Don't use hashtags, marketing speak, or "let's" / "shall we".
-- If the USER profile specifies a communicationStyle, every reply must
-  plausibly sound like that person wrote it. Don't turn a reserved user
-  into a hyper-flirty one just because "flirty" was requested — adapt the
-  tone to their baseline voice.
+KISITLAR — HEPSİ TÜRKÇE
+- Mesajlar TÜRKÇE. Kesinlikle İngilizce kelime serpiştirme (argo zaten
+  Türkçeleşmiş olanlar hariç: "chill", "vibe" gibi doğallaşmış kelimeler
+  tamam ama "I think", "you know" gibi yapılar YASAK).
+- Her cevap başına 1-2 cümle. Kısa genelde daha iyi.
+- Gelen mesajın büyük/küçük harf ve noktalama seviyesini eşle.
+- Hedef hakkında hiçbir gerçek uydurma. Emin değilsen genel kal.
+- Tonlar arasında aynı kelimeyle başlama.
+- Hashtag, pazarlama dili veya "hadi" / "yapalım mı" gibi kalıp yok.
+- KULLANICI profilinde communicationStyle varsa, her cevap o kişinin
+  yazmış olabileceği gibi durmalı. Çekingen bir kullanıcıyı "flirty"
+  istendi diye hyper-flirt'e çevirme — onun taban sesine adapte et.
 
-TONES
+TONLAR
 ${toneBlock}
 
 ${userProfileBlock}
@@ -74,22 +72,20 @@ ${targetBlock}
 
 ${userBlock}
 
-OUTPUT FORMAT — STRICT
-Return a single JSON object, no prose, no markdown fences:
+ÇIKTI FORMATI — SIKI
+Tek bir JSON objesi döndür, düzyazı yok, markdown yok:
 {
   "replies": [
-    { "tone": "<one of the requested tones>", "text": "<the reply>", "rationale": "<1 short sentence explaining the choice>" }
+    { "tone": "<istenen tonlardan biri>", "text": "<cevap — TÜRKÇE>", "rationale": "<neden bu seçim — 1 kısa Türkçe cümle>" }
   ]
 }
-Exactly one entry per requested tone, in the order requested.
+Her istenen ton için tam olarak bir kayıt, istenen sırada.
 `;
 }
 
 /**
- * Build the user-turn message. Keeping this separate makes the
- * prompt easier to A/B test — the system prompt is cacheable,
- * only the user turn changes per request.
+ * User-turn message.
  */
 export function buildGeneratorUserMessage(incomingMessage: string): string {
-  return `Incoming message from the target:\n"""\n${incomingMessage}\n"""`;
+  return `Hedeften gelen mesaj:\n"""\n${incomingMessage}\n"""`;
 }

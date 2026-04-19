@@ -25,6 +25,13 @@ type AnalysisResult = {
   severity: number;
 };
 
+const ESCALATED_LABELS: Record<string, string> = {
+  user: "Sen",
+  target: "O",
+  both: "İkiniz de",
+  neither: "Hiçbiri",
+};
+
 export default function ConflictsPage() {
   return (
     <Suspense fallback={<div />}>
@@ -190,7 +197,7 @@ function ConflictsContent() {
                 kim tırmandırdı
               </p>
               <p className="font-display text-xl italic text-ink-100">
-                {result.whoEscalated}
+                {ESCALATED_LABELS[result.whoEscalated] ?? result.whoEscalated}
               </p>
             </SectionCard>
             <SectionCard className="p-5">

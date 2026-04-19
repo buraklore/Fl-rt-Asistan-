@@ -87,7 +87,7 @@ export async function GET() {
       daysSinceLastContact: daysSince,
       recentHookCategories: [],
     }),
-    messages: [{ role: "user", content: "Generate today's hook." }],
+    messages: [{ role: "user", content: "Bugünün hook'unu üret." }],
     schema: HookLLMResponseSchema,
     temperature: 0.8,
     maxTokens: 300,

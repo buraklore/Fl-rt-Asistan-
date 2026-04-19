@@ -77,7 +77,7 @@ export async function POST(request: NextRequest) {
     const result = await provider.complete<ConflictAnalysisLLMResponse>({
       system: buildConflictSystemPrompt({ user: userForPrompt, target }),
       messages: [
-        { role: "user", content: `Chat transcript:\n"""\n${body.chatLog}\n"""` },
+        { role: "user", content: `Sohbet transkripti:\n"""\n${body.chatLog}\n"""` },
       ],
       schema: ConflictAnalysisLLMResponseSchema,
       temperature: 0.4,

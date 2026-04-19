@@ -113,7 +113,7 @@ export async function POST(_req: NextRequest, { params }: Params) {
           averageResponseLagHours: null,
         },
       }),
-      messages: [{ role: "user", content: "Compute the score." }],
+      messages: [{ role: "user", content: "Skoru hesapla." }],
       schema: RelationshipScoreLLMResponseSchema,
       temperature: 0.3,
       maxTokens: 600,

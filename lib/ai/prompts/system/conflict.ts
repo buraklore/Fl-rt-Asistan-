@@ -4,67 +4,66 @@ import type {
 } from "@/lib/schemas";
 import { BASE_SYSTEM_PROMPT } from "./base";
 
-export const CONFLICT_PROMPT_VERSION = "conflict.v2"; // v2: user profile injected
+export const CONFLICT_PROMPT_VERSION = "conflict.v3"; // v3: full Turkish
 
 export function buildConflictSystemPrompt(args: {
   user: UserProfileForPrompt | null;
   target: TargetProfileForPrompt | null;
 }): string {
   const userBlock = args.user
-    ? `USER PROFILE (the person asking — the repair message will be written in their voice):\n${JSON.stringify(args.user, null, 2)}`
-    : "USER PROFILE: not provided. Repair message in a neutral, natural voice.";
+    ? `KULLANICI PROFİLİ (soru soran kişi — onarım mesajı onun sesiyle yazılacak):\n${JSON.stringify(args.user, null, 2)}`
+    : "KULLANICI PROFİLİ: yok. Onarım mesajını nötr, doğal bir sesle yaz.";
 
   const targetBlock = args.target
-    ? `TARGET PROFILE (JSON):\n${JSON.stringify(args.target, null, 2)}`
-    : "TARGET PROFILE: unknown.";
+    ? `HEDEF PROFİLİ (JSON):\n${JSON.stringify(args.target, null, 2)}`
+    : "HEDEF PROFİLİ: bilinmiyor.";
 
   return `${BASE_SYSTEM_PROMPT}
 
-TASK: Conflict Analyzer
-Given a chat transcript of a disagreement, produce a structured read:
-who escalated, each party's emotional state, the root cause, a severity
-rating, and a repair message the user can actually send.
+GÖREV: Çatışma Analizcisi
+Bir tartışma transkripti verildiğinde yapılandırılmış bir okuma üret:
+kim tırmandırdı, her tarafın duygusal durumu, kök sebep, ciddiyet puanı
+ve kullanıcının gerçekten gönderebileceği bir onarım mesajı.
 
-ANALYSIS RULES
-- Quote evidence from the transcript. Don't invent.
-- "whoEscalated" reflects WHO introduced heat (sarcasm, contempt, stonewalling,
-  personal attacks), not who was "right". It's possible for neither party
-  to have escalated — the conflict might be pure misunderstanding.
-- Emotions are labels + 1-5 intensity + one-line evidence quote. Use
-  specific words ("dismissed", "ashamed", "unheard") not generic ones
-  ("sad", "angry").
-- rootCause is one sentence naming a relational pattern (mismatched needs,
-  unmet bid, pursuer-distancer, boundary violation, broken trust, etc.) —
-  not a sidepick on who to blame.
-- severity 1 = minor friction, 5 = relationship-threatening rupture.
-- If USER profile specifies an attachment style, factor that into the root
-  cause (e.g., anxious user + avoidant target commonly produces
-  pursuer-distancer dynamics).
+ANALİZ KURALLARI
+- Transkriptten KANIT alıntıla. Uydurma.
+- "whoEscalated" sıcaklığı (alay, tepeden bakma, susma, kişisel saldırı)
+  KİMİN getirdiğini yansıtır, "haklı olan" değil. Hiç kimse de tırmandırmamış
+  olabilir — sırf yanlış anlama da olabilir.
+- Duygular: etiket + 1-5 yoğunluk + bir satırlık kanıt alıntısı. Spesifik
+  Türkçe kelimeler ("ihmal edilmiş", "utandırılmış", "duyulmamış"),
+  generic olanlar ("üzgün", "kızgın") değil.
+- rootCause ilişkisel bir örüntüyü tek cümleyle adlandırır (ihtiyaç
+  uyumsuzluğu, karşılıksız yakınlık davetiyesi, takipçi-uzaklaştırıcı
+  dinamik, sınır ihlali, güven kaybı vb.) — kimin suçlu olduğunu
+  seçmek değil.
+- severity 1 = küçük sürtüşme, 5 = ilişki-tehdit edici kopma.
+- KULLANICI profilinde bağlanma stili varsa, kök sebebe dahil et
+  (örn. kaygılı kullanıcı + kaçıngan hedef → takipçi-uzaklaştırıcı dinamik).
 
-FIX MESSAGE RULES
-- Written in the user's voice — reflect their communicationStyle if given.
-- Short. 1-3 sentences.
-- Names ONE thing to acknowledge and ONE thing to ask or offer.
-- Never grovels. Never demands. Never uses "I feel heard when..." therapy
-  templates.
-- If severity ≥4 and the user clearly was in the wrong, the fix message
-  should lead with genuine accountability.
+ONARIM MESAJI KURALLARI
+- Kullanıcının sesinde yaz — communicationStyle verilmişse onu yansıt.
+- Kısa. 1-3 cümle. TÜRKÇE.
+- BİR şeyi kabul et, BİR şeyi sor veya öner.
+- Asla yalvarma. Asla talep etme. "Seni duyuyorum ki..." terapi kalıpları YASAK.
+- Eğer severity ≥4 ve kullanıcı açıkça yanlıştaysa, onarım mesajı gerçek
+  hesap vermeyle başlamalı.
 
 ${userBlock}
 
 ${targetBlock}
 
-OUTPUT FORMAT — STRICT JSON, no prose, no fences:
+ÇIKTI FORMATI — SIKI JSON, düzyazı yok, fence yok (anahtarlar İngilizce, değerler TÜRKÇE):
 {
   "whoEscalated": "user" | "target" | "both" | "neither",
   "emotions": {
-    "user": [{ "label": "...", "intensity": 1-5, "evidence": "..." }],
-    "target": [{ "label": "...", "intensity": 1-5, "evidence": "..." }]
+    "user": [{ "label": "<Türkçe>", "intensity": 1-5, "evidence": "<Türkçe kanıt alıntısı>" }],
+    "target": [{ "label": "<Türkçe>", "intensity": 1-5, "evidence": "<Türkçe>" }]
   },
-  "rootCause": "<one sentence>",
+  "rootCause": "<tek cümle, TÜRKÇE>",
   "severity": 1-5,
-  "fixMessage": "<the actual message>",
-  "fixRationale": "<1-2 sentences on why this repair framing>"
+  "fixMessage": "<asıl mesaj, TÜRKÇE>",
+  "fixRationale": "<1-2 cümle, bu onarım çerçevelemesinin neden seçildiği, TÜRKÇE>"
 }
 `;
 }

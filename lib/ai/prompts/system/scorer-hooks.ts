@@ -6,7 +6,7 @@ import { BASE_SYSTEM_PROMPT } from "./base";
 
 // ---------- Relationship Score ----------
 
-export const SCORER_PROMPT_VERSION = "scorer.v2"; // v2: user profile injected
+export const SCORER_PROMPT_VERSION = "scorer.v3"; // v3: full Turkish
 
 export function buildScorerSystemPrompt(args: {
   user: UserProfileForPrompt | null;
@@ -19,57 +19,57 @@ export function buildScorerSystemPrompt(args: {
 }): string {
   return `${BASE_SYSTEM_PROMPT}
 
-TASK: Relationship Score — compatibility between THE USER and THE TARGET.
-Compute a compatibility 0-100 with top-3 risks and top-3 strengths, grounded
-in BOTH profiles and recent activity. This is a two-sided score: it is about
-the *fit* between these two specific people, not just the target's general
-desirability.
+GÖREV: İlişki Skoru — KULLANICI ile HEDEF arasındaki uyum.
+0-100 arası bir uyum skoru üret. En kritik 3 risk ve en kritik 3 güçlü yönü
+her iki profilin ve son aktivite sinyallerinin kanıtına dayanarak belirle.
+Bu iki taraflı bir skor: bu iki spesifik insanın uyumu hakkında, sadece
+hedefin genel cazibesi değil.
 
-SCORING RULES
-- 80-100: strong alignment on attachment style, communication, goals, values.
-- 60-79:  compatible but meaningful mismatch in one dimension (attachment/goal/pace).
-- 40-59:  workable with explicit effort; friction in multiple dimensions.
-- 20-39:  structural incompatibility (e.g., anxious↔avoidant, different goals).
-- 0-19:   severe mismatch; recommend stepping back.
+SKORLAMA KURALLARI
+- 80-100: bağlanma stili, iletişim, hedefler, değerlerde güçlü uyum.
+- 60-79:  uyumlu ama bir boyutta (bağlanma/hedef/tempo) anlamlı uyumsuzluk.
+- 40-59:  açık çabayla yürüyebilir; birden fazla boyutta sürtüşme.
+- 20-39:  yapısal uyumsuzluk (örn. kaygılı ↔ kaçıngan, farklı hedefler).
+- 0-19:   ciddi uyumsuzluk; geri adım atmayı öner.
 
-COMPATIBILITY HEURISTICS — use these unless profiles strongly contradict:
-- Anxious ↔ avoidant pair: mark as a risk, not a deal-breaker.
-- Mismatched relationship goals (e.g., "dating" ↔ "long-term"): major risk.
-- Overlapping interests: mild strength; rarely decisive alone.
-- Communication style mismatch (direct ↔ indirect): risk with moderate severity.
+UYUM HEURİSTİKLERİ — profiller güçlü şekilde aksini söylemedikçe:
+- Kaygılı ↔ kaçıngan çifti: risk olarak işaretle ama anlaşma-bozucu değil.
+- Uyumsuz ilişki hedefleri (örn. "yeni tanışmak" ↔ "uzun vadeli"): büyük risk.
+- Örtüşen ilgi alanları: hafif güç; tek başına nadiren belirleyici.
+- İletişim stili uyumsuzluğu (direkt ↔ dolaylı): orta şiddette risk.
 
-- Risks must cite specific evidence from EITHER profile OR recent activity.
-- Don't invent data. If either profile is mostly empty, keep confidence
-  moderate and flag that in the summary.
+- Riskler mutlaka profil veya aktiviteden KANIT alıntılamalı.
+- Veri uydurma. Profiller büyük ölçüde boşsa, güveni düşük tut ve bunu
+  özette belirt.
 
 ${
   args.user
-    ? `USER PROFILE (JSON) — this is the person asking:\n${JSON.stringify(args.user, null, 2)}`
-    : "USER PROFILE: not provided. Score with lower confidence, skip user-side risks/strengths."
+    ? `KULLANICI PROFİLİ (JSON) — soru soran kişi:\n${JSON.stringify(args.user, null, 2)}`
+    : "KULLANICI PROFİLİ: yok. Düşük güvenle skorla, kullanıcı tarafı risk/güç atlama."
 }
 
 ${
   args.target
-    ? `TARGET PROFILE (JSON):\n${JSON.stringify(args.target, null, 2)}`
-    : "TARGET PROFILE: unknown (return moderate scores with low-confidence language)."
+    ? `HEDEF PROFİLİ (JSON):\n${JSON.stringify(args.target, null, 2)}`
+    : "HEDEF PROFİLİ: bilinmiyor (orta skor, düşük güvenli dil kullan)."
 }
 
-RECENT ACTIVITY:
+SON AKTİVİTE:
 ${JSON.stringify(args.recentActivity, null, 2)}
 
-OUTPUT — STRICT JSON:
+ÇIKTI — SIKI JSON (anahtarlar İngilizce, değerler Türkçe):
 {
   "compatibility": 0-100,
-  "risks":    [{ "label": "...", "severity": 1-5, "evidence": "..." }],
-  "strengths":[{ "label": "...", "evidence": "..." }],
-  "summary": "<one sentence overall read of the fit>"
+  "risks":    [{ "label": "<Türkçe>", "severity": 1-5, "evidence": "<Türkçe>" }],
+  "strengths":[{ "label": "<Türkçe>", "evidence": "<Türkçe>" }],
+  "summary": "<uyumun tek cümlelik Türkçe okunuşu>"
 }
 `;
 }
 
 // ---------- Daily Hooks ----------
 
-export const HOOKS_PROMPT_VERSION = "hooks.v1";
+export const HOOKS_PROMPT_VERSION = "hooks.v2"; // v2: full Turkish
 
 export function buildHooksSystemPrompt(args: {
   target: TargetProfileForPrompt | null;
@@ -78,36 +78,35 @@ export function buildHooksSystemPrompt(args: {
 }): string {
   return `${BASE_SYSTEM_PROMPT}
 
-TASK: Daily Hook
-Generate ONE tiny, specific, copy-pasteable opener the user can send the target
-today. Categories:
-- "reignite" — light reconnection after silence
-- "curiosity" — a question that invites them to share, not just answer
-- "vulnerability" — a brief share that invites reciprocity (not trauma dump)
-- "playful" — teasing, shared joke, light challenge
+GÖREV: Günün Hook'u
+Bugün kullanıcının hedefe gönderebileceği TEK BİR küçük, spesifik,
+kopyala-yapıştır'a hazır açılış mesajı üret. Kategoriler:
+- "reignite" — sessizlik sonrası hafif yeniden bağlanma
+- "curiosity" — hedefin sadece cevap vermesini değil paylaşmasını davet
+  eden soru
+- "vulnerability" — karşılık davet eden küçük paylaşım (travma dökümü DEĞİL)
+- "playful" — takılma, ortak espri, hafif meydan okuma
 
-CONSTRAINTS
-- The "text" is a READY-TO-SEND message, 1-2 sentences max.
-- Don't repeat categories they've seen recently: ${
-    args.recentHookCategories.join(", ") || "(none)"
-  }.
-- Reference something specific from the target profile if available.
-- Never generate hooks if the target appears to have disengaged — skip and
-  return category "curiosity" with a neutral text instead.
+KISITLAR
+- "text" GÖNDERİLMEYE HAZIR bir mesaj olmalı, 1-2 cümle maksimum, TÜRKÇE.
+- Son gördüğü kategorileri tekrar etme: ${args.recentHookCategories.join(", ") || "(yok)"}.
+- Mevcutsa hedef profilinden spesifik bir detaya referans ver.
+- Hedef belirgin şekilde çekilmiş görünüyorsa: bunun yerine "curiosity"
+  kategorisinde nötr bir metin üret.
 
 ${
   args.target
-    ? `TARGET PROFILE (JSON):\n${JSON.stringify(args.target, null, 2)}`
-    : "TARGET PROFILE: unknown — produce a generic playful hook."
+    ? `HEDEF PROFİLİ (JSON):\n${JSON.stringify(args.target, null, 2)}`
+    : "HEDEF PROFİLİ: bilinmiyor — genel oyuncu bir hook üret."
 }
 
-Days since last contact: ${args.daysSinceLastContact ?? "unknown"}
+Son temas üzerinden geçen gün: ${args.daysSinceLastContact ?? "bilinmiyor"}
 
-OUTPUT — STRICT JSON:
+ÇIKTI — SIKI JSON (anahtarlar İngilizce, değerler Türkçe):
 {
   "category": "reignite" | "curiosity" | "vulnerability" | "playful",
-  "text": "<the ready-to-send opener>",
-  "rationale": "<1 short sentence on why this works for this person>"
+  "text": "<gönderilmeye hazır açılış — TÜRKÇE>",
+  "rationale": "<bu kişi için neden işe yaradığını açıklayan 1 kısa cümle — TÜRKÇE>"
 }
 `;
 }
