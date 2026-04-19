@@ -8,7 +8,7 @@ export default function LandingPage() {
       <MarketingNav />
 
       {/* ============================================================
-          HERO — burgundy gradient, big editorial headline
+          HERO — burgundy gradient, big editorial headline + right mockup
           ============================================================ */}
       <section
         className="relative overflow-hidden"
@@ -17,8 +17,8 @@ export default function LandingPage() {
             "linear-gradient(135deg, #6B0F2A 0%, #140A10 55%, #140A10 100%)",
         }}
       >
-        <div className="mx-auto max-w-6xl px-6 pb-24 pt-20 sm:pt-32">
-          <div className="relative">
+        <div className="relative mx-auto grid max-w-6xl items-center gap-12 px-6 pb-24 pt-20 sm:pt-32 lg:grid-cols-[1.3fr_1fr] lg:gap-10">
+          <div className="relative z-10">
             <p className="mb-8 text-[11px] font-semibold uppercase tracking-[0.3em] text-brand-400">
               — beta · sadece davetliye özel
             </p>
@@ -65,6 +65,11 @@ export default function LandingPage() {
                 </div>
               ))}
             </div>
+          </div>
+
+          {/* Right — phone/mockup preview card */}
+          <div className="relative z-10 hidden items-center justify-center lg:flex">
+            <HeroMockup />
           </div>
         </div>
 
@@ -375,3 +380,71 @@ const FEATURES = [
     desc: "Şifreli saklanır. Tek tıkla sil. Kimse okuyamaz.",
   },
 ];
+
+// ============================================================
+// HeroMockup — mini preview of the Generate screen, anchors hero
+// ============================================================
+
+function HeroMockup() {
+  return (
+    <div
+      className="relative w-full max-w-[400px] rounded-3xl border border-ink-700 p-6 shadow-2xl"
+      style={{
+        background:
+          "linear-gradient(180deg, rgba(31,16,35,0.95) 0%, rgba(20,10,16,0.9) 100%)",
+        backdropFilter: "blur(20px)",
+        boxShadow:
+          "0 25px 50px -12px rgba(0,0,0,0.7), 0 0 60px -20px rgba(225,29,72,0.25)",
+      }}
+    >
+      {/* Header */}
+      <div className="mb-4 flex items-center justify-between">
+        <div>
+          <p className="text-[9px] font-semibold uppercase tracking-[0.3em] text-brand-400">
+            — mesaj üretici
+          </p>
+          <p className="mt-1 font-display text-lg italic text-ink-100">
+            Ayşe için
+          </p>
+        </div>
+        <span className="rounded-full border border-brand-500/20 bg-brand-500/10 px-2 py-1 text-[9px] font-semibold uppercase tracking-widest text-brand-400">
+          ✓ güven %82
+        </span>
+      </div>
+
+      {/* Incoming */}
+      <div className="mb-4 rounded-xl border border-ink-800 bg-ink-950/60 p-3">
+        <p className="mb-1 text-[9px] font-semibold uppercase tracking-widest text-ink-500">
+          gelen
+        </p>
+        <p className="text-sm text-ink-200">
+          &ldquo;lol rastgele bir soru — niye soruyorsun?&rdquo;
+        </p>
+      </div>
+
+      {/* Generated replies */}
+      <div className="space-y-2">
+        {[
+          { tone: "sakin", text: "merak ettim, konuşurken senin neye takıldığını anlamak için." },
+          { tone: "flörtöz", text: "sebepsiz sormuyorum — seni okumaya çalışıyorum." },
+          { tone: "oyuncu", text: "sormazsam öğrenemiyorum, cevaplarını da seviyorum." },
+        ].map((r, i) => (
+          <div
+            key={i}
+            className="group/reply flex items-start gap-3 rounded-xl border border-ink-800 bg-ink-900/60 p-3 transition hover:border-brand-500/30"
+          >
+            <span className="mt-0.5 shrink-0 rounded-full bg-brand-500/10 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-widest text-brand-400">
+              {r.tone}
+            </span>
+            <p className="text-xs leading-relaxed text-ink-100">{r.text}</p>
+          </div>
+        ))}
+      </div>
+
+      {/* Footer hint */}
+      <p className="mt-4 text-center text-[10px] text-ink-500">
+        1.8s · tek tıkla kopyala
+      </p>
+    </div>
+  );
+}
