@@ -125,26 +125,30 @@ export default async function TargetDetailPage({ params }: Params) {
     );
 
   return (
-    <div className="mx-auto max-w-5xl px-6 py-12 md:px-10">
+    <div className="mx-auto max-w-[1120px] px-10 py-8 pb-20">
       <Link
         href="/targets"
-        className="mb-6 inline-block text-sm text-ink-400 hover:text-ink-200"
+        className="mb-6 inline-block text-[13px] text-ink-400 hover:text-ink-200"
       >
         ← Hedefler
       </Link>
 
       <PageHeader
-        kicker={RELATION_LABELS[target.relation] ?? target.relation}
+        kicker={(RELATION_LABELS[target.relation] ?? target.relation).toLowerCase()}
         title={target.name ?? "İsimsiz"}
         action={<TargetActions targetId={target.id} hasAnalysis={!!hasAnalysis} />}
       />
 
-      {/* Quick stats */}
-      <section className="mb-10 grid grid-cols-2 gap-3 md:grid-cols-4">
+      {/* Quick stats — 4 tile grid */}
+      <section className="mb-8 grid grid-cols-2 gap-[14px] md:grid-cols-4">
         <StatTile
           label="uyum"
           value={score ? `${score.compatibility}` : "—"}
-          subtext={score ? "/ 100" : "henüz yok"}
+          subtext={
+            score
+              ? `/100 · ${formatRel(score.computed_at)}`
+              : "henüz yok"
+          }
         />
         <StatTile label="üretim" value={genCount ?? 0} subtext="mesaj" />
         <StatTile
@@ -163,39 +167,73 @@ export default async function TargetDetailPage({ params }: Params) {
               ? `%${Math.round(target.analysis_confidence * 100)}`
               : "—"
           }
-          subtext="analiz güveni"
+          subtext="analiz"
         />
       </section>
 
-      {/* Score card */}
-      <section className="mb-12 overflow-hidden rounded-2xl border border-ink-800 bg-gradient-to-br from-ink-900/80 to-ink-950/80">
-        <div className="flex flex-col gap-4 p-6 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <p className="text-[10px] font-semibold uppercase tracking-widest text-brand-400">
-              ilişki skoru
+      {/* Big score card — pixel-perfect Claude Design */}
+      <section className="mb-10">
+        <div
+          className="relative grid grid-cols-1 items-center gap-8 overflow-hidden rounded-[20px] border px-10 py-[34px] backdrop-blur-[8px] sm:grid-cols-[1fr_auto]"
+          style={{
+            borderColor: "rgba(225,29,72,0.3)",
+            background:
+              "linear-gradient(135deg, rgba(225,29,72,0.18) 0%, rgba(225,29,72,0.06) 38%, rgba(31,16,35,0.6) 100%)",
+          }}
+        >
+          <span
+            aria-hidden
+            className="pointer-events-none absolute select-none font-display italic leading-none text-brand-400"
+            style={{
+              bottom: -56,
+              right: 140,
+              fontSize: 280,
+              opacity: 0.06,
+            }}
+          >
+            &rdquo;
+          </span>
+
+          <div className="relative">
+            <p className="mb-3 text-[10px] font-semibold uppercase tracking-[0.3em] text-brand-400">
+              ilişki uyum skoru —
             </p>
-            <div className="mt-2 flex items-baseline gap-3">
-              <span className="font-display text-6xl leading-none text-ink-100">
-                {score ? score.compatibility : "—"}
+            <p
+              className="font-display tracking-tight text-ink-100"
+              style={{ fontSize: 120, lineHeight: 0.92, letterSpacing: "-0.04em" }}
+            >
+              {score ? score.compatibility : "—"}
+              <span className="text-ink-500" style={{ fontSize: 48 }}>
+                {" "}
+                /100
               </span>
-              <span className="text-xl text-ink-500">/ 100</span>
-            </div>
-            <p className="mt-2 text-sm text-ink-400">
+            </p>
+            <p className="mt-4 text-[11px] uppercase tracking-[0.25em] text-ink-500">
+              Son hesaplama:{" "}
               {score
-                ? `Son hesaplama: ${new Date(score.computed_at).toLocaleDateString("tr-TR")}`
-                : "Henüz skor hesaplanmadı."}
+                ? new Date(score.computed_at).toLocaleDateString("tr-TR", {
+                    day: "numeric",
+                    month: "long",
+                    year: "numeric",
+                  })
+                : "—"}
             </p>
             {score?.summary && (
-              <p className="mt-3 max-w-lg text-sm italic leading-relaxed text-ink-200">
+              <p
+                className="mt-[18px] max-w-[560px] font-display italic leading-[1.4] text-ink-200"
+                style={{ fontSize: 20 }}
+              >
                 &ldquo;{score.summary}&rdquo;
               </p>
             )}
           </div>
-          <RecomputeScoreButton
-            targetId={target.id}
-            hasScore={!!score}
-            size="md"
-          />
+          <div className="relative">
+            <RecomputeScoreButton
+              targetId={target.id}
+              hasScore={!!score}
+              size="md"
+            />
+          </div>
         </div>
       </section>
 
@@ -267,12 +305,25 @@ export default async function TargetDetailPage({ params }: Params) {
               {target.big5 && <Big5Display big5={target.big5 as never} />}
 
               {target.attachment_style && (
-                <div className="rounded-xl border border-brand-500/20 bg-brand-500/5 p-5">
-                  <p className="mb-2 text-[10px] font-semibold uppercase tracking-widest text-brand-400">
-                    bağlanma stili —{" "}
-                    {ATTACHMENT_LABELS[target.attachment_style] ?? target.attachment_style}
+                <div
+                  className="rounded-[14px] border p-5"
+                  style={{
+                    borderColor: "rgba(225,29,72,0.3)",
+                    background:
+                      "linear-gradient(135deg, rgba(225,29,72,0.12), rgba(225,29,72,0.03))",
+                  }}
+                >
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.3em] text-brand-400">
+                    bağlanma stili
                   </p>
-                  <p className="text-sm leading-relaxed text-ink-200">
+                  <p
+                    className="mb-[10px] mt-2 font-display italic text-ink-100"
+                    style={{ fontSize: 26 }}
+                  >
+                    {ATTACHMENT_LABELS[target.attachment_style] ??
+                      target.attachment_style}
+                  </p>
+                  <p className="text-[14px] leading-[1.6] text-ink-200">
                     {ATTACHMENT_DESCRIPTIONS[target.attachment_style] ??
                       "Açıklama yok."}
                   </p>
@@ -421,39 +472,47 @@ function ArchetypeCard({
 }) {
   if (!value) {
     return (
-      <SectionCard className="p-5 opacity-40">
-        <p className="text-[10px] font-semibold uppercase tracking-widest text-ink-500">
+      <div className="rounded-2xl border border-ink-800 bg-ink-900/40 p-5 opacity-40">
+        <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-ink-500">
           {axis}
         </p>
-        <p className="mt-2 font-display text-lg italic text-ink-500">
+        <p className="mt-[14px] font-display italic text-ink-500" style={{ fontSize: 22 }}>
           belirsiz
         </p>
-      </SectionCard>
+      </div>
     );
   }
 
   return (
-    <div
-      className={`rounded-2xl border p-5 transition ${
-        match
-          ? "border-emerald-500/40 bg-emerald-500/5"
-          : "border-ink-800 bg-ink-900/40"
-      }`}
-    >
-      <div className="mb-2 flex items-center justify-between">
-        <p className="text-[10px] font-semibold uppercase tracking-widest text-ink-400">
-          {axis}
+    <div className="rounded-2xl border border-ink-800 bg-ink-900/40 p-5 backdrop-blur-[8px]">
+      <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-ink-500">
+        {axis}
+      </p>
+      <div className="mt-[14px] flex items-center justify-between">
+        <p
+          className="font-display italic text-ink-100"
+          style={{ fontSize: 22 }}
+        >
+          {value}
         </p>
-        {match && (
-          <span className="inline-block h-2 w-2 rounded-full bg-emerald-400" />
-        )}
+        <span
+          className="inline-block h-[10px] w-[10px] rounded-full"
+          style={{
+            background: match ? "#34d399" : "#6A5070",
+            boxShadow: match ? "0 0 12px rgba(52,211,153,0.5)" : "none",
+          }}
+        />
       </div>
-      <p className="font-display text-lg leading-tight text-ink-100">{value}</p>
-      {match && (
-        <p className="mt-2 text-xs italic text-emerald-400">
-          hoşlandığın tiple örtüşüyor
-        </p>
-      )}
     </div>
   );
+}
+
+function formatRel(iso: string): string {
+  const d = new Date(iso);
+  const diff = Date.now() - d.getTime();
+  const days = Math.floor(diff / 86_400_000);
+  if (days < 1) return "bugün";
+  if (days < 7) return `${days} gün önce`;
+  if (days < 30) return `${Math.floor(days / 7)} hafta önce`;
+  return d.toLocaleDateString("tr-TR", { day: "numeric", month: "short" });
 }
