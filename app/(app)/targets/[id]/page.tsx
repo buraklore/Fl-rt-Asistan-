@@ -178,7 +178,7 @@ export default async function TargetDetailPage({ params }: Params) {
           style={{
             borderColor: "rgba(225,29,72,0.3)",
             background:
-              "linear-gradient(135deg, rgba(225,29,72,0.18) 0%, rgba(225,29,72,0.06) 38%, rgba(31,16,35,0.6) 100%)",
+              "linear-gradient(135deg, rgba(225,29,72,0.18) 0%, rgba(225,29,72,0.06) 38%, rgba(17,17,24,0.6) 100%)",
           }}
         >
           <span
