@@ -6,7 +6,7 @@ import { BASE_SYSTEM_PROMPT } from "./base";
 
 // ---------- Relationship Score ----------
 
-export const SCORER_PROMPT_VERSION = "scorer.v3"; // v3: full Turkish
+export const SCORER_PROMPT_VERSION = "scorer.v4"; // v4: confidence + dataGaps
 
 export function buildScorerSystemPrompt(args: {
   user: UserProfileForPrompt | null;
@@ -38,6 +38,30 @@ UYUM HEURİSTİKLERİ — profiller güçlü şekilde aksini söylemedikçe:
 - Örtüşen ilgi alanları: hafif güç; tek başına nadiren belirleyici.
 - İletişim stili uyumsuzluğu (direkt ↔ dolaylı): orta şiddette risk.
 
+ARKETİP UYUMU — EN KRİTİK FAKTÖRLERDEN BİRİ
+Kullanıcı profili üç eksende arketip verir:
+- ownDynamicStyle vs target.dynamicStyle (liderlik dansı)
+- ownExpressionStyle vs target.expressionStyle (eril/dişil ifade)
+- ownRelationshipEnergy vs target.relationshipEnergy (tempo/yoğunluk)
+
+VE kullanıcının HOŞLANDIĞI tipler:
+- attractedToDynamicStyles (1-3 seçim)
+- attractedToExpressionStyles (1-2 seçim)
+- attractedToEnergies (1-2 seçim)
+
+KURAL 1: Eğer hedefin `dynamicStyle` kullanıcının `attractedToDynamicStyles`
+listesinde VARSA → bu güçlü bir güçtür (strengths listesine ekle).
+
+KURAL 2: Eğer hedefin `dynamicStyle` kullanıcının `attractedToDynamicStyles`
+listesinde YOKSA → bu KRİTİK bir uyumsuzluktur, compatibility skorunu
+10-15 puan AŞAĞI çek ve risks listesinin en üstüne koy.
+
+KURAL 3: Aynı mantık expression ve energy eksenleri için de geçerli.
+
+KURAL 4: İki kişinin kendi arketipleri de analize dahil — örn.
+iki "dominant-leading" çarpışabilir (güç mücadelesi riski), iki
+"yielding-follower" ise karar alamama riski. Bunları belirt.
+
 - Riskler mutlaka profil veya aktiviteden KANIT alıntılamalı.
 - Veri uydurma. Profiller büyük ölçüde boşsa, güveni düşük tut ve bunu
   özette belirt.
@@ -62,8 +86,22 @@ ${JSON.stringify(args.recentActivity, null, 2)}
   "compatibility": 0-100,
   "risks":    [{ "label": "<Türkçe>", "severity": 1-5, "evidence": "<Türkçe>" }],
   "strengths":[{ "label": "<Türkçe>", "evidence": "<Türkçe>" }],
-  "summary": "<uyumun tek cümlelik Türkçe okunuşu>"
+  "summary": "<uyumun tek cümlelik Türkçe okunuşu>",
+  "confidence": {
+    "overall": 0.0-1.0,
+    "dataGaps": ["<eksik veya belirsiz olan alanların Türkçe listesi>"],
+    "explanation": "<bu güven skorunun neden bu olduğuna dair 1-2 cümlelik Türkçe açıklama>"
+  }
 }
+
+GÜVEN SKORU KURALLARI — dürüst ol, kendini kandırma
+- 0.9-1.0: Her iki profil de eksiksiz, recent activity var, net sinyaller.
+- 0.7-0.9: Profiller çoğunlukla dolu, 1-2 alan belirsiz.
+- 0.5-0.7: Önemli alanlar boş (örn. hedefin davranışları veya bağlanma stili yok).
+- 0.3-0.5: Ciddi eksiklikler, skor tahminseldir.
+- 0.0-0.3: Yetersiz veri, kullanıcı bunu bilmeli ve skor ekranında uyarı göstermeli.
+
+dataGaps'i doğru doldur: "hedefin bağlanma stili belirsiz", "kullanıcının iletişim stili boş", "hedefin son davranışları hakkında tek cümle var" gibi. Kullanıcı ne ekleyerek skoru iyileştirebilir görmeli.
 `;
 }
 

@@ -14,9 +14,15 @@ export const GenerateMessageRequestSchema = z.object({
   targetId: z.string().min(1).optional(),
   incomingMessage: z
     .string()
-    .min(1, "Gelen mesaj boş olamaz.")
+    .min(5, "Gelen mesaj en az 5 karakter olmalı")
     .max(2000, "Gelen mesaj çok uzun."),
-  context: z.string().max(1000).optional(),
+  context: z
+    .string()
+    .max(1000)
+    .refine((v) => !v || v.length >= 20, {
+      message: "Bağlam notu boş bırakılabilir ama yazıyorsan en az 20 karakter olsun",
+    })
+    .optional(),
   tones: z
     .array(ToneSchema)
     .min(1)
@@ -33,10 +39,19 @@ export type GenerateMessageRequest = z.infer<
  */
 export const ReplySchema = z.object({
   tone: ToneSchema,
-  text: z.string().min(1).max(500),
-  rationale: z.string().min(1).max(300),
+  text: z.string().min(3).max(600),
+  rationale: z
+    .string()
+    .min(25, "Her cevap için neden-açıklaması en az bir cümle olmalı")
+    .max(400),
 });
 export type Reply = z.infer<typeof ReplySchema>;
+
+const GeneratorConfidenceSchema = z.object({
+  overall: z.number().min(0).max(1),
+  dataGaps: z.array(z.string().min(5).max(200)).max(6),
+  explanation: z.string().min(30).max(400),
+});
 
 /**
  * Full LLM response envelope. Used both to parse provider output
@@ -44,6 +59,7 @@ export type Reply = z.infer<typeof ReplySchema>;
  */
 export const GenerateMessageLLMResponseSchema = z.object({
   replies: z.array(ReplySchema).min(1).max(3),
+  confidence: GeneratorConfidenceSchema,
 });
 export type GenerateMessageLLMResponse = z.infer<
   typeof GenerateMessageLLMResponseSchema

@@ -4,7 +4,7 @@ import type {
 } from "@/lib/schemas";
 import { BASE_SYSTEM_PROMPT } from "./base";
 
-export const CONFLICT_PROMPT_VERSION = "conflict.v3"; // v3: full Turkish
+export const CONFLICT_PROMPT_VERSION = "conflict.v4"; // v4: confidence + dataGaps
 
 export function buildConflictSystemPrompt(args: {
   user: UserProfileForPrompt | null;
@@ -41,6 +41,18 @@ ANALİZ KURALLARI
 - KULLANICI profilinde bağlanma stili varsa, kök sebebe dahil et
   (örn. kaygılı kullanıcı + kaçıngan hedef → takipçi-uzaklaştırıcı dinamik).
 
+ARKETİP ÇATIŞMA DİNAMİKLERİ — rootCause belirlerken KULLAN:
+- İki dominant-leading → güç mücadelesi, kim karar verecek çekişmesi
+- dominant-leading + yielding-follower → doğal uyum ama follower
+  taşkınlık yaşayabilir
+- independent-distant taraf + anything-else → yakınlık düzeyi çatışması
+- intense-passionate + calm-stable → biri drama biri soğuk algılayabilir
+- masculine + masculine ifade → duygu paylaşımı zorluğu riski
+- İki farklı energy (intense vs playful) → biri diğerini hafife alıyor
+  hissettirebilir
+Bu örüntüler rootCause'da spesifik olarak adlandırılmalı — "iletişim
+sorunu" gibi genel etiketler YASAK.
+
 ONARIM MESAJI KURALLARI
 - Kullanıcının sesinde yaz — communicationStyle verilmişse onu yansıt.
 - Kısa. 1-3 cümle. TÜRKÇE.
@@ -63,7 +75,20 @@ ${targetBlock}
   "rootCause": "<tek cümle, TÜRKÇE>",
   "severity": 1-5,
   "fixMessage": "<asıl mesaj, TÜRKÇE>",
-  "fixRationale": "<1-2 cümle, bu onarım çerçevelemesinin neden seçildiği, TÜRKÇE>"
+  "fixRationale": "<1-2 cümle, bu onarım çerçevelemesinin neden seçildiği, TÜRKÇE>",
+  "confidence": {
+    "overall": 0.0-1.0,
+    "dataGaps": ["<eksik veya belirsiz alan - Türkçe>"],
+    "explanation": "<güven skorunun Türkçe açıklaması>"
+  }
 }
+
+GÜVEN SKORU — dürüst ol
+- 0.9+: Transkript açık, iki tarafın rolleri net, kullanıcı profili bağlam verdi.
+- 0.7-0.9: Transkript iyi ama tek taraf tam konuşmamış veya hedef profili zayıf.
+- 0.5-0.7: Transkript kısa / bağlam yetersiz / iki tarafın rolü belirsiz.
+- <0.5: Ciddi eksiklikler, kullanıcı uyarılmalı.
+
+dataGaps'e koy: "kullanıcının bağlanma stili bilinmiyor", "transkript tek yönlü görünüyor", "bağlam notu yetersiz" gibi.
 `;
 }

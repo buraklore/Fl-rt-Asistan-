@@ -8,7 +8,10 @@ export type CreateChatSessionRequest = z.infer<
 >;
 
 export const SendChatMessageRequestSchema = z.object({
-  content: z.string().min(1).max(4000),
+  content: z
+    .string()
+    .min(10, "Soru çok kısa — daha anlamlı bir mesaj yaz (en az 10 karakter)")
+    .max(4000),
 });
 export type SendChatMessageRequest = z.infer<
   typeof SendChatMessageRequestSchema

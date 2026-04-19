@@ -1,6 +1,6 @@
 import { BASE_SYSTEM_PROMPT } from "./base";
 
-export const ANALYZER_PROMPT_VERSION = "analyzer.v2"; // v2: full Turkish
+export const ANALYZER_PROMPT_VERSION = "analyzer.v3"; // v3: confidenceDetail
 
 export function buildAnalyzerSystemPrompt(): string {
   return `${BASE_SYSTEM_PROMPT}
@@ -30,9 +30,22 @@ Tek bir JSON objesi döndür, düzyazı yok, markdown yok:
   "attachmentStyle": "secure" | "anxious" | "avoidant" | "disorganized",
   "communicationStyle": "<1 kısa Türkçe cümle>",
   "attractionTriggers": ["<tetikleyici 1 Türkçe>", "<tetikleyici 2 Türkçe>", ...],
-  "confidence": 0.0,
-  "rationale": "<okumayı 2-3 Türkçe cümle ile açıkla>"
+  "confidence": 0.0-1.0,
+  "rationale": "<okumayı 2-3 Türkçe cümle ile açıkla>",
+  "confidenceDetail": {
+    "overall": 0.0-1.0,
+    "dataGaps": ["<gözlemi zayıflatan eksik alanlar — Türkçe>"],
+    "explanation": "<güven skorunun Türkçe açıklaması>"
+  }
 }
+
+GÜVEN SKORU (hem top-level "confidence" hem "confidenceDetail.overall" AYNI değer):
+- 0.8+: 5+ zengin davranış notu + bağlam + ilgi alanları var.
+- 0.5-0.8: Yeterli ama bazı alanlar yüzeysel.
+- 0.3-0.5: Gözlem sayısı az veya yüzeysel, kişilik okumaları tahminsel.
+- <0.3: Çok az veri, genel kalıp tahmin.
+
+dataGaps'e ekle: "davranış gözlemleri sadece 3, daha fazlası gerekli", "ilgi alanları genel terimler", "bağlam notları tanıma senaryosu hakkında bilgi vermiyor" gibi.
 `;
 }
 

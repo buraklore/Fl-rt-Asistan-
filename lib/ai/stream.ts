@@ -33,7 +33,7 @@ export async function streamChat(
   }
 
   const openai = new OpenAI({ apiKey: openaiKey });
-  const model = process.env.OPENAI_MODEL ?? "gpt-4o-mini";
+  const model = process.env.OPENAI_MODEL ?? "gpt-4o";
 
   const stream = await openai.chat.completions.create({
     model,

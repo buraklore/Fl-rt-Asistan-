@@ -89,6 +89,29 @@ export const api = {
       body: JSON.stringify(body),
     }),
 
+  /**
+   * Upload a screenshot, receive a chat transcript.
+   * Uses multipart/form-data so we can't go through the generic request().
+   */
+  extractTranscriptFromImage: async (file: File) => {
+    const form = new FormData();
+    form.append("image", file);
+    const res = await fetch("/api/conflicts/extract-from-image", {
+      method: "POST",
+      body: form,
+      credentials: "include",
+      cache: "no-store",
+    });
+    if (!res.ok) {
+      const problem = (await res.json().catch(() => ({}))) as ApiProblem;
+      throw new ApiError(res.status, problem);
+    }
+    return (await res.json()) as ApiEnvelope<{
+      transcript: string;
+      telemetry: { model: string; inputTokens: number; outputTokens: number };
+    }>;
+  },
+
   getScore: (targetId: string) =>
     request<{ compatibility: number; risks: unknown[]; strengths: unknown[] } | null>(
       `/api/scores/${targetId}`,

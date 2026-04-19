@@ -47,7 +47,7 @@ export async function parseBody<T>(
   try {
     json = await request.json();
   } catch {
-    return fail(400, "Invalid JSON", "İstek gövdesi geçerli JSON değil.");
+    return fail(400, "Geçersiz JSON", "İstek gövdesi geçerli JSON değil.");
   }
 
   try {
@@ -56,12 +56,12 @@ export async function parseBody<T>(
     if (err instanceof ZodError) {
       return fail(
         400,
-        "Validation Failed",
+        "Doğrulama Hatası",
         err.issues.map((i) => `${i.path.join(".") || "body"}: ${i.message}`).join("; "),
         { issues: err.issues },
       );
     }
-    return fail(400, "Validation Failed", "Bilinmeyen doğrulama hatası.");
+    return fail(400, "Doğrulama Hatası", "Bilinmeyen doğrulama hatası.");
   }
 }
 

@@ -8,7 +8,7 @@ import {
   LLMSchemaError,
 } from "./index";
 
-const DEFAULT_MODEL = "gpt-4o-mini";
+const DEFAULT_MODEL = "gpt-4o";
 
 export type OpenAIProviderOptions = {
   apiKey: string;
@@ -96,7 +96,7 @@ export class OpenAIProvider implements LLMProvider {
     const response = await this.client.chat.completions.create({
       model,
       messages,
-      max_tokens: args.maxTokens ?? 1024,
+      max_tokens: args.maxTokens ?? 2048,
       temperature: args.temperature ?? 0.7,
       ...(args.schema ? { response_format: { type: "json_object" } } : {}),
     });

@@ -25,6 +25,7 @@ export type GenerateMessageServiceResult =
   | {
       ok: true;
       replies: GenerateMessageLLMResponse["replies"];
+      confidence: GenerateMessageLLMResponse["confidence"];
       telemetry: {
         provider: string;
         model: string;
@@ -41,10 +42,6 @@ export type GenerateMessageServiceResult =
       reasons: string[];
     };
 
-/**
- * Orchestration for the hero feature. The API module instantiates this
- * once at boot with a provider and calls `run` per request.
- */
 export class MessageGeneratorService {
   constructor(private readonly provider: LLMProvider) {}
 
@@ -77,13 +74,14 @@ export class MessageGeneratorService {
         { role: "user", content: buildGeneratorUserMessage(input.incomingMessage) },
       ],
       schema: GenerateMessageLLMResponseSchema,
-      temperature: 0.8,
-      maxTokens: 600,
+      temperature: 0.7,
+      maxTokens: 1500,
     });
 
     return {
       ok: true,
       replies: result.data.replies,
+      confidence: result.data.confidence,
       telemetry: {
         provider: result.provider,
         model: result.model,

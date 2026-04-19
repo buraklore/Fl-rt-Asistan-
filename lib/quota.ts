@@ -63,7 +63,7 @@ export async function enforceQuota(
       response: NextResponse.json(
         {
           type: "https://rizzai.app/errors/quota-exceeded",
-          title: "Quota Exceeded",
+          title: "Günlük Limit Doldu",
           status: 402,
           detail: "Ücretsiz katman günlük limiti doldu.",
           feature,

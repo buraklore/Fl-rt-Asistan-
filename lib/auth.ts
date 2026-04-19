@@ -20,7 +20,7 @@ export async function requireUser() {
     return NextResponse.json(
       {
         type: "https://rizzai.app/errors/unauthorized",
-        title: "Unauthorized",
+        title: "Yetkisiz",
         status: 401,
         detail: "Giriş yapman gerekiyor.",
       },

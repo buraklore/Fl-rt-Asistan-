@@ -5,7 +5,7 @@ import type {
 } from "@/lib/schemas";
 import { BASE_SYSTEM_PROMPT } from "./base";
 
-export const GENERATOR_PROMPT_VERSION = "generator.v3"; // v3: full Turkish
+export const GENERATOR_PROMPT_VERSION = "generator.v4"; // v4: confidence + dataGaps
 
 const TONE_DEFINITIONS: Record<Tone, string> = {
   cool: "topraklı, zahmetsiz duran, hafif espirili. Heveskâr değil. Gelen mesajda emoji yoksa emoji yok.",
@@ -63,6 +63,21 @@ KISITLAR — HEPSİ TÜRKÇE
   yazmış olabileceği gibi durmalı. Çekingen bir kullanıcıyı "flirty"
   istendi diye hyper-flirt'e çevirme — onun taban sesine adapte et.
 
+ARKETİP VOICE UYARLAMASI:
+- ownExpressionStyle "masculine" → direkt, kısa, aksiyon odaklı
+- ownExpressionStyle "feminine" → sıcak, besleyen, duygusal ince
+- ownExpressionStyle "androgynous" → esnek, ton değiştirebilen
+- ownRelationshipEnergy "intense-passionate" → duygu yüklü, yoğun
+- ownRelationshipEnergy "calm-stable" → ölçülü, sakin
+- ownRelationshipEnergy "playful-light" → oyuncu, takılan
+- ownRelationshipEnergy "deep-intellectual" → zihinsel, anlamlı
+
+HEDEF ARKETİPİNE GÖRE UYARLA:
+- target.expressionStyle "masculine" → direkt konuşmalar işe yarar
+- target.expressionStyle "feminine" → duygusal referanslar çekici gelir
+- target.relationshipEnergy "playful-light" → ağır duygular yerine hafif
+- target.relationshipEnergy "deep-intellectual" → yüzeysel sohbet itici
+
 TONLAR
 ${toneBlock}
 
@@ -77,9 +92,22 @@ Tek bir JSON objesi döndür, düzyazı yok, markdown yok:
 {
   "replies": [
     { "tone": "<istenen tonlardan biri>", "text": "<cevap — TÜRKÇE>", "rationale": "<neden bu seçim — 1 kısa Türkçe cümle>" }
-  ]
+  ],
+  "confidence": {
+    "overall": 0.0-1.0,
+    "dataGaps": ["<kullanıcının veya hedefin eksik bilgisini burada yaz>"],
+    "explanation": "<güven skorunun neden bu olduğuna dair Türkçe açıklama>"
+  }
 }
 Her istenen ton için tam olarak bir kayıt, istenen sırada.
+
+GÜVEN SKORU (bu tüm paketin değil, HER SEVİYEDE geneldir):
+- 0.9+: Gelen mesaj net bağlam veriyor + hedef profili dolu + kullanıcı profili dolu.
+- 0.7-0.9: Biri zayıf ama diğerleri iyi.
+- 0.5-0.7: Gelen mesaj çok kısa veya hedef profili boş → cevaplar genele yakın.
+- <0.5: Kullanıcı uyarılmalı, bu sürümleri beğenmeyebilir.
+
+dataGaps: "hedef profili hiç analiz edilmemiş", "gelen mesaj tek kelime, bağlam yok", "kullanıcının iletişim stili bilinmiyor" gibi spesifik notlar.
 `;
 }
 
