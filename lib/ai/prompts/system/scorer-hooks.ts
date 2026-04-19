@@ -49,10 +49,10 @@ VE kullanıcının HOŞLANDIĞI tipler:
 - attractedToExpressionStyles (1-2 seçim)
 - attractedToEnergies (1-2 seçim)
 
-KURAL 1: Eğer hedefin `dynamicStyle` kullanıcının `attractedToDynamicStyles`
+KURAL 1: Eğer hedefin 'dynamicStyle' değeri kullanıcının 'attractedToDynamicStyles'
 listesinde VARSA → bu güçlü bir güçtür (strengths listesine ekle).
 
-KURAL 2: Eğer hedefin `dynamicStyle` kullanıcının `attractedToDynamicStyles`
+KURAL 2: Eğer hedefin 'dynamicStyle' değeri kullanıcının 'attractedToDynamicStyles'
 listesinde YOKSA → bu KRİTİK bir uyumsuzluktur, compatibility skorunu
 10-15 puan AŞAĞI çek ve risks listesinin en üstüne koy.
 
