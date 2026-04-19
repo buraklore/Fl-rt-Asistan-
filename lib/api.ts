@@ -3,6 +3,8 @@
 import type {
   GenerateMessageRequest,
   GenerateMessageResponse,
+  GenerateOpenerRequest,
+  GenerateOpenerResponse,
   CreateTargetRequest,
   AnalyzeConflictRequest,
   DailyHookDto,
@@ -69,6 +71,12 @@ export const api = {
       body: JSON.stringify(body),
     }),
 
+  generateOpener: (body: GenerateOpenerRequest) =>
+    request<GenerateOpenerResponse>("/api/messages/opener", {
+      method: "POST",
+      body: JSON.stringify(body),
+    }),
+
   createTarget: (body: CreateTargetRequest) =>
     request<{ id: string; name: string | null }>("/api/profiles", {
       method: "POST",
@@ -87,6 +95,35 @@ export const api = {
     request<unknown>("/api/conflicts/analyze", {
       method: "POST",
       body: JSON.stringify(body),
+    }),
+
+  listConflicts: () =>
+    request<
+      Array<{
+        id: string;
+        target_id: string | null;
+        who_escalated: string;
+        root_cause: string;
+        severity: number;
+        created_at: string;
+        target: { id: string; name: string | null } | null;
+      }>
+    >("/api/conflicts"),
+
+  getConflict: (id: string) =>
+    request<Record<string, unknown>>(`/api/conflicts/${id}`),
+
+  deleteConflict: (id: string) =>
+    request<{ deleted: boolean }>(`/api/conflicts/${id}`, { method: "DELETE" }),
+
+  deleteChatSession: (id: string) =>
+    request<{ deleted: boolean }>(`/api/chat/sessions/${id}`, {
+      method: "DELETE",
+    }),
+
+  deleteScoreHistory: (targetId: string) =>
+    request<{ deleted: boolean }>(`/api/scores/${targetId}`, {
+      method: "DELETE",
     }),
 
   /**

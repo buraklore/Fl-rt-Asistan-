@@ -52,6 +52,65 @@ const ConfidenceSchema = z.object({
   explanation: z.string().min(30).max(400),
 });
 
+/**
+ * Coaching advice — personalized recommendations for how to interact
+ * with this specific target. Produced in the same LLM call as the personality
+ * analysis to share context and cut cost in half.
+ */
+const CoachingAdviceSchema = z.object({
+  doNow: z
+    .array(
+      z.object({
+        action: z
+          .string()
+          .min(20, "Her somut aksiyon en az bir cümle olmalı")
+          .max(300),
+        why: z
+          .string()
+          .min(20, "Her aksiyon için gerekçe zorunlu")
+          .max(300),
+      }),
+    )
+    .min(2, "En az 2 somut aksiyon gerekli")
+    .max(4),
+  avoid: z
+    .array(
+      z.object({
+        what: z
+          .string()
+          .min(15, "Her kaçınma noktası net olmalı")
+          .max(250),
+        why: z
+          .string()
+          .min(15)
+          .max(250),
+      }),
+    )
+    .min(2, "En az 2 kaçınma noktası gerekli")
+    .max(4),
+  growthAreas: z
+    .array(
+      z
+        .string()
+        .min(25, "Her gelişim alanı somut olmalı")
+        .max(300),
+    )
+    .min(2)
+    .max(4),
+  redFlags: z
+    .array(
+      z.object({
+        signal: z
+          .string()
+          .min(15, "Kırmızı bayrak net olmalı")
+          .max(250),
+        meaning: z.string().min(15).max(300),
+      }),
+    )
+    .max(4),
+});
+export type CoachingAdvice = z.infer<typeof CoachingAdviceSchema>;
+
 export const AnalyzeTargetLLMResponseSchema = z.object({
   personalityType: z.string().min(5).max(80),
   big5: Big5Schema,
@@ -61,12 +120,13 @@ export const AnalyzeTargetLLMResponseSchema = z.object({
     .min(25, "İletişim stili açıklaması en az bir cümle olmalı")
     .max(300),
   attractionTriggers: z.array(z.string().min(5).max(100)).min(2).max(6),
-  confidence: z.number().min(0).max(1), // legacy numeric field, keep
+  confidence: z.number().min(0).max(1),
   rationale: z
     .string()
     .min(50, "Gerekçe en az iki cümle olmalı")
     .max(600),
   confidenceDetail: ConfidenceSchema,
+  coachingAdvice: CoachingAdviceSchema,
 });
 export type AnalyzeTargetLLMResponse = z.infer<
   typeof AnalyzeTargetLLMResponseSchema

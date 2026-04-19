@@ -47,7 +47,7 @@ export function preCallModeration(input: {
       allow: false,
       reasons,
       message:
-        "Bu istek RizzAI'nin güvenlik sınırlarına takıldı. Rızasız, reşit olmayan veya açıkça uzaklaşmış birine yönelik içerik üretmiyoruz.",
+        "Bu istek Flört Asistanı'nin güvenlik sınırlarına takıldı. Rızasız, reşit olmayan veya açıkça uzaklaşmış birine yönelik içerik üretmiyoruz.",
     };
   }
 

@@ -7,6 +7,7 @@ export * from "./prompts/system/analyzer";
 export * from "./prompts/system/coach";
 export * from "./prompts/system/conflict";
 export * from "./prompts/system/scorer-hooks";
+export * from "./prompts/system/opener";
 export * from "./memory/build-context";
 export * from "./safety/moderation";
 export * from "./message-generator.service";

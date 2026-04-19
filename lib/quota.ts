@@ -62,7 +62,7 @@ export async function enforceQuota(
       ok: false,
       response: NextResponse.json(
         {
-          type: "https://rizzai.app/errors/quota-exceeded",
+          type: "https://flortasistani.app/errors/quota-exceeded",
           title: "Günlük Limit Doldu",
           status: 402,
           detail: "Ücretsiz katman günlük limiti doldu.",

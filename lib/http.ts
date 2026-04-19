@@ -22,7 +22,7 @@ export function fail(
 ): NextResponse {
   return NextResponse.json(
     {
-      type: `https://rizzai.app/errors/${slugify(title)}`,
+      type: `https://flortasistani.app/errors/${slugify(title)}`,
       title,
       status,
       detail,
