@@ -163,6 +163,10 @@ function ConflictsContent() {
       </div>
 
       {!result && (
+        <div
+          className="rounded-[20px] border border-ink-800 bg-ink-900/40 backdrop-blur-[8px]"
+          style={{ padding: 32 }}
+        >
         <div className="space-y-6">
           <div>
             <Label>Kim için? (opsiyonel)</Label>
@@ -268,6 +272,7 @@ function ConflictsContent() {
           </Button>
 
           {error && <ErrorBanner message={error} />}
+        </div>
         </div>
       )}
 
