@@ -97,4 +97,16 @@ export const api = {
     request<unknown>(`/api/scores/${targetId}`, { method: "POST" }),
 
   getTodayHook: () => request<DailyHookDto | null>("/api/hooks/today"),
+
+  createChatSession: (body: { targetId: string }) =>
+    request<{ id: string }>("/api/chat/sessions", {
+      method: "POST",
+      body: JSON.stringify(body),
+    }),
+
+  ackHook: (id: string, action: "copied" | "dismissed" | "used") =>
+    request<{ acked: boolean }>(`/api/hooks/${id}/ack`, {
+      method: "POST",
+      body: JSON.stringify({ action }),
+    }),
 };

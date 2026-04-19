@@ -46,8 +46,10 @@ export async function middleware(request: NextRequest) {
     pathname.startsWith("/generate") ||
     pathname.startsWith("/chat") ||
     pathname.startsWith("/targets") ||
+    pathname.startsWith("/conflicts") ||
     pathname.startsWith("/insights") ||
-    pathname.startsWith("/settings");
+    pathname.startsWith("/settings") ||
+    pathname.startsWith("/onboarding");
 
   if (isAppRoute && !user) {
     const url = request.nextUrl.clone();
@@ -61,7 +63,7 @@ export async function middleware(request: NextRequest) {
     pathname === "/sign-in" || pathname === "/sign-up";
   if (isAuthRoute && user) {
     const url = request.nextUrl.clone();
-    url.pathname = "/generate";
+    url.pathname = "/dashboard";
     return NextResponse.redirect(url);
   }
 

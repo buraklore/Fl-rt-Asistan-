@@ -42,7 +42,7 @@ export default function SignUpPage() {
       setSentEmail(true);
       return;
     }
-    router.push("/generate");
+    router.push("/onboarding");
     router.refresh();
   };
 

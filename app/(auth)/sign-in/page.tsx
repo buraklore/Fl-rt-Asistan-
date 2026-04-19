@@ -2,18 +2,10 @@
 
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Suspense, useState } from "react";
+import { useState } from "react";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 
 export default function SignInPage() {
-  return (
-    <Suspense fallback={<div className="min-h-screen bg-ink-950" />}>
-      <SignInContent />
-    </Suspense>
-  );
-}
-
-function SignInContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [email, setEmail] = useState("");
@@ -35,7 +27,7 @@ function SignInContent() {
       setError(error.message);
       return;
     }
-    router.push(searchParams.get("next") ?? "/generate");
+    router.push(searchParams.get("next") ?? "/dashboard");
     router.refresh();
   };
 
@@ -62,11 +54,11 @@ function SignInContent() {
           </Link>
           <div className="my-auto max-w-sm">
             <blockquote className="font-display text-4xl italic leading-tight text-ink-100">
-              &ldquo;Arkadasina danismak gibi — sadece arkadasin senin yerine
-              bes saniyede uc farkli cevap hazirlamis.&rdquo;
+              &ldquo;Arkadaşına danışmak gibi — sadece arkadaşın senin yerine
+              beş saniyede üç farklı cevap hazırlamış.&rdquo;
             </blockquote>
             <p className="mt-6 text-sm text-ink-400">
-              — erken beta kullanicisi, 24
+              — erken beta kullanıcısı, 24
             </p>
           </div>
         </div>
@@ -85,10 +77,10 @@ function SignInContent() {
           </Link>
 
           <p className="mb-3 font-display italic text-xl text-brand-400">
-            tekrar hos geldin —
+            tekrar hoş geldin —
           </p>
           <h1 className="mb-10 font-display text-4xl leading-tight sm:text-5xl">
-            Giris yap.
+            Giriş yap.
           </h1>
 
           <form className="space-y-4" onSubmit={submit}>
@@ -101,11 +93,11 @@ function SignInContent() {
               required
             />
             <Field
-              label="Sifre"
+              label="Şifre"
               type="password"
               value={password}
               onChange={setPassword}
-              placeholder="********"
+              placeholder="••••••••"
               required
             />
 
@@ -120,7 +112,7 @@ function SignInContent() {
               disabled={loading}
               className="w-full rounded-xl bg-brand-500 py-3.5 text-sm font-medium text-white shadow-lg shadow-brand-500/20 transition hover:bg-brand-600 disabled:opacity-50"
             >
-              {loading ? "giris yapiliyor..." : "Giris yap"}
+              {loading ? "giriş yapılıyor…" : "Giriş yap"}
             </button>
           </form>
 
@@ -139,12 +131,12 @@ function SignInContent() {
           </button>
 
           <p className="mt-10 text-center text-sm text-ink-300">
-            Hesabin yok mu?{" "}
+            Hesabın yok mu?{" "}
             <Link
               href="/sign-up"
               className="font-medium text-brand-400 hover:text-brand-500"
             >
-              Hemen olustur
+              Hemen oluştur
             </Link>
           </p>
         </div>

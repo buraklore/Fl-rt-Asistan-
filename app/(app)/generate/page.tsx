@@ -1,34 +1,67 @@
 "use client";
 
-import { useState } from "react";
-import Link from "next/link";
+import { Suspense, useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { api, ApiError } from "@/lib/api";
 import type { Reply, Tone } from "@/lib/schemas";
+import {
+  PageHeader,
+  SectionCard,
+  Label,
+  Input,
+  Textarea,
+  Button,
+  Chip,
+  ErrorBanner,
+  InfoBanner,
+} from "@/components/app/ui";
 
-const ALL_TONES: Tone[] = ["cool", "flirty", "confident"];
-const TONE_LABELS: Record<Tone, string> = {
-  cool: "Cool",
-  flirty: "Flirty",
-  confident: "Confident",
-};
-const TONE_DESCRIPTIONS: Record<Tone, string> = {
-  cool: "dengeli, hafif nükteli",
-  flirty: "oyuncu, hafif tahrik",
-  confident: "direkt, özür dilemez",
-};
+const ALL_TONES: { key: Tone; label: string; desc: string }[] = [
+  { key: "cool", label: "Cool", desc: "dengeli, hafif nükteli" },
+  { key: "flirty", label: "Flirty", desc: "oyuncu, hafif tahrik" },
+  { key: "confident", label: "Confident", desc: "direkt, özür dilemez" },
+];
+
+type TargetOption = { id: string; name: string | null; relation: string };
 
 export default function GeneratePage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen" />}>
+      <GenerateContent />
+    </Suspense>
+  );
+}
+
+function GenerateContent() {
+  const searchParams = useSearchParams();
+  const preselectedTargetId = searchParams.get("targetId");
+
+  const [targets, setTargets] = useState<TargetOption[]>([]);
+  const [targetId, setTargetId] = useState<string | null>(
+    preselectedTargetId,
+  );
   const [incoming, setIncoming] = useState("");
   const [context, setContext] = useState("");
-  const [tones, setTones] = useState<Tone[]>(ALL_TONES);
+  const [tones, setTones] = useState<Tone[]>(["cool", "flirty", "confident"]);
   const [replies, setReplies] = useState<Reply[] | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [usageRemaining, setUsageRemaining] = useState<number | null>(null);
+
+  // Load target list for picker
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await api.listTargets();
+        setTargets(res.data ?? []);
+      } catch {
+        // Silently ignore — target picker is optional
+      }
+    })();
+  }, []);
 
   const toggleTone = (t: Tone) => {
-    setTones((curr) =>
-      curr.includes(t) ? curr.filter((x) => x !== t) : [...curr, t],
-    );
+    setTones((c) => (c.includes(t) ? c.filter((x) => x !== t) : [...c, t]));
   };
 
   const submit = async () => {
@@ -41,11 +74,22 @@ export default function GeneratePage() {
         incomingMessage: incoming,
         context: context || undefined,
         tones,
+        targetId: targetId || undefined,
       });
       setReplies(res.data.replies);
+      if (res.meta?.usage?.remaining !== undefined) {
+        setUsageRemaining(res.meta.usage.remaining ?? null);
+      }
     } catch (err) {
       if (err instanceof ApiError) {
-        setError(err.problem.detail ?? err.problem.title);
+        if (err.status === 402) {
+          setError(
+            (err.problem.detail ?? "Günlük limit doldu.") +
+              " Premium'a yükselerek sınırsız kullan.",
+          );
+        } else {
+          setError(err.problem.detail ?? err.problem.title);
+        }
       } else {
         setError("Bir şeyler ters gitti. Tekrar dene.");
       }
@@ -54,141 +98,180 @@ export default function GeneratePage() {
     }
   };
 
+  const selectedTarget = targets.find((t) => t.id === targetId);
+
   return (
-    <div className="min-h-screen">
-      {/* Minimal nav — focus stays on the tool */}
-      <nav className="border-b border-ink-800/50">
-        <div className="mx-auto flex max-w-3xl items-center justify-between px-6 py-4">
-          <Link
-            href="/"
-            className="text-lg font-display tracking-tight transition hover:opacity-80"
-          >
-            Rizz<span className="italic text-brand-500">AI</span>
-          </Link>
-          <Link
-            href="/sign-up"
-            className="text-sm text-ink-300 transition hover:text-ink-100"
-          >
-            Hesap oluştur →
-          </Link>
-        </div>
-      </nav>
+    <div className="mx-auto max-w-4xl px-6 py-12 md:px-10">
+      <PageHeader
+        kicker="önce mesajı göster —"
+        title="Mesaj Üretici"
+        description="Gelen mesajı yapıştır, üç farklı tonda cevap al. Kopyala, gönder, bitti."
+      />
 
-      <main className="mx-auto max-w-2xl px-6 py-16 sm:py-20">
-        {/* Header */}
-        <p className="mb-3 font-display italic text-xl text-brand-400">
-          önce mesajı göster —
-        </p>
-        <h1 className="mb-3 font-display text-display-sm leading-[0.95] tracking-tightest sm:text-5xl">
-          Mesaj Üretici
-        </h1>
-        <p className="mb-12 text-lg text-ink-200">
-          Gelen mesajı yapıştır. Üç tonda cevap al.
-        </p>
-
+      <div className="grid gap-6 lg:grid-cols-[1fr_340px]">
+        {/* Main form */}
         <div className="space-y-6">
-          <Field label="Gelen mesaj">
-            <textarea
-              value={incoming}
-              onChange={(e) => setIncoming(e.target.value)}
-              placeholder="örn: lol rastgele bir soru, niye soruyorsun?"
-              rows={3}
-              className="w-full resize-none rounded-xl border border-ink-700 bg-ink-900/60 px-4 py-3 text-ink-100 placeholder-ink-500 outline-none transition focus:border-brand-500"
-            />
-          </Field>
+          <SectionCard className="space-y-6 p-6">
+            <div>
+              <Label required>Gelen mesaj</Label>
+              <Textarea
+                value={incoming}
+                onChange={(e) => setIncoming(e.target.value)}
+                placeholder="örn: lol rastgele bir soru, niye soruyorsun?"
+                rows={4}
+                maxLength={2000}
+              />
+              <p className="mt-1 text-xs text-ink-500">
+                {incoming.length} / 2000
+              </p>
+            </div>
 
-          <Field label="Bağlam (opsiyonel)">
-            <input
-              value={context}
-              onChange={(e) => setContext(e.target.value)}
-              placeholder="örn: 2 gün önce hinge'de eşleştik, geç cevap veriyor"
-              className="w-full rounded-xl border border-ink-700 bg-ink-900/60 px-4 py-3 text-ink-100 placeholder-ink-500 outline-none transition focus:border-brand-500"
-            />
-          </Field>
+            <div>
+              <Label>Bağlam (opsiyonel)</Label>
+              <Input
+                value={context}
+                onChange={(e) => setContext(e.target.value)}
+                placeholder="örn: 2 gün önce hinge'de eşleştik, geç cevap veriyor"
+                maxLength={1000}
+              />
+            </div>
 
-          <Field label="Tonlar">
-            <div className="grid grid-cols-3 gap-2">
-              {ALL_TONES.map((t) => {
-                const active = tones.includes(t);
-                return (
-                  <button
-                    key={t}
-                    type="button"
-                    onClick={() => toggleTone(t)}
-                    className={`rounded-xl border p-3 text-left transition ${
-                      active
-                        ? "border-brand-500 bg-brand-500/10"
-                        : "border-ink-700 bg-ink-900/40 hover:border-ink-600"
-                    }`}
-                  >
-                    <div
-                      className={`mb-1 font-display text-lg ${
-                        active ? "text-brand-400" : "text-ink-100"
+            <div>
+              <Label>Tonlar</Label>
+              <div className="grid grid-cols-3 gap-2">
+                {ALL_TONES.map((t) => {
+                  const active = tones.includes(t.key);
+                  return (
+                    <button
+                      key={t.key}
+                      type="button"
+                      onClick={() => toggleTone(t.key)}
+                      className={`rounded-xl border p-3 text-left transition ${
+                        active
+                          ? "border-brand-500 bg-brand-500/10"
+                          : "border-ink-700 bg-ink-900/40 hover:border-ink-600"
                       }`}
                     >
-                      {TONE_LABELS[t]}
-                    </div>
-                    <div className="text-[11px] text-ink-400">
-                      {TONE_DESCRIPTIONS[t]}
-                    </div>
-                  </button>
-                );
-              })}
+                      <div
+                        className={`mb-1 font-display text-lg ${
+                          active ? "text-brand-400" : "text-ink-100"
+                        }`}
+                      >
+                        {t.label}
+                      </div>
+                      <div className="text-[11px] text-ink-400">{t.desc}</div>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
-          </Field>
 
-          <button
-            onClick={submit}
-            disabled={loading || !incoming.trim() || tones.length === 0}
-            className="w-full rounded-xl bg-brand-500 px-6 py-4 font-medium text-white shadow-lg shadow-brand-500/20 transition hover:bg-brand-600 disabled:cursor-not-allowed disabled:opacity-40"
-          >
-            {loading ? "düşünüyor…" : "Cevapları üret →"}
-          </button>
+            <Button
+              onClick={submit}
+              disabled={loading || !incoming.trim() || tones.length === 0}
+              fullWidth
+            >
+              {loading ? "düşünüyor..." : "Cevapları üret →"}
+            </Button>
 
-          {error && (
-            <div className="rounded-xl border border-red-500/30 bg-red-500/5 p-4 text-sm text-red-300">
-              {error}
-            </div>
-          )}
+            {error && <ErrorBanner message={error} />}
+          </SectionCard>
 
-          {replies && (
-            <div className="pt-4">
-              <div className="divider mb-6" />
-              <p className="mb-6 font-display italic text-brand-400">
-                işte üç cevap —
+          {/* Replies */}
+          {replies && replies.length > 0 && (
+            <section>
+              <p className="mb-4 font-display italic text-brand-400">
+                işte {replies.length} cevap —
               </p>
               <div className="space-y-3">
                 {replies.map((r, i) => (
-                  <ReplyCard key={i} reply={r} />
+                  <ReplyCard key={i} reply={r} index={i} />
                 ))}
               </div>
-            </div>
+            </section>
           )}
         </div>
-      </main>
+
+        {/* Sidebar: target picker + tips */}
+        <aside className="space-y-4">
+          <SectionCard className="p-5">
+            <Label>Kim için?</Label>
+            <div className="space-y-1">
+              <button
+                onClick={() => setTargetId(null)}
+                className={`w-full rounded-lg px-3 py-2 text-left text-sm transition ${
+                  targetId === null
+                    ? "bg-brand-500/10 text-brand-400"
+                    : "text-ink-300 hover:bg-ink-900"
+                }`}
+              >
+                Belirsiz (genel)
+              </button>
+              {targets.map((t) => (
+                <button
+                  key={t.id}
+                  onClick={() => setTargetId(t.id)}
+                  className={`w-full rounded-lg px-3 py-2 text-left text-sm transition ${
+                    targetId === t.id
+                      ? "bg-brand-500/10 text-brand-400"
+                      : "text-ink-300 hover:bg-ink-900"
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <span>{t.name ?? "İsimsiz"}</span>
+                    <span className="text-xs text-ink-500">
+                      {t.relation}
+                    </span>
+                  </div>
+                </button>
+              ))}
+            </div>
+            {targets.length === 0 && (
+              <p className="mt-2 text-xs text-ink-500">
+                Hedef profili ekle, AI kişiye özel cevaplar üretsin.
+              </p>
+            )}
+            {selectedTarget && (
+              <p className="mt-3 border-t border-ink-800 pt-3 text-xs text-ink-400">
+                Cevaplar{" "}
+                <span className="text-brand-400">
+                  {selectedTarget.name ?? "bu kişi"}
+                </span>{" "}
+                için kişiselleşecek.
+              </p>
+            )}
+          </SectionCard>
+
+          {usageRemaining !== null && (
+            <InfoBanner>
+              <span className="font-display text-2xl italic text-brand-400">
+                {usageRemaining}
+              </span>{" "}
+              üretim hakkın kaldı (bugün).
+            </InfoBanner>
+          )}
+
+          <SectionCard className="p-5">
+            <p className="mb-3 font-display italic text-brand-400">
+              daha iyi cevap için —
+            </p>
+            <ul className="space-y-2 text-xs leading-relaxed text-ink-300">
+              <li>◆ Mesajı birebir yapıştır, özetleme</li>
+              <li>◆ Bağlam alanı: nerede, kaç gündür, ilişki evresi</li>
+              <li>◆ Hedef profili oluştur — kişiselleşir</li>
+              <li>◆ Emoji varsa bırak, emoji yoksa ekleme</li>
+            </ul>
+          </SectionCard>
+        </aside>
+      </div>
     </div>
   );
 }
 
-function Field({
-  label,
-  children,
-}: {
-  label: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <label className="block">
-      <span className="mb-2 block text-xs font-semibold uppercase tracking-widest text-ink-300">
-        {label}
-      </span>
-      {children}
-    </label>
-  );
-}
-
-function ReplyCard({ reply }: { reply: Reply }) {
+function ReplyCard({ reply, index }: { reply: Reply; index: number }) {
   const [copied, setCopied] = useState(false);
+  const [showRationale, setShowRationale] = useState(false);
+
   const copy = async () => {
     await navigator.clipboard.writeText(reply.text);
     setCopied(true);
@@ -196,10 +279,13 @@ function ReplyCard({ reply }: { reply: Reply }) {
   };
 
   return (
-    <div className="group rounded-2xl border border-ink-800 bg-ink-900/40 p-5 transition hover:border-ink-700">
+    <div
+      className="group rounded-2xl border border-ink-800 bg-ink-900/40 p-6 transition hover:border-ink-700"
+      style={{ animationDelay: `${index * 80}ms` }}
+    >
       <div className="mb-4 flex items-center justify-between">
-        <span className="font-display text-lg italic text-brand-400">
-          {TONE_LABELS[reply.tone]}
+        <span className="font-display text-xl italic text-brand-400">
+          {reply.tone.charAt(0).toUpperCase() + reply.tone.slice(1)}
         </span>
         <button
           onClick={copy}
@@ -208,10 +294,18 @@ function ReplyCard({ reply }: { reply: Reply }) {
           {copied ? "Kopyalandı ✓" : "Kopyala"}
         </button>
       </div>
-      <p className="mb-4 text-base leading-relaxed text-ink-100">
-        {reply.text}
-      </p>
-      <p className="text-xs italic text-ink-400">→ {reply.rationale}</p>
+      <p className="mb-4 text-lg leading-relaxed text-ink-100">{reply.text}</p>
+      <button
+        onClick={() => setShowRationale((v) => !v)}
+        className="text-xs text-ink-400 hover:text-ink-200"
+      >
+        {showRationale ? "− açıklamayı gizle" : "+ neden bu cevap?"}
+      </button>
+      {showRationale && (
+        <p className="mt-3 border-t border-ink-800 pt-3 text-xs italic leading-relaxed text-ink-400">
+          {reply.rationale}
+        </p>
+      )}
     </div>
   );
 }
