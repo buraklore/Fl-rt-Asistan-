@@ -280,14 +280,19 @@ export function StatTile({
   subtext?: string;
 }) {
   return (
-    <div className="rounded-2xl border border-ink-800 bg-ink-900/40 p-5">
-      <p className="mb-2 text-[10px] font-semibold uppercase tracking-widest text-ink-400">
+    <div className="min-w-0 overflow-hidden rounded-2xl border border-ink-800 bg-ink-900/40 p-5">
+      <p className="mb-2 truncate text-[10px] font-semibold uppercase tracking-[0.25em] text-ink-400">
         {label}
       </p>
-      <p className="font-display text-4xl leading-none tracking-tight text-ink-100">
+      <p
+        className="break-words font-display font-normal tracking-tight text-ink-100"
+        style={{ fontSize: 26, lineHeight: 1.1, letterSpacing: "-0.02em" }}
+      >
         {value}
       </p>
-      {subtext && <p className="mt-2 text-xs text-ink-400">{subtext}</p>}
+      {subtext && (
+        <p className="mt-2 text-[11px] leading-[1.4] text-ink-400">{subtext}</p>
+      )}
     </div>
   );
 }
