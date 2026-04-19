@@ -186,7 +186,7 @@ export default function ChatSessionPage({ params }: Params) {
                 {session?.target?.name ?? "Koç"}
               </p>
               <p
-                className="m-0 text-[10px] font-semibold uppercase text-brand-400"
+                className="m-0 text-[11px] font-semibold uppercase text-brand-400"
                 style={{ letterSpacing: "0.25em" }}
               >
                 {session?.target?.relation ?? "KOÇ"} · hafızalı sohbet
@@ -302,21 +302,21 @@ export default function ChatSessionPage({ params }: Params) {
                 padding: "16px 18px",
                 borderRadius: 16,
                 background: "rgba(17,17,24,0.6)",
-                fontSize: 15,
-                lineHeight: 1.5,
+                fontSize: 16,
+                lineHeight: 1.55,
               }}
             />
             <button
               onClick={send}
               disabled={streaming || !input.trim()}
               className="rounded-full bg-brand-500 font-medium text-white shadow-lg shadow-brand-500/20 transition hover:bg-brand-600 disabled:cursor-not-allowed disabled:opacity-50"
-              style={{ height: 52, padding: "0 22px", fontSize: 14 }}
+              style={{ height: 52, padding: "0 22px", fontSize: 15 }}
             >
               {streaming ? "…" : "Gönder →"}
             </button>
           </div>
           <p
-            className="text-[11px] text-ink-500"
+            className="text-[12px] text-ink-500"
             style={{ margin: "8px 4px 0" }}
           >
             kısa ve olgun cevaplar verir.
@@ -361,7 +361,7 @@ function Bubble({
           padding: "14px 18px",
           borderRadius: 18,
           background: isUser ? "#BE123C" : "rgba(17,17,24,0.7)",
-          fontSize: 15,
+          fontSize: 16,
           lineHeight: 1.55,
           boxShadow: isUser ? "0 10px 24px -10px rgba(225,29,72,0.4)" : "none",
           borderBottomRightRadius: isUser ? 6 : 18,

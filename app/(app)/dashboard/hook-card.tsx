@@ -143,13 +143,49 @@ export function DashboardHookCard({ hasTargets }: { hasTargets: boolean }) {
 
   if (!hook) {
     return (
-      <div className="rounded-2xl border border-ink-800 bg-ink-900/40 p-8">
-        <p className="mb-3 font-display italic text-lg text-brand-400">
-          günlük dürtme —
+      <div
+        className="relative overflow-hidden rounded-[20px] border border-brand-500/20 backdrop-blur-[8px]"
+        style={{
+          padding: "34px 40px 32px",
+          background:
+            "linear-gradient(135deg, rgba(225,29,72,0.12) 0%, rgba(225,29,72,0.04) 42%, rgba(17,17,24,0.5) 100%)",
+        }}
+      >
+        <span
+          aria-hidden
+          className="pointer-events-none absolute select-none font-display italic leading-none text-brand-400"
+          style={{
+            top: -34,
+            right: 28,
+            fontSize: 280,
+            opacity: 0.1,
+          }}
+        >
+          &rdquo;
+        </span>
+        <p className="relative mb-5 text-[10px] font-semibold uppercase tracking-[0.25em] text-brand-400">
+          günün hook&apos;u
         </p>
-        <p className="text-sm text-ink-300">
-          Bugün için hazırlanmadı. Daha sonra tekrar dene.
+        <p
+          className="relative mb-7 max-w-[640px] font-display italic leading-[1.15] tracking-tight text-ink-100"
+          style={{ fontSize: 38 }}
+        >
+          Bugünün dürtmesi için biraz bekle — koç profilini çözerken yeniden dener.
         </p>
+        <div className="relative flex flex-wrap items-center gap-[18px]">
+          <button
+            onClick={() => window.location.reload()}
+            className="rounded-full bg-brand-500 px-5 py-2.5 text-sm font-medium text-white shadow-lg shadow-brand-500/20 transition hover:bg-brand-600"
+          >
+            ↻ Yeniden dene
+          </button>
+          <Link
+            href="/generate"
+            className="text-[13px] text-ink-200 hover:text-ink-100"
+          >
+            veya kendi üret →
+          </Link>
+        </div>
       </div>
     );
   }
@@ -197,17 +233,17 @@ export function DashboardHookCard({ hasTargets }: { hasTargets: boolean }) {
       </button>
 
       <div className="relative mb-5 flex flex-wrap items-center gap-[10px] pr-[60px]">
-        <span className="text-[10px] font-semibold uppercase tracking-[0.25em] text-brand-400">
+        <span className="text-[11px] font-semibold uppercase tracking-[0.25em] text-brand-400">
           GÜNÜN HOOK&apos;U
         </span>
-        <span className="text-[10px] text-ink-600">·</span>
-        <span className="text-[10px] font-semibold uppercase tracking-[0.25em] text-ink-400">
+        <span className="text-[11px] text-ink-600">·</span>
+        <span className="text-[11px] font-semibold uppercase tracking-[0.25em] text-ink-400">
           {CATEGORY_LABELS[hook.category] ?? hook.category}
         </span>
         {hook.targetName && (
           <>
-            <span className="text-[10px] text-ink-600">·</span>
-            <span className="text-[10px] font-semibold uppercase tracking-[0.25em] text-ink-400">
+            <span className="text-[11px] text-ink-600">·</span>
+            <span className="text-[11px] font-semibold uppercase tracking-[0.25em] text-ink-400">
               {hook.targetName} için
             </span>
           </>
@@ -216,7 +252,7 @@ export function DashboardHookCard({ hasTargets }: { hasTargets: boolean }) {
 
       <p
         className="relative mb-7 max-w-[760px] font-display italic leading-[1.15] tracking-tight text-ink-100"
-        style={{ fontSize: 42 }}
+        style={{ fontSize: 48 }}
       >
         {hook.text}
       </p>
@@ -224,13 +260,13 @@ export function DashboardHookCard({ hasTargets }: { hasTargets: boolean }) {
       <div className="relative flex flex-wrap items-center gap-[18px]">
         <button
           onClick={copy}
-          className="rounded-full bg-brand-500 px-5 py-2.5 text-sm font-medium text-white shadow-lg shadow-brand-500/20 transition hover:bg-brand-600"
+          className="rounded-full bg-brand-500 px-6 py-3 text-[15px] font-medium text-white shadow-lg shadow-brand-500/20 transition hover:bg-brand-600"
         >
           {copied ? "Kopyalandı ✓" : "Kopyala"}
         </button>
         <Link
           href="/generate"
-          className="text-[13px] text-ink-200 hover:text-ink-100"
+          className="text-[14px] text-ink-200 hover:text-ink-100"
         >
           veya üret →
         </Link>

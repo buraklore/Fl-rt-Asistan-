@@ -168,46 +168,47 @@ export default async function DashboardPage() {
                 <Link
                   key={t.id}
                   href={`/targets/${t.id}`}
-                  className="group rounded-2xl border border-ink-800 bg-ink-900/40 p-[22px] transition hover:border-brand-500/40 hover:bg-ink-900/60"
+                  className="group rounded-[20px] border border-ink-800 bg-ink-900/40 transition hover:border-brand-500/40 hover:bg-ink-900/60"
+                  style={{ padding: 26 }}
                 >
-                  <div className="mb-[10px] flex items-start justify-between gap-3">
+                  <div className="mb-[12px] flex items-start justify-between gap-3">
                     <div className="min-w-0">
-                      <p className="font-display text-[26px] leading-tight tracking-tight text-ink-100">
+                      <p className="font-display text-[28px] leading-tight tracking-tight text-ink-100">
                         {t.name ?? "İsimsiz"}
                       </p>
-                      <p className="mt-1 text-[9px] font-semibold uppercase tracking-[0.25em] text-ink-400">
+                      <p className="mt-1 text-[10px] font-semibold uppercase tracking-[0.25em] text-ink-400">
                         {RELATION_LABELS[t.relation] ?? t.relation}
                       </p>
                     </div>
                     {score !== undefined ? (
                       <div className="text-right">
-                        <p className="font-display text-[30px] leading-none tracking-tight text-brand-400">
+                        <p className="font-display text-[32px] leading-none tracking-tight text-brand-400">
                           %{score}
                         </p>
-                        <p className="mt-1 text-[9px] uppercase tracking-[0.25em] text-ink-500">
+                        <p className="mt-1 text-[10px] uppercase tracking-[0.25em] text-ink-500">
                           uyum
                         </p>
                       </div>
                     ) : (
-                      <span className="text-[10px] uppercase tracking-[0.2em] text-ink-500">
+                      <span className="text-[11px] uppercase tracking-[0.2em] text-ink-500">
                         analiz edilmedi
                       </span>
                     )}
                   </div>
 
                   {t.personality_type ? (
-                    <p className="font-display text-[17px] italic text-brand-400" style={{ lineHeight: 1.45 }}>
+                    <p className="font-display text-[18px] italic text-brand-400" style={{ lineHeight: 1.45 }}>
                       {t.personality_type}
                     </p>
                   ) : (
-                    <p className="text-[13px] text-ink-500" style={{ lineHeight: 1.5 }}>
+                    <p className="text-[14px] text-ink-500" style={{ lineHeight: 1.5 }}>
                       henüz yeterli veri yok — profili doldur
                     </p>
                   )}
 
                   {typeof t.analysis_confidence === "number" && (
-                    <div className="mt-[14px]">
-                      <span className="inline-block rounded-full border border-ink-800 bg-ink-900/60 px-[10px] py-[4px] text-[9px] font-semibold uppercase tracking-[0.25em] text-ink-300">
+                    <div className="mt-[16px]">
+                      <span className="inline-block rounded-full border border-ink-800 bg-ink-900/60 px-[12px] py-[5px] text-[10px] font-semibold uppercase tracking-[0.25em] text-ink-300">
                         analiz güveni — %{Math.round(t.analysis_confidence * 100)}
                       </span>
                     </div>
@@ -328,10 +329,10 @@ function SectionHeader({
   linkHref?: string;
 }) {
   return (
-    <div className="flex items-baseline justify-between" style={{ marginBottom: 16 }}>
+    <div className="flex items-baseline justify-between" style={{ marginBottom: 18 }}>
       <h2
         className="m-0 font-display text-ink-100"
-        style={{ fontWeight: 400, fontSize: 28, letterSpacing: "-0.01em" }}
+        style={{ fontWeight: 400, fontSize: 32, letterSpacing: "-0.01em" }}
       >
         {title}
       </h2>
@@ -339,7 +340,7 @@ function SectionHeader({
         <Link
           href={linkHref}
           className="lowercase text-ink-400 hover:text-ink-200"
-          style={{ fontSize: 12 }}
+          style={{ fontSize: 13 }}
         >
           {linkLabel}
         </Link>
@@ -365,17 +366,17 @@ function ToolTile({
     <Link
       href={href}
       className="group flex h-full flex-col rounded-[20px] border border-ink-800 bg-ink-900/40 backdrop-blur-[8px] transition-all duration-[160ms] hover:border-brand-500/40 hover:bg-ink-900/60"
-      style={{ padding: 22 }}
+      style={{ padding: 26 }}
     >
-      <div className="flex items-start justify-between gap-3" style={{ marginBottom: 16 }}>
-        <span className="text-brand-500" style={{ fontSize: 34, lineHeight: 1 }}>{symbol}</span>
+      <div className="flex items-start justify-between gap-3" style={{ marginBottom: 18 }}>
+        <span className="text-brand-500" style={{ fontSize: 38, lineHeight: 1 }}>{symbol}</span>
         {stat && (
           <span
             className="rounded-full border border-ink-700 bg-ink-900/60 font-semibold uppercase text-ink-400"
             style={{
-              fontSize: 9,
+              fontSize: 10,
               letterSpacing: "0.22em",
-              padding: "3px 10px",
+              padding: "4px 12px",
             }}
           >
             {stat}
@@ -384,17 +385,17 @@ function ToolTile({
       </div>
       <p
         className="font-display text-ink-100"
-        style={{ fontSize: 22, letterSpacing: "-0.01em" }}
+        style={{ fontSize: 24, letterSpacing: "-0.01em" }}
       >
         {title}
       </p>
       <p
         className="flex-1 text-ink-400"
-        style={{ margin: "6px 0 16px", fontSize: 13, lineHeight: 1.5 }}
+        style={{ margin: "8px 0 18px", fontSize: 15, lineHeight: 1.5 }}
       >
         {desc}
       </p>
-      <span className="lowercase text-ink-500 transition group-hover:text-brand-400" style={{ fontSize: 11 }}>
+      <span className="lowercase text-ink-500 transition group-hover:text-brand-400" style={{ fontSize: 12 }}>
         aç →
       </span>
     </Link>

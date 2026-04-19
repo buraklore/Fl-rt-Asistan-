@@ -69,17 +69,17 @@ export function AppShell({
           className={`${
             mobileOpen ? "fixed inset-0 z-40 flex" : "hidden"
           } shrink-0 flex-col border-r border-ink-800 bg-ink-950 md:sticky md:top-0 md:flex md:h-screen`}
-          style={{ width: 264 }}
+          style={{ width: 280 }}
         >
           {/* Logo block — CD: padding 24px 24px 20px, fontSize 22, letterSpacing -0.01em */}
           <div
             className="flex items-center justify-between"
-            style={{ padding: "24px 24px 20px" }}
+            style={{ padding: "28px 24px 22px" }}
           >
             <Link
               href="/dashboard"
               className="font-display text-ink-100"
-              style={{ fontSize: 22, letterSpacing: "-0.01em" }}
+              style={{ fontSize: 24, letterSpacing: "-0.01em" }}
               onClick={() => setMobileOpen(false)}
             >
               Flört<span className="italic text-brand-500"> asistanı</span>
@@ -106,8 +106,8 @@ export function AppShell({
                 <p
                   className="font-semibold uppercase text-ink-500"
                   style={{
-                    margin: "0 0 6px 12px",
-                    fontSize: 10,
+                    margin: "0 0 8px 14px",
+                    fontSize: 11,
                     letterSpacing: "0.25em",
                   }}
                 >
@@ -165,11 +165,11 @@ function NavItem({
             : "text-ink-300 hover:bg-ink-900/50 hover:text-ink-100"
         }`}
         style={{
-          padding: "8px 12px",
-          marginBottom: 2,
+          padding: "10px 14px",
+          marginBottom: 3,
           borderRadius: 10,
-          gap: 12,
-          fontSize: 14,
+          gap: 14,
+          fontSize: 15,
         }}
       >
         <span
@@ -178,7 +178,7 @@ function NavItem({
               ? "text-brand-500"
               : "text-ink-500 group-hover:text-ink-300"
           }`}
-          style={{ fontSize: 16 }}
+          style={{ fontSize: 18 }}
         >
           {symbol}
         </span>
@@ -213,19 +213,19 @@ function UserBlock({ user }: { user: User }) {
         onClick={() => setMenuOpen((v) => !v)}
         className="flex w-full cursor-pointer items-center text-left transition hover:bg-ink-900/50"
         style={{
-          padding: "8px 8px",
+          padding: "10px 10px",
           borderRadius: 10,
-          gap: 12,
+          gap: 14,
         }}
       >
-        {/* Avatar — CD: 36x36, rounded-full, bg rgba(225,29,72,0.12), color brand-400, fontSize 13, fontWeight 600 */}
+        {/* Avatar — CD: 36x36 → bigger 40x40 */}
         <div
           className="flex flex-shrink-0 items-center justify-center rounded-full font-semibold text-brand-400"
           style={{
-            width: 36,
-            height: 36,
+            width: 40,
+            height: 40,
             background: "rgba(225,29,72,0.12)",
-            fontSize: 13,
+            fontSize: 14,
           }}
         >
           {initials || "?"}
@@ -233,18 +233,18 @@ function UserBlock({ user }: { user: User }) {
         <div className="min-w-0 flex-1">
           <p
             className="m-0 truncate text-ink-100"
-            style={{ fontSize: 14 }}
+            style={{ fontSize: 15 }}
           >
             {user.displayName ?? user.email.split("@")[0]}
           </p>
           <p
             className="m-0 uppercase text-ink-500"
-            style={{ fontSize: 10, letterSpacing: "0.25em" }}
+            style={{ fontSize: 11, letterSpacing: "0.25em" }}
           >
             {user.plan === "premium" ? "premium" : "ücretsiz"}
           </p>
         </div>
-        <span className="text-ink-500" style={{ fontSize: 18 }}>
+        <span className="text-ink-500" style={{ fontSize: 20 }}>
           ⋯
         </span>
       </button>

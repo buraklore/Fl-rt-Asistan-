@@ -184,7 +184,7 @@ export default async function InsightsPage() {
                         </p>
                         <span
                           className="text-ink-400"
-                          style={{ fontSize: 14 }}
+                          style={{ fontSize: 15 }}
                         >
                           / 100
                         </span>
@@ -192,7 +192,7 @@ export default async function InsightsPage() {
                           <span
                             className="font-semibold uppercase"
                             style={{
-                              fontSize: 11,
+                              fontSize: 12,
                               letterSpacing: "0.2em",
                               color: up ? "#10B981" : "#F87171",
                             }}
@@ -211,7 +211,7 @@ export default async function InsightsPage() {
                           className="rounded-[14px] border border-ink-700 bg-ink-900/60 text-ink-100 hover:border-ink-600"
                           style={{
                             padding: "6px 14px",
-                            fontSize: 13,
+                            fontSize: 15,
                           }}
                         >
                           Detay →
@@ -247,7 +247,7 @@ export default async function InsightsPage() {
                               <li
                                 key={i}
                                 className="flex text-ink-200"
-                                style={{ gap: 10, fontSize: 14 }}
+                                style={{ gap: 10, fontSize: 15 }}
                               >
                                 <span style={{ color: "#10B981" }}>●</span>
                                 {s.label}
@@ -284,7 +284,7 @@ export default async function InsightsPage() {
                               <li
                                 key={i}
                                 className="flex text-ink-200"
-                                style={{ gap: 10, fontSize: 14 }}
+                                style={{ gap: 10, fontSize: 15 }}
                               >
                                 <span style={{ color: "#F87171" }}>●</span>
                                 {r.label}
@@ -325,11 +325,11 @@ export default async function InsightsPage() {
                 className="rounded-2xl border border-ink-800 bg-ink-900/40 p-5"
               >
                 <div className="mb-2 flex items-center justify-between">
-                  <span className="text-[11px] text-ink-500">
+                  <span className="text-[12px] text-ink-500">
                     {formatDate(c.created_at)}
                   </span>
                   <span
-                    className="rounded-full px-[10px] py-[3px] text-[10px] font-semibold uppercase tracking-[0.2em]"
+                    className="rounded-full px-[10px] py-[3px] text-[11px] font-semibold uppercase tracking-[0.2em]"
                     style={{
                       border: "1px solid rgba(225,29,72,0.3)",
                       background: "rgba(225,29,72,0.1)",

@@ -182,7 +182,7 @@ function GenerateContent() {
               setReplies(null);
               setOpeners(null);
             }}
-            className={`rounded-full px-5 py-2 text-[13px] transition ${
+            className={`rounded-full px-6 py-[10px] text-[14px] transition ${
               mode === o.k
                 ? "bg-brand-500 text-white"
                 : "text-ink-300 hover:text-ink-100"
@@ -200,7 +200,7 @@ function GenerateContent() {
           <div className="flex flex-col gap-[22px] rounded-2xl border border-ink-800 bg-ink-900/40 p-7">
             {mode === "opener" && (
               <div
-                className="rounded-[12px] border px-4 py-3 text-[13px] leading-[1.5]"
+                className="rounded-[12px] border px-4 py-3 text-[14px] leading-[1.5]"
                 style={{
                   borderColor: "rgba(225,29,72,0.3)",
                   background: "rgba(225,29,72,0.08)",
@@ -222,9 +222,9 @@ function GenerateContent() {
                     rows={4}
                     maxLength={2000}
                     placeholder="örn: lol rastgele bir soru, niye soruyorsun?"
-                    className="w-full resize-y rounded-[14px] border border-ink-700 bg-ink-900/60 px-4 py-3 text-[15px] leading-[1.55] text-ink-100 placeholder-ink-500 outline-none transition focus:border-brand-500"
+                    className="w-full resize-y rounded-[14px] border border-ink-700 bg-ink-900/60 px-4 py-3 text-[16px] leading-[1.55] text-ink-100 placeholder-ink-500 outline-none transition focus:border-brand-500"
                   />
-                  <p className="mt-1 text-[11px] text-ink-500">
+                  <p className="mt-1 text-[14px] text-ink-500">
                     {incoming.length} / 2000
                   </p>
                 </Field>
@@ -235,7 +235,7 @@ function GenerateContent() {
                     value={context}
                     onChange={(e) => setContext(e.target.value)}
                     placeholder="örn: 2 gün önce eşleştik"
-                    className="w-full rounded-[14px] border border-ink-700 bg-ink-900/60 px-4 py-3 text-[15px] leading-[1.55] text-ink-100 placeholder-ink-500 outline-none transition focus:border-brand-500"
+                    className="w-full rounded-[14px] border border-ink-700 bg-ink-900/60 px-4 py-3 text-[16px] leading-[1.55] text-ink-100 placeholder-ink-500 outline-none transition focus:border-brand-500"
                   />
                 </Field>
               </>
@@ -246,7 +246,7 @@ function GenerateContent() {
                   onChange={(e) => setSituation(e.target.value)}
                   rows={3}
                   placeholder="nerede tanıştınız, son ne oldu, hedefin neresi…"
-                  className="w-full resize-y rounded-[14px] border border-ink-700 bg-ink-900/60 px-4 py-3 text-[15px] leading-[1.55] text-ink-100 placeholder-ink-500 outline-none transition focus:border-brand-500"
+                  className="w-full resize-y rounded-[14px] border border-ink-700 bg-ink-900/60 px-4 py-3 text-[16px] leading-[1.55] text-ink-100 placeholder-ink-500 outline-none transition focus:border-brand-500"
                 />
               </Field>
             )}
@@ -280,7 +280,7 @@ function GenerateContent() {
                       >
                         {t.label}
                       </div>
-                      <div className="text-[11px] text-ink-400">{t.desc}</div>
+                      <div className="text-[13px] text-ink-400">{t.desc}</div>
                     </button>
                   );
                 })}
@@ -303,7 +303,7 @@ function GenerateContent() {
                 (mode === "opener" && !targetId)
               }
               className="w-full rounded-[14px] bg-brand-500 font-medium text-white shadow-[0_10px_20px_-8px_rgba(225,29,72,0.4)] transition hover:bg-brand-600 disabled:cursor-not-allowed disabled:opacity-40"
-              style={{ padding: "12px 20px", fontSize: 14 }}
+              style={{ padding: "14px 24px", fontSize: 16 }}
             >
               {loading
                 ? "üretiliyor…"
@@ -324,7 +324,7 @@ function GenerateContent() {
                   işte {resultList.length} cevap —
                 </p>
                 {selectedTarget && (
-                  <span className="text-[10px] uppercase tracking-[0.25em] text-ink-500">
+                  <span className="text-[11px] uppercase tracking-[0.25em] text-ink-500">
                     {selectedTarget.name ?? "?"} için
                   </span>
                 )}
@@ -351,7 +351,7 @@ function GenerateContent() {
                           {r.tone}
                         </span>
                         {r.hook && (
-                          <span className="text-[10px] uppercase tracking-[0.25em] text-ink-500">
+                          <span className="text-[11px] uppercase tracking-[0.25em] text-ink-500">
                             · hook: {r.hook}
                           </span>
                         )}
@@ -393,7 +393,7 @@ function GenerateContent() {
                         {expanded === i && (
                           <p
                             className="mt-[14px] border-t border-ink-800 pt-[14px] italic text-ink-300"
-                            style={{ fontSize: 13, lineHeight: 1.6 }}
+                            style={{ fontSize: 15, lineHeight: 1.6 }}
                           >
                             {r.rationale}
                           </p>
@@ -432,7 +432,7 @@ function GenerateContent() {
               ))}
             </div>
             {selectedTarget && (
-              <p className="mt-[14px] border-t border-ink-800 pt-[14px] text-[11px] leading-[1.5] text-ink-400">
+              <p className="mt-[14px] border-t border-ink-800 pt-[14px] text-[12px] leading-[1.5] text-ink-400">
                 Cevaplar{" "}
                 <span className="text-brand-400">{selectedTarget.name}</span>{" "}
                 için kişiselleşecek — bağlanma stili ve çekim tetikleyicileri
@@ -447,7 +447,7 @@ function GenerateContent() {
               className="rounded-2xl border border-ink-800 p-5 backdrop-blur-[8px]"
               style={{ background: "rgba(17,17,24,0.4)" }}
             >
-              <p className="text-[10px] font-semibold uppercase tracking-[0.3em] text-ink-500">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-ink-500">
                 kalan kota
               </p>
               <p
@@ -460,7 +460,7 @@ function GenerateContent() {
               >
                 {usageRemaining}
               </p>
-              <p className="text-[13px] text-ink-300">üretim kaldı bugün</p>
+              <p className="text-[14px] text-ink-300">üretim kaldı bugün</p>
               <div className="mt-[14px] h-1 overflow-hidden rounded-full bg-ink-800">
                 <div
                   className="h-full bg-brand-500 transition-all"
@@ -553,7 +553,7 @@ function TargetPickerRow({
       <span>{label}</span>
       {sub && (
         <span
-          className={`text-[10px] uppercase tracking-[0.25em] ${
+          className={`text-[11px] uppercase tracking-[0.25em] ${
             active ? "text-brand-400" : "text-ink-500"
           }`}
         >

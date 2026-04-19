@@ -25,7 +25,7 @@ export function PageHeader({
         {kicker && (
           <p
             className="m-0 font-display italic text-brand-400"
-            style={{ marginBottom: 8, fontSize: 18 }}
+            style={{ marginBottom: 10, fontSize: 20 }}
           >
             {kicker}
           </p>
@@ -34,7 +34,7 @@ export function PageHeader({
           className="m-0 font-display text-ink-100"
           style={{
             fontWeight: 400,
-            fontSize: 42,
+            fontSize: 48,
             lineHeight: 1.05,
             letterSpacing: "-0.02em",
           }}
@@ -45,9 +45,9 @@ export function PageHeader({
           <p
             className="m-0 text-ink-300"
             style={{
-              marginTop: 12,
+              marginTop: 14,
               maxWidth: 640,
-              fontSize: 15,
+              fontSize: 16,
               lineHeight: 1.55,
             }}
           >
@@ -129,12 +129,13 @@ export function Button({
   className = "",
   ...rest
 }: ButtonBaseProps & React.ButtonHTMLAttributes<HTMLButtonElement>) {
-  // CD sm: padding 6px 14px, fontSize 13
-  // CD md: padding 12px 20px, fontSize 14, fontWeight 500
+  // Bigger sizes
+  // sm: 14px / 7px/16px padding
+  // md: 15px / 14px/22px padding
   const sizeStyle =
     size === "sm"
-      ? "px-[14px] py-[6px] text-[13px]"
-      : "px-5 py-3 text-[14px] font-medium";
+      ? "px-4 py-[7px] text-[14px]"
+      : "px-[22px] py-[14px] text-[15px] font-medium";
   return (
     <button
       {...rest}
@@ -157,8 +158,8 @@ export function ButtonLink({
 }: ButtonBaseProps & { href: string }) {
   const sizeStyle =
     size === "sm"
-      ? "px-[14px] py-[6px] text-[13px]"
-      : "px-5 py-3 text-[14px] font-medium";
+      ? "px-4 py-[7px] text-[14px]"
+      : "px-[22px] py-[14px] text-[15px] font-medium";
   return (
     <Link
       href={href}
@@ -186,8 +187,8 @@ export function Label({
     <span
       className="block font-semibold uppercase text-ink-300"
       style={{
-        marginBottom: 8,
-        fontSize: 10,
+        marginBottom: 10,
+        fontSize: 11,
         letterSpacing: "0.25em",
       }}
     >
@@ -207,8 +208,8 @@ export function Input(props: React.InputHTMLAttributes<HTMLInputElement>) {
       {...props}
       className={`w-full rounded-[14px] border border-ink-700 bg-ink-900/60 text-ink-100 placeholder-ink-500 outline-none transition-[border] duration-[160ms] focus:border-brand-500 ${props.className ?? ""}`}
       style={{
-        padding: "12px 16px",
-        fontSize: 15,
+        padding: "14px 18px",
+        fontSize: 16,
         boxSizing: "border-box",
         ...props.style,
       }}
@@ -228,8 +229,8 @@ export function Textarea(
       {...props}
       className={`w-full resize-y rounded-[14px] border border-ink-700 bg-ink-900/60 text-ink-100 placeholder-ink-500 outline-none transition-[border] duration-[160ms] focus:border-brand-500 ${props.className ?? ""}`}
       style={{
-        padding: "12px 16px",
-        fontSize: 15,
+        padding: "14px 18px",
+        fontSize: 16,
         lineHeight: 1.55,
         boxSizing: "border-box",
         ...props.style,
@@ -252,8 +253,8 @@ export function Select(
       {...props}
       className={`w-full rounded-[14px] border border-ink-700 bg-ink-900/60 text-ink-100 outline-none transition-[border] duration-[160ms] focus:border-brand-500 ${props.className ?? ""}`}
       style={{
-        padding: "12px 16px",
-        fontSize: 15,
+        padding: "14px 18px",
+        fontSize: 16,
         boxSizing: "border-box",
         ...props.style,
       }}
@@ -288,8 +289,8 @@ export function Chip({
           : "border-ink-700 text-ink-200 hover:border-ink-600"
       }`}
       style={{
-        padding: small ? "6px 12px" : "8px 16px",
-        fontSize: small ? 12 : 14,
+        padding: small ? "7px 14px" : "10px 18px",
+        fontSize: small ? 13 : 15,
         background: active ? "rgba(225,29,72,0.12)" : "rgba(17,17,24,0.4)",
       }}
     >
@@ -312,12 +313,12 @@ export function StatTile({
   subtext?: string;
 }) {
   return (
-    <SectionCard style={{ padding: 20, minWidth: 0, overflow: "hidden" }}>
+    <SectionCard style={{ padding: 22, minWidth: 0, overflow: "hidden" }}>
       <p
         className="m-0 truncate font-semibold uppercase text-ink-400"
         style={{
-          marginBottom: 8,
-          fontSize: 10,
+          marginBottom: 10,
+          fontSize: 11,
           letterSpacing: "0.25em",
         }}
       >
@@ -327,7 +328,7 @@ export function StatTile({
         className="m-0 break-words font-display text-ink-100"
         style={{
           fontWeight: 400,
-          fontSize: 26,
+          fontSize: 30,
           lineHeight: 1.1,
           letterSpacing: "-0.02em",
           overflowWrap: "anywhere",
@@ -338,7 +339,7 @@ export function StatTile({
       {subtext && (
         <p
           className="m-0 text-ink-400"
-          style={{ marginTop: 8, fontSize: 11, lineHeight: 1.4 }}
+          style={{ marginTop: 10, fontSize: 12, lineHeight: 1.4 }}
         >
           {subtext}
         </p>
@@ -366,7 +367,7 @@ export function InfoBanner({
           ? "border-red-500/30 bg-red-500/5 text-red-300"
           : "border-ink-700 bg-ink-900/40 text-ink-200"
       }`}
-      style={{ padding: 14, fontSize: 13, lineHeight: 1.55 }}
+      style={{ padding: 16, fontSize: 14, lineHeight: 1.55 }}
     >
       {children}
     </div>
@@ -391,19 +392,19 @@ export function EmptyState({
   action?: ReactNode;
 }) {
   return (
-    <SectionCard style={{ padding: 40 }}>
+    <SectionCard style={{ padding: 48 }}>
       <div className="text-center">
         <p
           className="m-0 font-display italic text-brand-400"
-          style={{ marginBottom: 8, fontSize: 22 }}
+          style={{ marginBottom: 10, fontSize: 24 }}
         >
           —
         </p>
         <h3
           className="m-0 font-display text-ink-100"
           style={{
-            marginBottom: 8,
-            fontSize: 22,
+            marginBottom: 10,
+            fontSize: 24,
             letterSpacing: "-0.01em",
           }}
         >
@@ -413,9 +414,9 @@ export function EmptyState({
           <p
             className="mx-auto m-0 text-ink-300"
             style={{
-              marginBottom: 24,
-              maxWidth: 420,
-              fontSize: 14,
+              marginBottom: 28,
+              maxWidth: 440,
+              fontSize: 15,
               lineHeight: 1.55,
             }}
           >

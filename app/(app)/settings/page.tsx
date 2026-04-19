@@ -74,7 +74,7 @@ function HesapTab({ user }: { user: { email?: string; created_at?: string } }) {
           <form action="/api/auth/signout" method="POST">
             <button
               type="submit"
-              className="rounded-full border border-ink-700 bg-ink-900/60 px-4 py-2 text-[13px] text-ink-200 transition hover:border-ink-600"
+              className="rounded-full border border-ink-700 bg-ink-900/60 px-4 py-2 text-[14px] text-ink-200 transition hover:border-ink-600"
             >
               Çıkış yap
             </button>
@@ -105,7 +105,7 @@ function AccountCard({
       <p className="text-[16px] text-ink-100" style={{ margin: "8px 0 16px" }}>
         {value}
       </p>
-      <button className="rounded-full border border-ink-700 bg-ink-900/60 px-4 py-2 text-[13px] text-ink-200 transition hover:border-ink-600">
+      <button className="rounded-full border border-ink-700 bg-ink-900/60 px-4 py-2 text-[14px] text-ink-200 transition hover:border-ink-600">
         {buttonLabel}
       </button>
     </div>

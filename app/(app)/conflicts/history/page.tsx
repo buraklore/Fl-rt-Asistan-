@@ -131,11 +131,11 @@ export default function ConflictsHistoryPage() {
                     >
                       {c.target?.name ?? "Genel"}
                     </p>
-                    <span className="text-[11px] text-ink-500">
+                    <span className="text-[12px] text-ink-500">
                       · {formatDate(c.created_at)}
                     </span>
                     <span
-                      className="rounded-full px-[10px] py-[3px] text-[10px] font-semibold uppercase tracking-[0.2em] text-brand-300"
+                      className="rounded-full px-[10px] py-[3px] text-[11px] font-semibold uppercase tracking-[0.2em] text-brand-300"
                       style={{
                         border: "1px solid rgba(225,29,72,0.3)",
                         background: "rgba(225,29,72,0.1)",

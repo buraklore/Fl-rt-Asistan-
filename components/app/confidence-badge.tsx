@@ -42,7 +42,7 @@ export function ConfidenceBadge({ confidence }: { confidence: Confidence }) {
       style={{
         borderColor: conf.border,
         background: conf.bg,
-        padding: 14,
+        padding: 16,
       }}
     >
       <button
@@ -50,30 +50,30 @@ export function ConfidenceBadge({ confidence }: { confidence: Confidence }) {
         className="flex w-full cursor-pointer items-center justify-between border-0 bg-transparent p-0 text-inherit"
         style={{ gap: 12 }}
       >
-        <div className="flex items-center" style={{ gap: 8 }}>
+        <div className="flex items-center" style={{ gap: 10 }}>
           <span
             className="rounded-full"
             style={{
-              width: 8,
-              height: 8,
+              width: 10,
+              height: 10,
               background: conf.color,
             }}
           />
           <span
             className="font-semibold uppercase"
             style={{
-              fontSize: 11,
+              fontSize: 12,
               letterSpacing: "0.2em",
               color: conf.color,
             }}
           >
             {conf.label}
           </span>
-          <span className="text-ink-400" style={{ fontSize: 12 }}>
+          <span className="text-ink-400" style={{ fontSize: 13 }}>
             %{Math.round(score * 100)}
           </span>
         </div>
-        <span className="text-ink-500" style={{ fontSize: 11 }}>
+        <span className="text-ink-500" style={{ fontSize: 12 }}>
           {open ? "gizle ▲" : "detay ▼"}
         </span>
       </button>

@@ -91,7 +91,7 @@ export default async function ChatListPage() {
                       {target?.name ?? "İsimsiz"}
                     </p>
                     <p
-                      className="text-[10px] font-semibold uppercase text-brand-400"
+                      className="text-[11px] font-semibold uppercase text-brand-400"
                       style={{
                         letterSpacing: "0.25em",
                         marginTop: 2,

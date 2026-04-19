@@ -128,7 +128,7 @@ export default async function TargetDetailPage({ params }: Params) {
     <div className="mx-auto max-w-[1120px] px-10 py-8 pb-20">
       <Link
         href="/targets"
-        className="mb-6 inline-block text-[13px] text-ink-400 hover:text-ink-200"
+        className="mb-6 inline-block text-[14px] text-ink-400 hover:text-ink-200"
       >
         ← Hedefler
       </Link>
@@ -195,7 +195,7 @@ export default async function TargetDetailPage({ params }: Params) {
           </span>
 
           <div className="relative">
-            <p className="mb-3 text-[10px] font-semibold uppercase tracking-[0.3em] text-brand-400">
+            <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.3em] text-brand-400">
               ilişki uyum skoru —
             </p>
             <p
@@ -294,7 +294,7 @@ export default async function TargetDetailPage({ params }: Params) {
 
             <SectionCard className="space-y-8 p-8">
               <div>
-                <p className="mb-1 text-[10px] font-semibold uppercase tracking-widest text-brand-400">
+                <p className="mb-1 text-[11px] font-semibold uppercase tracking-widest text-brand-400">
                   kişilik tipi
                 </p>
                 <p className="font-display text-3xl italic leading-tight text-ink-100">
@@ -313,7 +313,7 @@ export default async function TargetDetailPage({ params }: Params) {
                       "linear-gradient(135deg, rgba(225,29,72,0.12), rgba(225,29,72,0.03))",
                   }}
                 >
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.3em] text-brand-400">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-brand-400">
                     bağlanma stili
                   </p>
                   <p
@@ -333,7 +333,7 @@ export default async function TargetDetailPage({ params }: Params) {
               <div className="grid gap-6 md:grid-cols-2">
                 {target.communication_style && (
                   <div>
-                    <p className="mb-2 text-[10px] font-semibold uppercase tracking-widest text-ink-400">
+                    <p className="mb-2 text-[11px] font-semibold uppercase tracking-widest text-ink-400">
                       iletişim stili
                     </p>
                     <p className="text-sm leading-relaxed text-ink-200">
@@ -344,7 +344,7 @@ export default async function TargetDetailPage({ params }: Params) {
                 {target.attraction_triggers &&
                   (target.attraction_triggers as string[]).length > 0 && (
                     <div>
-                      <p className="mb-2 text-[10px] font-semibold uppercase tracking-widest text-ink-400">
+                      <p className="mb-2 text-[11px] font-semibold uppercase tracking-widest text-ink-400">
                         çekim tetikleyicileri
                       </p>
                       <ul className="space-y-1">
@@ -426,7 +426,7 @@ export default async function TargetDetailPage({ params }: Params) {
         <section className="mb-10 grid gap-4 md:grid-cols-2">
           {(target.interests as string[])?.length > 0 && (
             <SectionCard className="p-6">
-              <p className="mb-3 text-[10px] font-semibold uppercase tracking-widest text-ink-400">
+              <p className="mb-3 text-[11px] font-semibold uppercase tracking-widest text-ink-400">
                 ilgi alanları
               </p>
               <div className="flex flex-wrap gap-2">
@@ -443,7 +443,7 @@ export default async function TargetDetailPage({ params }: Params) {
           )}
           {(target.behaviors as string[])?.length > 0 && (
             <SectionCard className="p-6">
-              <p className="mb-3 text-[10px] font-semibold uppercase tracking-widest text-ink-400">
+              <p className="mb-3 text-[11px] font-semibold uppercase tracking-widest text-ink-400">
                 davranış gözlemleri
               </p>
               <ul className="space-y-1">
@@ -473,7 +473,7 @@ function ArchetypeCard({
   if (!value) {
     return (
       <div className="rounded-2xl border border-ink-800 bg-ink-900/40 p-5 opacity-40">
-        <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-ink-500">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-ink-500">
           {axis}
         </p>
         <p className="mt-[14px] font-display italic text-ink-500" style={{ fontSize: 22 }}>
@@ -485,7 +485,7 @@ function ArchetypeCard({
 
   return (
     <div className="rounded-2xl border border-ink-800 bg-ink-900/40 p-5 backdrop-blur-[8px]">
-      <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-ink-500">
+      <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-ink-500">
         {axis}
       </p>
       <div className="mt-[14px] flex items-center justify-between">

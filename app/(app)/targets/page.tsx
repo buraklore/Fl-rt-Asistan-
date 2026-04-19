@@ -106,18 +106,19 @@ export default async function TargetsPage({
               <Link
                 key={t.id}
                 href={`/targets/${t.id}`}
-                className="group relative overflow-hidden rounded-[20px] border border-ink-800 bg-ink-900/40 p-6 backdrop-blur-[8px] transition-all duration-200 hover:border-brand-500/45 hover:bg-ink-900/60 hover:shadow-[0_0_0_1px_rgba(225,29,72,0.15),0_24px_40px_-24px_rgba(225,29,72,0.25)]"
+                className="group relative overflow-hidden rounded-[20px] border border-ink-800 bg-ink-900/40 backdrop-blur-[8px] transition-all duration-200 hover:border-brand-500/45 hover:bg-ink-900/60 hover:shadow-[0_0_0_1px_rgba(225,29,72,0.15),0_24px_40px_-24px_rgba(225,29,72,0.25)]"
+                style={{ padding: 28 }}
               >
                 {/* Top row: name + score */}
-                <div className="mb-[14px] flex items-start justify-between gap-3">
+                <div className="mb-[16px] flex items-start justify-between gap-3">
                   <div className="min-w-0 flex-1">
                     <p
                       className="break-words font-display tracking-tight text-ink-100"
-                      style={{ fontSize: 28, lineHeight: 1.1, letterSpacing: "-0.02em" }}
+                      style={{ fontSize: 32, lineHeight: 1.1, letterSpacing: "-0.02em" }}
                     >
                       {t.name ?? "İsimsiz"}
                     </p>
-                    <p className="mt-2 text-[10px] font-semibold uppercase tracking-[0.28em] text-ink-400 transition-colors group-hover:text-brand-400">
+                    <p className="mt-2 text-[11px] font-semibold uppercase tracking-[0.28em] text-ink-400 transition-colors group-hover:text-brand-400">
                       {RELATION_LABELS[t.relation] ?? t.relation.toUpperCase()}
                     </p>
                   </div>
@@ -125,13 +126,13 @@ export default async function TargetsPage({
                     <div className="flex-shrink-0 text-right">
                       <p
                         className="font-display text-ink-100 transition-all duration-200 group-hover:text-brand-400 group-hover:[text-shadow:0_0_24px_rgba(225,29,72,0.35)]"
-                        style={{ fontSize: 28, lineHeight: 1, letterSpacing: "-0.03em" }}
+                        style={{ fontSize: 32, lineHeight: 1, letterSpacing: "-0.03em" }}
                       >
                         {score}
-                        <span className="text-[13px] text-ink-500">/100</span>
+                        <span className="text-[14px] text-ink-500">/100</span>
                       </p>
                       {confidence !== null && (
-                        <span className="mt-2 inline-block whitespace-nowrap rounded-full border border-ink-800 bg-ink-900/60 px-[9px] py-[3px] text-[9px] font-semibold uppercase tracking-[0.22em] text-ink-300">
+                        <span className="mt-2 inline-block whitespace-nowrap rounded-full border border-ink-800 bg-ink-900/60 px-[10px] py-[4px] text-[10px] font-semibold uppercase tracking-[0.22em] text-ink-300">
                           %{Math.round(confidence * 100)} güven
                         </span>
                       )}
@@ -140,11 +141,11 @@ export default async function TargetsPage({
                     <div className="flex-shrink-0 text-right">
                       <p
                         className="font-display italic text-ink-500"
-                        style={{ fontSize: 22 }}
+                        style={{ fontSize: 24 }}
                       >
                         —
                       </p>
-                      <span className="text-[9px] font-semibold uppercase tracking-[0.25em] text-ink-500">
+                      <span className="text-[10px] font-semibold uppercase tracking-[0.25em] text-ink-500">
                         henüz analiz yok
                       </span>
                     </div>
@@ -155,14 +156,14 @@ export default async function TargetsPage({
                 {t.personality_type ? (
                   <p
                     className="font-display italic text-brand-400"
-                    style={{ margin: "0 0 18px", fontSize: 19, lineHeight: 1.4 }}
+                    style={{ margin: "0 0 20px", fontSize: 20, lineHeight: 1.4 }}
                   >
                     {t.personality_type}
                   </p>
                 ) : (
                   <p
                     className="text-ink-500"
-                    style={{ margin: "0 0 18px", fontSize: 14, lineHeight: 1.6 }}
+                    style={{ margin: "0 0 20px", fontSize: 15, lineHeight: 1.6 }}
                   >
                     profil yeterli veri içermiyor — koçluğa başlamak için birkaç
                     mesaj ekle.
@@ -214,15 +215,15 @@ function MiniStat({
 }) {
   return (
     <div>
-      <p className="text-[9px] font-semibold uppercase tracking-[0.25em] text-ink-500">
+      <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-ink-500">
         {label}
       </p>
       {badge ? (
-        <span className="mt-[6px] inline-block rounded-full border border-ink-700 bg-ink-900/60 px-[10px] py-[2px] text-[11px] font-medium text-ink-200">
+        <span className="mt-[8px] inline-block rounded-full border border-ink-700 bg-ink-900/60 px-[12px] py-[3px] text-[12px] font-medium text-ink-200">
           {value}
         </span>
       ) : (
-        <p className="mt-[6px] text-[13px] text-ink-200">{value}</p>
+        <p className="mt-[8px] text-[14px] text-ink-200">{value}</p>
       )}
     </div>
   );

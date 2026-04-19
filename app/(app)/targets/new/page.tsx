@@ -222,7 +222,7 @@ export default function NewTargetPage() {
             rows={3}
             maxLength={600}
           />
-          <p className="mt-2 text-[11px] text-ink-500">
+          <p className="mt-2 text-[12px] text-ink-500">
             {interests.length} geçerli — en az 3 gerekli, her biri 4+ karakter
           </p>
           {interests.length > 0 && (
@@ -251,7 +251,7 @@ export default function NewTargetPage() {
             rows={6}
             maxLength={2000}
           />
-          <p className="mt-2 text-[11px] text-ink-500">
+          <p className="mt-2 text-[12px] text-ink-500">
             {behaviors.length} geçerli davranış — en az 3 gerekli, her biri 15+
             karakter
           </p>
@@ -424,7 +424,7 @@ function Section({
         <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-brand-400">
           — {title}
         </p>
-        {hint && <p className="mt-[6px] text-[13px] text-ink-400">{hint}</p>}
+        {hint && <p className="mt-[6px] text-[14px] text-ink-400">{hint}</p>}
       </div>
       {children}
     </div>

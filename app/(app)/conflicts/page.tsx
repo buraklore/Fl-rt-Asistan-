@@ -163,7 +163,7 @@ function ConflictsContent() {
       </div>
 
       {!result && (
-        <SectionCard className="space-y-6 p-6">
+        <div className="space-y-6">
           <div>
             <Label>Kim için? (opsiyonel)</Label>
             <div className="flex flex-wrap gap-2">
@@ -268,7 +268,7 @@ function ConflictsContent() {
           </Button>
 
           {error && <ErrorBanner message={error} />}
-        </SectionCard>
+        </div>
       )}
 
       {result && (
@@ -296,7 +296,7 @@ function ConflictsContent() {
           {/* 3 stat tiles */}
           <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
             <div className="rounded-2xl border border-ink-800 bg-ink-900/40 p-5">
-              <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.25em] text-ink-400">
+              <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.25em] text-ink-400">
                 ciddiyet
               </p>
               <p
@@ -306,7 +306,7 @@ function ConflictsContent() {
                 {result.severity}
                 <span className="text-ink-500"> / 5</span>
               </p>
-              <p className="mt-2 text-[11px] text-ink-400">
+              <p className="mt-2 text-[12px] text-ink-400">
                 {result.severity >= 4
                   ? "yüksek"
                   : result.severity >= 3
@@ -315,7 +315,7 @@ function ConflictsContent() {
               </p>
             </div>
             <div className="rounded-2xl border border-ink-800 bg-ink-900/40 p-5">
-              <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.25em] text-ink-400">
+              <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.25em] text-ink-400">
                 tetikleyen
               </p>
               <p
@@ -324,12 +324,12 @@ function ConflictsContent() {
               >
                 {ESCALATED_LABELS[result.whoEscalated] ?? result.whoEscalated}
               </p>
-              <p className="mt-2 text-[11px] text-ink-400">
+              <p className="mt-2 text-[12px] text-ink-400">
                 {result.whoEscalated === "both" ? "karşılıklı yük" : "yük taşıyan"}
               </p>
             </div>
             <div className="rounded-2xl border border-ink-800 bg-ink-900/40 p-5">
-              <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.25em] text-ink-400">
+              <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.25em] text-ink-400">
                 duygu yoğunluğu
               </p>
               <p
@@ -342,7 +342,7 @@ function ConflictsContent() {
                 ].length}{" "}
                 tema
               </p>
-              <p className="mt-2 text-[11px] leading-[1.4] text-ink-400">
+              <p className="mt-2 text-[12px] leading-[1.4] text-ink-400">
                 {[
                   ...(result.emotions?.user ?? []),
                   ...(result.emotions?.target ?? []),
