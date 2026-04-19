@@ -7,20 +7,19 @@ const config: Config = {
     extend: {
       colors: {
         ink: {
-          950: "#140A10",
+          950: "#0A0A0F",
           900: "#111118",
-          850: "#2A1830",
-          800: "#3A2340",
-          700: "#4F3658",
-          600: "#6A5070",
-          500: "#8B6F80",
+          850: "#1A1622",
+          800: "#2A2230",
+          700: "#3F3545",
+          600: "#5A4F60",
+          500: "#8B7F90",
           400: "#A89CA2",
           300: "#C8BEC4",
           200: "#E0D8DC",
           100: "#F3EFF1",
           50: "#FAF7F9",
         },
-        // Claude Design'daki kart/panel dolgusu — nötr siyah (burgundy değil!)
         card: "#111118",
         brand: {
           50: "#FDF2F5",
