@@ -8,7 +8,7 @@ const config: Config = {
       colors: {
         ink: {
           950: "#140A10",
-          900: "#1F1023",
+          900: "#111118",
           850: "#2A1830",
           800: "#3A2340",
           700: "#4F3658",
@@ -20,6 +20,8 @@ const config: Config = {
           100: "#F3EFF1",
           50: "#FAF7F9",
         },
+        // Claude Design'daki kart/panel dolgusu — nötr siyah (burgundy değil!)
+        card: "#111118",
         brand: {
           50: "#FDF2F5",
           100: "#FCE7EC",
