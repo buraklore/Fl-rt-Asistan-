@@ -8,53 +8,77 @@ export default function LandingPage() {
       <MarketingNav />
 
       {/* Hero — editorial, asymmetric */}
-      <section className="relative spotlight overflow-hidden">
+      <section
+        className="relative overflow-hidden"
+        style={{
+          background:
+            "linear-gradient(135deg, #6B0F2A 0%, #140A10 55%, #140A10 100%)",
+        }}
+      >
         <div className="mx-auto max-w-6xl px-6 pb-24 pt-20 sm:pt-32">
           <div className="stagger">
-            <p className="mb-8 font-display italic text-xl text-brand-400 sm:text-2xl">
-              özel bir şey söyle —
+            <p className="mb-8 text-[11px] font-semibold uppercase tracking-[0.3em] text-brand-400">
+              — beta · sadece davetliye özel
             </p>
 
             <h1 className="font-display text-display-sm text-balance leading-[0.95] tracking-tightest sm:text-display-md md:text-display-lg">
-              Ne yazacağını
+              Crush&apos;ın ne demek istiyor?
               <br />
-              <span className="italic text-brand-500">zaten</span> biliyor.
+              <span className="italic text-brand-400">
+                kendisi söylemeyecek.
+              </span>
             </h1>
 
             <p className="mt-10 max-w-xl text-lg leading-relaxed text-ink-200 sm:text-xl">
-              Flört Asistanı, crush&apos;ından gelen mesajı okur ve üç farklı tonda
-              kopyala-yapıştır hazır cevaplar üretir.{" "}
-              <span className="text-ink-100">
-                Düşünmeyi bırak, yaz.
-              </span>
+              İlişki koçun — mesajlarını okur, onu çözer, sana ne diyeceğini
+              söyler.{" "}
+              <span className="text-ink-100">AI değil, koç.</span>
             </p>
 
             <div className="mt-12 flex flex-col items-start gap-4 sm:flex-row sm:items-center">
               <Link
-                href="/generate"
+                href="/sign-up"
                 className="group rounded-full bg-brand-500 px-7 py-4 text-base font-medium text-white shadow-xl shadow-brand-500/20 transition hover:bg-brand-600 hover:shadow-brand-500/30"
               >
-                Şimdi dene
+                ücretsiz başla
                 <span className="ml-2 inline-block transition group-hover:translate-x-0.5">
                   →
                 </span>
               </Link>
-              <Link
-                href="/how-it-works"
-                className="text-sm text-ink-300 transition hover:text-ink-100"
-              >
-                Nasıl çalıştığını gör
-              </Link>
+              <span className="text-sm text-ink-400">
+                kredi kartı yok · 3 dakikada hazır
+              </span>
             </div>
 
-            <p className="mt-6 text-xs text-ink-400">
-              Kayıt gerekmez · 3 üretim ücretsiz · İstediğin zaman sil
-            </p>
+            {/* Trust row — 3 mini stats */}
+            <div className="mt-16 flex flex-wrap gap-x-12 gap-y-6">
+              {[
+                ["3.2k+", "aktif kullanıcı"],
+                ["48k+", "üretilen mesaj"],
+                ["%92", "tekrar kullanım"],
+              ].map(([value, label]) => (
+                <div key={label}>
+                  <p className="font-display text-3xl text-ink-100">{value}</p>
+                  <p className="mt-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-ink-500">
+                    {label}
+                  </p>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
 
         {/* Floating editorial detail — decorative serif */}
-        <div className="pointer-events-none absolute -right-20 top-1/2 hidden -translate-y-1/2 font-display italic text-[14rem] text-brand-500/5 lg:block">
+        <div
+          className="pointer-events-none absolute -right-20 top-1/2 hidden -translate-y-1/2 select-none font-display italic lg:block"
+          style={{
+            fontSize: "clamp(280px, 36vw, 520px)",
+            color: "#F17A92",
+            opacity: 0.05,
+            letterSpacing: "-0.04em",
+            lineHeight: 0.9,
+          }}
+        >
           flört
         </div>
       </section>
