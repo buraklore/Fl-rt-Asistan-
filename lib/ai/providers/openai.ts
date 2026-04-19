@@ -16,9 +16,9 @@ export type OpenAIProviderOptions = {
 };
 
 /**
- * OpenAI provider. Mirrors the AnthropicProvider interface so the two are
- * interchangeable at the call site. Uses JSON mode (response_format) when
- * a schema is passed, with the same one-retry pattern on parse failure.
+ * OpenAI provider — conforms to LLMProvider interface.
+ * Uses JSON mode (response_format) when a schema is passed, with a
+ * one-retry pattern on parse failure.
  */
 export class OpenAIProvider implements LLMProvider {
   readonly name = "openai";

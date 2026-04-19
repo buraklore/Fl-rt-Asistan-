@@ -1,84 +1,41 @@
-import { AnthropicProvider } from "./anthropic";
 import { OpenAIProvider } from "./openai";
 import type { LLMProvider, LLMCompleteArgs, LLMResult } from "./index";
 
 /**
- * Hybrid provider: tries Anthropic first, falls back to OpenAI on any error.
+ * Thin wrapper around OpenAIProvider — single source of LLM for the app.
  *
- * Env vars (any combination works):
- *   ANTHROPIC_API_KEY        → enables Claude
- *   OPENAI_API_KEY           → enables GPT fallback
- *   LLM_PRIMARY_PROVIDER     → "anthropic" (default) or "openai" to flip
- *   LLM_PRIMARY_MODEL        → optional Claude model override
- *   OPENAI_MODEL             → optional GPT model override (default gpt-4o-mini)
+ * Anthropic was removed because the account's credit was exhausted and
+ * the user explicitly requested OpenAI-only. If we ever add a second
+ * provider, bring back the hybrid pattern (see git history).
  *
- * Rationale: Anthropic hits common failure modes in production —
- *   - credit balance exhausted
- *   - rate limit
- *   - transient 5xx
- * Rather than crashing the user's request, we silently retry on OpenAI.
- * If only one key is configured, we use that one and surface its errors.
+ * Env:
+ *   OPENAI_API_KEY   (required)
+ *   OPENAI_MODEL     (optional, defaults to gpt-4o-mini)
  */
 export class HybridProvider implements LLMProvider {
-  readonly name = "hybrid";
-  private readonly primary: LLMProvider | null;
-  private readonly fallback: LLMProvider | null;
+  readonly name = "openai-only";
+  private readonly provider: LLMProvider;
 
   constructor() {
-    const anthropicKey = process.env.ANTHROPIC_API_KEY;
     const openaiKey = process.env.OPENAI_API_KEY;
-    const preferOpenAI = process.env.LLM_PRIMARY_PROVIDER === "openai";
-
-    const anthropic = anthropicKey
-      ? new AnthropicProvider({
-          apiKey: anthropicKey,
-          defaultModel: process.env.LLM_PRIMARY_MODEL,
-        })
-      : null;
-
-    const openai = openaiKey
-      ? new OpenAIProvider({
-          apiKey: openaiKey,
-          defaultModel: process.env.OPENAI_MODEL,
-        })
-      : null;
-
-    if (preferOpenAI) {
-      this.primary = openai;
-      this.fallback = anthropic;
-    } else {
-      this.primary = anthropic;
-      this.fallback = openai;
+    if (!openaiKey) {
+      throw new Error(
+        "OPENAI_API_KEY ortam değişkeni tanımlı değil. Vercel → Settings → Environment Variables.",
+      );
     }
+    this.provider = new OpenAIProvider({
+      apiKey: openaiKey,
+      defaultModel: process.env.OPENAI_MODEL,
+    });
   }
 
   async complete<T = unknown>(args: LLMCompleteArgs): Promise<LLMResult<T>> {
-    if (!this.primary && !this.fallback) {
-      throw new Error(
-        "Hiçbir LLM sağlayıcısı yapılandırılmamış. ANTHROPIC_API_KEY veya OPENAI_API_KEY env var ekle.",
-      );
-    }
-
-    if (this.primary) {
-      try {
-        return await this.primary.complete<T>(args);
-      } catch (err) {
-        if (!this.fallback) throw err;
-        console.warn(
-          `[HybridProvider] Primary (${this.primary.name}) failed, falling back to ${this.fallback.name}:`,
-          err instanceof Error ? err.message : err,
-        );
-      }
-    }
-
-    // Either primary failed and we have a fallback, or primary wasn't configured.
-    return await this.fallback!.complete<T>(args);
+    return this.provider.complete<T>(args);
   }
 }
 
 /**
- * Single function every route should call to get an LLM. Returns the
- * configured hybrid provider — no manual provider-picking needed.
+ * Every route calls this. Returns the configured OpenAI provider.
  */
 export function getLLM(): LLMProvider {
   return new HybridProvider();
