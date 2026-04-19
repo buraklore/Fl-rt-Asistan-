@@ -7,37 +7,43 @@ const config: Config = {
     extend: {
       colors: {
         ink: {
-          950: "#0a0a0f",
-          900: "#111118",
-          850: "#16161f",
-          800: "#1a1a24",
-          700: "#242430",
-          600: "#3a3a4a",
-          500: "#555566",
-          400: "#7a7a8c",
-          300: "#a0a0b0",
-          200: "#c8c8d4",
-          100: "#ececf2",
-          50: "#f8f8fb",
+          950: "#140A10",
+          900: "#1F1023",
+          850: "#2A1830",
+          800: "#3A2340",
+          700: "#4F3658",
+          600: "#6A5070",
+          500: "#8B6F80",
+          400: "#A89CA2",
+          300: "#C8BEC4",
+          200: "#E0D8DC",
+          100: "#F3EFF1",
+          50: "#FAF7F9",
         },
         brand: {
-          50: "#fff5f5",
-          100: "#ffe3e3",
-          400: "#ff8787",
-          500: "#ff6b6b",
-          600: "#e85d5d",
-          700: "#c94a4a",
+          50: "#FDF2F5",
+          100: "#FCE7EC",
+          200: "#FBCFD8",
+          300: "#F7A8B8",
+          400: "#F17A92",
+          500: "#E11D48",
+          600: "#BE123C",
+          700: "#9F1239",
+          800: "#881337",
+          900: "#6B0F2A",
+        },
+        gold: {
+          400: "#FDE68A",
+          500: "#F59E0B",
         },
       },
       fontFamily: {
-        // Editorial display serif — sets the personality
         display: [
           "var(--font-display)",
           "ui-serif",
           "Georgia",
           "serif",
         ],
-        // Clean grotesque for body — modern but not cliché
         sans: [
           "var(--font-body)",
           "ui-sans-serif",
@@ -47,7 +53,6 @@ const config: Config = {
         ],
       },
       fontSize: {
-        // Editorial-scale display sizes
         "display-sm": ["3rem", { lineHeight: "1.05", letterSpacing: "-0.02em" }],
         "display-md": ["4.5rem", { lineHeight: "1.02", letterSpacing: "-0.03em" }],
         "display-lg": ["6rem", { lineHeight: "0.98", letterSpacing: "-0.035em" }],
@@ -63,6 +68,7 @@ const config: Config = {
       animation: {
         "fade-up": "fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards",
         "fade-in": "fadeIn 0.8s ease-out forwards",
+        "route-enter": "routeEnter 0.42s cubic-bezier(0.16, 1, 0.3, 1) both",
       },
       keyframes: {
         fadeUp: {
@@ -72,6 +78,10 @@ const config: Config = {
         fadeIn: {
           "0%": { opacity: "0" },
           "100%": { opacity: "1" },
+        },
+        routeEnter: {
+          "0%": { opacity: "0", transform: "translateY(10px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" },
         },
       },
     },
