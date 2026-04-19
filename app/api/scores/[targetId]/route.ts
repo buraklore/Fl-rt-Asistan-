@@ -1,6 +1,6 @@
 import { NextRequest } from "next/server";
 import {
-  AnthropicProvider,
+  getLLM,
   buildScorerSystemPrompt,
 } from "@/lib/ai";
 import {
@@ -77,10 +77,7 @@ export async function POST(_req: NextRequest, { params }: Params) {
     analysis: null,
   };
 
-  const provider = new AnthropicProvider({
-    apiKey: process.env.ANTHROPIC_API_KEY ?? "",
-    defaultModel: process.env.LLM_PRIMARY_MODEL,
-  });
+  const provider = getLLM();
 
   const result = await provider.complete<RelationshipScoreLLMResponse>({
     system: buildScorerSystemPrompt({

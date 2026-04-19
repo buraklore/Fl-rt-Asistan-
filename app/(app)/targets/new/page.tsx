@@ -45,6 +45,7 @@ export default function NewTargetPage() {
   const [contextNotes, setContextNotes] = useState("");
   const [autoAnalyze, setAutoAnalyze] = useState(true);
   const [loading, setLoading] = useState(false);
+  const [analyzing, setAnalyzing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const canSubmit = relation !== null && !loading;
@@ -73,8 +74,14 @@ export default function NewTargetPage() {
       const targetId = res.data.id;
 
       if (autoAnalyze) {
-        // Fire-and-forget; user can view the page while this runs
-        api.analyzeTarget(targetId).catch(() => undefined);
+        // Wait for analysis so the detail page shows results, not empty tiles.
+        // Failure is non-blocking — user still gets their profile.
+        setAnalyzing(true);
+        try {
+          await api.analyzeTarget(targetId);
+        } catch (err) {
+          console.warn("auto-analyze failed:", err);
+        }
       }
 
       router.push(`/targets/${targetId}`);
@@ -84,6 +91,7 @@ export default function NewTargetPage() {
         err instanceof ApiError ? err.problem.detail ?? err.problem.title : "Bir şeyler ters gitti.",
       );
       setLoading(false);
+      setAnalyzing(false);
     }
   };
 
@@ -224,7 +232,11 @@ export default function NewTargetPage() {
 
         <div className="flex gap-3">
           <Button type="submit" disabled={!canSubmit}>
-            {loading ? "kaydediliyor..." : "Oluştur"}
+            {analyzing
+              ? "analiz ediliyor..."
+              : loading
+                ? "kaydediliyor..."
+                : "Oluştur"}
           </Button>
           <Link
             href="/targets"

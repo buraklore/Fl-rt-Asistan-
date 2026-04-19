@@ -1,5 +1,7 @@
 export * from "./providers";
 export * from "./providers/anthropic";
+export * from "./providers/openai";
+export * from "./providers/factory";
 export * from "./prompts/system/base";
 export * from "./prompts/system/generator";
 export * from "./prompts/system/analyzer";

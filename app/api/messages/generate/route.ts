@@ -1,6 +1,6 @@
 import { NextRequest } from "next/server";
 import {
-  AnthropicProvider,
+  getLLM,
   MessageGeneratorService,
 } from "@/lib/ai";
 import {
@@ -64,10 +64,7 @@ export async function POST(request: NextRequest) {
   }
 
   // 5. Generate
-  const provider = new AnthropicProvider({
-    apiKey: process.env.ANTHROPIC_API_KEY ?? "",
-    defaultModel: process.env.LLM_PRIMARY_MODEL,
-  });
+  const provider = getLLM();
   const generator = new MessageGeneratorService(provider);
 
   const result = await generator.run({

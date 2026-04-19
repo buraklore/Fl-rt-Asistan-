@@ -1,6 +1,6 @@
 import { NextRequest } from "next/server";
 import {
-  AnthropicProvider,
+  getLLM,
   buildConflictSystemPrompt,
 } from "@/lib/ai";
 import {
@@ -48,10 +48,7 @@ export async function POST(request: NextRequest) {
     }
   }
 
-  const provider = new AnthropicProvider({
-    apiKey: process.env.ANTHROPIC_API_KEY ?? "",
-    defaultModel: process.env.LLM_PRIMARY_MODEL,
-  });
+  const provider = getLLM();
 
   const result = await provider.complete<ConflictAnalysisLLMResponse>({
     system: buildConflictSystemPrompt(target),

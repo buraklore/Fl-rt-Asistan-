@@ -1,6 +1,6 @@
-import Anthropic from "@anthropic-ai/sdk";
 import { NextRequest } from "next/server";
 import { buildCoachSystemPrompt, buildContext } from "@/lib/ai";
+import { streamChat } from "@/lib/ai/stream";
 import {
   SendChatMessageRequestSchema,
   type TargetProfileForPrompt,
@@ -84,8 +84,6 @@ export async function POST(request: NextRequest, { params }: Params) {
     memoryContext: contextBlock,
   });
 
-  const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY ?? "" });
-
   const stream = new ReadableStream({
     async start(controller) {
       const encoder = new TextEncoder();
@@ -95,51 +93,52 @@ export async function POST(request: NextRequest, { params }: Params) {
       };
 
       try {
-        const llmStream = await anthropic.messages.stream({
-          model: process.env.LLM_PRIMARY_MODEL ?? "claude-opus-4-7",
-          max_tokens: 800,
-          temperature: 0.7,
-          system,
-          messages: orderedRecent.map((m: { role: string; content: string }) => ({
-            role: (m.role === "user" ? "user" : "assistant") as "user" | "assistant",
-            content: m.content,
-          })),
-        });
+        const result = await streamChat(
+          {
+            system,
+            messages: orderedRecent.map(
+              (m: { role: string; content: string }) => ({
+                role: (m.role === "user" ? "user" : "assistant") as
+                  | "user"
+                  | "assistant",
+                content: m.content,
+              }),
+            ),
+            maxTokens: 800,
+            temperature: 0.7,
+          },
+          (chunk) => {
+            if (chunk.type === "delta") write("delta", { text: chunk.text });
+          },
+        );
 
-        let full = "";
-        for await (const event of llmStream) {
-          if (
-            event.type === "content_block_delta" &&
-            event.delta.type === "text_delta"
-          ) {
-            full += event.delta.text;
-            write("delta", { text: event.delta.text });
-          }
-        }
-
-        const final = await llmStream.finalMessage();
         const { data: saved } = await supabase
           .from("chat_messages")
           .insert({
             session_id: sessionId,
             role: "assistant",
-            content: full,
-            model: final.model,
-            tokens_in: final.usage.input_tokens,
-            tokens_out: final.usage.output_tokens,
+            content: result.fullText,
+            model: result.model,
+            tokens_in: result.inputTokens,
+            tokens_out: result.outputTokens,
           })
           .select("id")
           .single();
 
         // First-reply auto-title
-        if (!session.title && full.length > 0) {
+        if (!session.title && result.fullText.length > 0) {
           await supabase
             .from("chat_sessions")
-            .update({ title: full.slice(0, 60).replace(/\s+/g, " ").trim() })
+            .update({
+              title: result.fullText.slice(0, 60).replace(/\s+/g, " ").trim(),
+            })
             .eq("id", sessionId);
         }
 
-        write("done", { messageId: saved?.id ?? null, fullText: full });
+        write("done", {
+          messageId: saved?.id ?? null,
+          fullText: result.fullText,
+        });
       } catch (err) {
         write("error", {
           message: err instanceof Error ? err.message : "stream error",

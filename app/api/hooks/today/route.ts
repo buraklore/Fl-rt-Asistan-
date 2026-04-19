@@ -1,5 +1,5 @@
 import {
-  AnthropicProvider,
+  getLLM,
   buildHooksSystemPrompt,
 } from "@/lib/ai";
 import {
@@ -79,10 +79,7 @@ export async function GET() {
     analysis: null,
   };
 
-  const provider = new AnthropicProvider({
-    apiKey: process.env.ANTHROPIC_API_KEY ?? "",
-    defaultModel: process.env.LLM_PRIMARY_MODEL,
-  });
+  const provider = getLLM();
 
   const result = await provider.complete<HookLLMResponse>({
     system: buildHooksSystemPrompt({

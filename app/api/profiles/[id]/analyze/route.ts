@@ -1,6 +1,6 @@
 import { NextRequest } from "next/server";
 import {
-  AnthropicProvider,
+  getLLM,
   buildAnalyzerSystemPrompt,
   buildAnalyzerUserMessage,
 } from "@/lib/ai";
@@ -35,10 +35,7 @@ export async function POST(_req: NextRequest, { params }: Params) {
   if (loadErr) return fail(500, "Database Error", loadErr.message);
   if (!target) return fail(404, "Not Found", "Hedef bulunamadı.");
 
-  const provider = new AnthropicProvider({
-    apiKey: process.env.ANTHROPIC_API_KEY ?? "",
-    defaultModel: process.env.LLM_PRIMARY_MODEL,
-  });
+  const provider = getLLM();
 
   const result = await provider.complete<AnalyzeTargetLLMResponse>({
     system: buildAnalyzerSystemPrompt(),
