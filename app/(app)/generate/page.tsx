@@ -331,11 +331,7 @@ function GenerateContent() {
 
               {confidence && (
                 <div className="mb-4">
-                  <ConfidenceBadge
-                    score={confidence.overall}
-                    explanation={confidence.explanation}
-                    gaps={confidence.dataGaps}
-                  />
+                  <ConfidenceBadge confidence={confidence} />
                 </div>
               )}
 
