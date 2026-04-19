@@ -11,6 +11,7 @@ import { DashboardHookCard } from "./hook-card";
 import { detectRealityCheck } from "@/lib/reality-check";
 import { checkProfileCompleteness } from "@/lib/schemas";
 import Link from "next/link";
+import { CopyButton } from "@/components/app/copy-button";
 
 export const dynamic = "force-dynamic";
 
@@ -21,7 +22,6 @@ export default async function DashboardPage() {
   } = await supabase.auth.getUser();
   if (!user) return null;
 
-  // Profile completeness gate — incomplete profiles can't use the app
   const { data: gateProfile } = await supabase
     .from("user_profiles")
     .select(
@@ -32,16 +32,15 @@ export default async function DashboardPage() {
   const gateCheck = checkProfileCompleteness(gateProfile ?? {});
   if (!gateCheck.complete) redirect("/onboarding");
 
-  // Load initial data server-side for fast first render
   const [
     { data: targets },
     { data: recentGenerations },
     { count: totalGenerations },
     realityCheck,
-    { data: myProfile },
     { count: totalChats },
     { count: totalConflicts },
     { data: allScores },
+    { data: latestScores },
   ] = await Promise.all([
     supabase
       .from("target_profiles")
@@ -51,7 +50,7 @@ export default async function DashboardPage() {
       .limit(4),
     supabase
       .from("message_generations")
-      .select("id, incoming_message, replies, created_at, target_id")
+      .select("id, incoming_message, replies, created_at, target_id, target:target_profiles(name)")
       .order("created_at", { ascending: false })
       .limit(3),
     supabase
@@ -59,70 +58,44 @@ export default async function DashboardPage() {
       .select("*", { count: "exact", head: true }),
     detectRealityCheck(user.id),
     supabase
-      .from("user_profiles")
-      .select("raw_bio, attachment_style, relationship_goal, communication_style")
-      .eq("id", user.id)
-      .maybeSingle(),
-    supabase
       .from("chat_sessions")
       .select("*", { count: "exact", head: true }),
     supabase
       .from("conflict_analyses")
       .select("*", { count: "exact", head: true })
       .eq("user_id", user.id),
+    supabase.from("relationship_scores").select("compatibility"),
     supabase
       .from("relationship_scores")
-      .select("compatibility"),
+      .select("target_id, compatibility, computed_at")
+      .order("computed_at", { ascending: false }),
   ]);
 
-  // Average compatibility across all scored targets
   const avgScore =
     allScores && allScores.length > 0
       ? Math.round(
-          allScores.reduce(
-            (sum, s) => sum + (s.compatibility ?? 0),
-            0,
-          ) / allScores.length,
+          allScores.reduce((sum, s) => sum + (s.compatibility ?? 0), 0) /
+            allScores.length,
         )
       : null;
 
-  // Profile is complete at this point (we redirected otherwise).
-  // The nudge below is kept for legacy compatibility but should never trigger.
-  const profileEmpty = false;
+  const scoreByTarget = new Map<string, number>();
+  (latestScores ?? []).forEach((s) => {
+    if (!scoreByTarget.has(s.target_id)) scoreByTarget.set(s.target_id, s.compatibility);
+  });
 
   const userName =
     user.user_metadata?.display_name || user.email?.split("@")[0] || "";
 
   return (
-    <div className="mx-auto max-w-6xl px-6 py-12 md:px-10">
+    <div className="mx-auto max-w-[1120px] px-10 py-12 pb-20">
       <PageHeader
         kicker={`merhaba ${userName} —`}
         title="Dashboard."
-        description="Günün hook'u, hedeflerin ve son üretimlerin — tek bakışta."
+        description="Günün dürtmesi, hedeflerin ve son üretimlerin — tek bakışta."
       />
 
-      {/* Profilini doldur — kullanıcı kendisini tanıtmadan koçun çıktıları genel kalıyor */}
-      {profileEmpty && (
-        <section className="mb-6">
-          <div className="rounded-2xl border border-brand-500/30 bg-gradient-to-br from-brand-500/10 via-ink-900/60 to-ink-900/60 p-6">
-            <p className="mb-2 font-display italic text-brand-400">
-              önce seni tanıyalım —
-            </p>
-            <p className="mb-4 max-w-xl text-[15px] leading-relaxed text-ink-100">
-              Uyum skoru ve mesaj önerileri senin profiline göre kalibreleniyor.
-              Birkaç dakikanı ayır, sana çok daha doğru cevaplar versin.
-            </p>
-            <Link
-              href="/settings"
-              className="inline-flex rounded-full bg-brand-500 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-brand-600"
-            >
-              Profilimi doldur →
-            </Link>
-          </div>
-        </section>
-      )}
-
-      {/* Reality check — obsessive-usage nudge (§14) */}
+      {/* Reality check — obsessive-usage nudge */}
       {realityCheck.shouldShow && (
         <section className="mb-6">
           <div className="rounded-2xl border border-amber-500/30 bg-amber-500/5 p-6">
@@ -148,13 +121,13 @@ export default async function DashboardPage() {
         </section>
       )}
 
-      {/* Daily Hook — hero */}
-      <section className="mb-10">
+      {/* Günün Dürtmesi — hero */}
+      <section className="mb-11">
         <DashboardHookCard hasTargets={(targets ?? []).length > 0} />
       </section>
 
-      {/* Stats row */}
-      <section className="mb-10 grid grid-cols-2 gap-4 md:grid-cols-4">
+      {/* Stats — 4 tile grid */}
+      <section className="mb-12 grid grid-cols-2 gap-[14px] md:grid-cols-4">
         <StatTile
           label="hedef"
           value={(targets ?? []).length}
@@ -177,68 +150,74 @@ export default async function DashboardPage() {
         />
       </section>
 
-      {/* Targets */}
-      <section className="mb-10">
-        <div className="mb-4 flex items-center justify-between">
-          <h2 className="font-display text-2xl">Hedeflerin</h2>
-          <Link
-            href="/targets"
-            className="text-sm text-ink-400 hover:text-ink-200"
-          >
-            tümünü gör →
-          </Link>
-        </div>
+      {/* Hedeflerin */}
+      <section className="mb-12">
+        <SectionHeader title="Hedeflerin" linkLabel="tümünü gör →" linkHref="/targets" />
 
         {(targets ?? []).length === 0 ? (
           <EmptyState
             title="Henüz hedef yok"
-            description="İlgilendiğin kişiyi tanıt — Flört Asistanı daha kişisel cevaplar üretebilir."
-            action={
-              <ButtonLink href="/targets/new">İlk hedefini oluştur</ButtonLink>
-            }
+            description="İlgilendiğin kişiyi tanıt — daha kişisel cevaplar üretebilsin."
+            action={<ButtonLink href="/targets/new">İlk hedefini oluştur</ButtonLink>}
           />
         ) : (
-          <div className="grid gap-3 md:grid-cols-2">
-            {targets?.map((t) => (
-              <Link
-                key={t.id}
-                href={`/targets/${t.id}`}
-                className="group rounded-2xl border border-ink-800 bg-ink-900/40 p-5 transition hover:border-brand-500/40 hover:bg-ink-900/60"
-              >
-                <div className="mb-3 flex items-start justify-between">
-                  <div>
-                    <p className="font-display text-xl text-ink-100">
-                      {t.name ?? "İsimsiz"}
-                    </p>
-                    <p className="mt-0.5 text-xs uppercase tracking-widest text-ink-400">
-                      {RELATION_LABELS[t.relation] ?? t.relation}
-                    </p>
-                  </div>
-                  <span className="text-ink-500 transition group-hover:translate-x-0.5 group-hover:text-brand-400">
-                    →
-                  </span>
-                </div>
-                {t.personality_type ? (
-                  <div>
-                    <p className="text-sm italic leading-relaxed text-brand-400">
-                      {t.personality_type}
-                    </p>
-                    {typeof t.analysis_confidence === "number" && (
-                      <p className="mt-2 text-[10px] uppercase tracking-widest text-ink-500">
-                        analiz güveni — %{Math.round(t.analysis_confidence * 100)}
+          <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+            {targets?.map((t) => {
+              const score = scoreByTarget.get(t.id);
+              return (
+                <Link
+                  key={t.id}
+                  href={`/targets/${t.id}`}
+                  className="group rounded-2xl border border-ink-800 bg-ink-900/40 p-[22px] transition hover:border-brand-500/40 hover:bg-ink-900/60"
+                >
+                  <div className="mb-[10px] flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="font-display text-[26px] leading-tight tracking-tight text-ink-100">
+                        {t.name ?? "İsimsiz"}
                       </p>
+                      <p className="mt-1 text-[9px] font-semibold uppercase tracking-[0.25em] text-ink-400">
+                        {RELATION_LABELS[t.relation] ?? t.relation}
+                      </p>
+                    </div>
+                    {score !== undefined ? (
+                      <div className="text-right">
+                        <p className="font-display text-[30px] leading-none tracking-tight text-brand-400">
+                          %{score}
+                        </p>
+                        <p className="mt-1 text-[9px] uppercase tracking-[0.25em] text-ink-500">
+                          uyum
+                        </p>
+                      </div>
+                    ) : (
+                      <span className="text-[10px] uppercase tracking-[0.2em] text-ink-500">
+                        analiz edilmedi
+                      </span>
                     )}
                   </div>
-                ) : (
-                  <p className="text-sm italic text-ink-500">
-                    henüz analiz edilmedi — tıkla + analiz et
-                  </p>
-                )}
-              </Link>
-            ))}
+
+                  {t.personality_type ? (
+                    <p className="font-display text-[17px] italic leading-snug text-brand-400">
+                      {t.personality_type}
+                    </p>
+                  ) : (
+                    <p className="text-[13px] leading-relaxed text-ink-500">
+                      henüz yeterli veri yok — profili doldur
+                    </p>
+                  )}
+
+                  {typeof t.analysis_confidence === "number" && (
+                    <div className="mt-[14px]">
+                      <span className="inline-block rounded-full border border-ink-800 bg-ink-900/60 px-[10px] py-[4px] text-[9px] font-semibold uppercase tracking-[0.25em] text-ink-300">
+                        analiz güveni — %{Math.round(t.analysis_confidence * 100)}
+                      </span>
+                    </div>
+                  )}
+                </Link>
+              );
+            })}
             <Link
               href="/targets/new"
-              className="flex items-center justify-center rounded-2xl border border-dashed border-ink-700 bg-transparent p-5 text-center text-sm text-ink-400 transition hover:border-brand-500 hover:text-brand-400"
+              className="flex min-h-[160px] items-center justify-center rounded-2xl border border-dashed border-ink-700 bg-transparent p-5 text-center text-sm text-ink-400 transition hover:border-brand-500 hover:bg-brand-500/5 hover:text-brand-400"
             >
               + Yeni hedef
             </Link>
@@ -246,10 +225,10 @@ export default async function DashboardPage() {
         )}
       </section>
 
-      {/* Quick tool access */}
-      <section className="mb-10">
-        <h2 className="mb-4 font-display text-2xl">Araçlar</h2>
-        <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+      {/* Araçlar */}
+      <section className="mb-12">
+        <SectionHeader title="Araçlar" />
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
           <ToolTile
             href="/generate"
             symbol="✻"
@@ -295,36 +274,70 @@ export default async function DashboardPage() {
         </div>
       </section>
 
-      {/* Recent generations */}
+      {/* Son üretimler */}
       {recentGenerations && recentGenerations.length > 0 && (
         <section>
-          <h2 className="mb-4 font-display text-2xl">Son üretimler</h2>
-          <div className="space-y-3">
+          <SectionHeader title="Son üretimler" linkLabel="tümünü gör →" linkHref="/generate" />
+          <div className="flex flex-col gap-[10px]">
             {recentGenerations.map((g) => {
               const firstReply = Array.isArray(g.replies) ? g.replies[0] : null;
+              const targetName = (g.target as { name: string } | null)?.name;
               return (
-                <SectionCard key={g.id} className="p-5">
-                  <p className="mb-2 text-xs text-ink-500">
-                    {formatRelativeTime(g.created_at)}
-                  </p>
-                  <p className="mb-3 line-clamp-1 text-sm text-ink-300">
+                <SectionCard key={g.id} className="p-[22px]">
+                  <div className="mb-2 flex items-center justify-between gap-4">
+                    <span className="text-[10px] uppercase tracking-[0.25em] text-ink-500">
+                      {formatRelativeTime(g.created_at)}
+                      {targetName ? ` · ${targetName}` : ""}
+                    </span>
+                    {firstReply && (
+                      <span className="text-[10px] font-semibold uppercase tracking-[0.25em] text-brand-400">
+                        {firstReply.tone}
+                      </span>
+                    )}
+                  </div>
+                  <p className="mb-[10px] line-clamp-1 text-[12px] leading-relaxed text-ink-400">
                     <span className="text-ink-500">Gelen:</span>{" "}
                     {g.incoming_message}
                   </p>
                   {firstReply && (
-                    <p className="text-sm text-ink-100">
-                      <span className="text-xs font-semibold uppercase tracking-widest text-brand-400">
-                        {firstReply.tone}
-                      </span>
-                      <span className="mx-2 text-ink-500">·</span>
-                      {firstReply.text}
-                    </p>
+                    <div className="flex items-start justify-between gap-4">
+                      <p className="flex-1 text-[15px] leading-[1.55] text-ink-100">
+                        {firstReply.text}
+                      </p>
+                      <CopyButton text={firstReply.text} />
+                    </div>
                   )}
                 </SectionCard>
               );
             })}
           </div>
         </section>
+      )}
+    </div>
+  );
+}
+
+function SectionHeader({
+  title,
+  linkLabel,
+  linkHref,
+}: {
+  title: string;
+  linkLabel?: string;
+  linkHref?: string;
+}) {
+  return (
+    <div className="mb-4 flex items-baseline justify-between">
+      <h2 className="font-display text-[28px] tracking-tight text-ink-100">
+        {title}
+      </h2>
+      {linkLabel && linkHref && (
+        <Link
+          href={linkHref}
+          className="text-[12px] lowercase text-ink-400 hover:text-ink-200"
+        >
+          {linkLabel}
+        </Link>
       )}
     </div>
   );
@@ -346,19 +359,23 @@ function ToolTile({
   return (
     <Link
       href={href}
-      className="group relative flex h-full flex-col rounded-2xl border border-ink-800 bg-ink-900/40 p-5 transition hover:border-brand-500/50 hover:bg-ink-900/60"
+      className="group flex h-full flex-col rounded-2xl border border-ink-800 bg-ink-900/40 p-[22px] transition hover:border-brand-500/40 hover:bg-ink-900/60"
     >
-      <div className="mb-3 flex items-start justify-between">
-        <p className="text-3xl text-brand-500">{symbol}</p>
+      <div className="mb-4 flex items-start justify-between gap-3">
+        <span className="text-[34px] leading-none text-brand-500">{symbol}</span>
         {stat && (
-          <span className="rounded-full border border-ink-700 bg-ink-900/80 px-2.5 py-0.5 text-[10px] uppercase tracking-widest text-ink-400">
+          <span className="rounded-full border border-ink-700 bg-ink-900/60 px-[10px] py-[3px] text-[9px] font-semibold uppercase tracking-[0.22em] text-ink-400">
             {stat}
           </span>
         )}
       </div>
-      <p className="mb-1 font-display text-lg text-ink-100">{title}</p>
-      <p className="flex-1 text-sm text-ink-400">{desc}</p>
-      <span className="mt-3 text-xs text-ink-500 transition group-hover:text-brand-400">
+      <p className="font-display text-[22px] leading-tight tracking-tight text-ink-100">
+        {title}
+      </p>
+      <p className="mb-4 mt-[6px] flex-1 text-[13px] leading-[1.5] text-ink-400">
+        {desc}
+      </p>
+      <span className="text-[11px] lowercase text-ink-500 transition group-hover:text-brand-400">
         aç →
       </span>
     </Link>
