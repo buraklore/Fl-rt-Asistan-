@@ -15,9 +15,11 @@ import {
 
 type Target = { id: string; name: string | null; relation: string };
 
+type Emotion = { label: string; intensity: number; evidence: string };
+
 type AnalysisResult = {
   whoEscalated: string;
-  emotions: Record<string, string[]>;
+  emotions: { user?: Emotion[]; target?: Emotion[] } | null;
   rootCause: string;
   fixMessage: string;
   severity: number;
@@ -180,7 +182,7 @@ function ConflictsContent() {
               </p>
               <p className="font-display text-4xl text-brand-400">
                 {result.severity}
-                <span className="text-xl text-ink-500"> / 10</span>
+                <span className="text-xl text-ink-500"> / 5</span>
               </p>
             </SectionCard>
             <SectionCard className="p-5">
@@ -193,18 +195,21 @@ function ConflictsContent() {
             </SectionCard>
             <SectionCard className="p-5">
               <p className="mb-2 text-[10px] font-semibold uppercase tracking-widest text-ink-400">
-                duygu yoğunluğu
+                duygular
               </p>
               <div className="flex flex-wrap gap-1">
-                {Object.values(result.emotions ?? {})
-                  .flat()
+                {[
+                  ...(result.emotions?.user ?? []),
+                  ...(result.emotions?.target ?? []),
+                ]
                   .slice(0, 4)
                   .map((e, i) => (
                     <span
                       key={i}
                       className="rounded-full bg-ink-800 px-2 py-0.5 text-xs text-ink-200"
+                      title={e.evidence}
                     >
-                      {e}
+                      {e.label}
                     </span>
                   ))}
               </div>
