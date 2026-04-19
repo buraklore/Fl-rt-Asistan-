@@ -259,3 +259,6 @@ Sayfa otomatik olarak `/blog/dosya-adi` adresinde görünür. Sitemap otomatik g
 **OAuth callback "oauth_failed":** Supabase Dashboard'da redirect URL'i doğru mu? `https://SENIN-DOMAIN/auth/callback` tam olarak.
 
 **Vercel build "Module not found":** `npm install` çalıştırıp lockfile'ı commit ettin mi?
+
+
+trigger vercel redeploy
