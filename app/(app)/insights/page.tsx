@@ -65,34 +65,39 @@ export default async function InsightsPage() {
       : null;
 
   return (
-    <div className="mx-auto max-w-6xl px-6 py-12 md:px-10">
+    <div className="mx-auto max-w-[1040px] px-10 py-12 pb-20">
       <PageHeader
-        kicker="derinlemesine —"
-        title="Analiz"
-        description="İlişki skorları, çatışma geçmişi, kişilik analizleri. Her hedef için bağlam, tek yerde."
+        kicker="zamanla —"
+        title="Analiz Paneli."
+        description="Her hedefin için son 30 günün skoru, riskleri ve güçlü yanları tek bakışta."
       />
 
-      {/* Aggregate stats */}
-      <section className="mb-10 grid grid-cols-2 gap-4 md:grid-cols-4">
+      {/* Aggregate stats — 3 col Claude Design */}
+      <section className="mb-8 grid grid-cols-1 gap-3 md:grid-cols-3">
         <StatTile
-          label="ortalama uyum"
-          value={avgCompat !== null ? `${avgCompat}` : "—"}
-          subtext={avgCompat !== null ? "/ 100" : "henüz skor yok"}
-        />
-        <StatTile
-          label="hedef sayısı"
+          label="Toplam hedef"
           value={(targets ?? []).length}
-          subtext="profil"
+          subtext={`${(targets ?? []).filter((t) => t.personality_type).length} analiz edildi`}
         />
         <StatTile
-          label="analiz edilmiş"
-          value={(targets ?? []).filter((t) => t.personality_type).length}
-          subtext="kişilik"
+          label="Ortalama skor"
+          value={avgCompat !== null ? `${avgCompat} / 100` : "—"}
+          subtext={
+            avgCompat !== null
+              ? avgCompat >= 70
+                ? "sağlıklı aralık"
+                : "gelişim alanı"
+              : "henüz skor yok"
+          }
         />
         <StatTile
-          label="son çatışma"
-          value={recentConflicts?.[0]?.severity ?? "—"}
-          subtext={recentConflicts?.[0] ? "/ 10 ciddiyet" : "yok"}
+          label="Aktif çatışma"
+          value={recentConflicts?.[0]?.severity ? `${recentConflicts[0].severity}` : "—"}
+          subtext={
+            recentConflicts?.[0]
+              ? `ciddiyet ${recentConflicts[0].severity}/5`
+              : "yok"
+          }
         />
       </section>
 
