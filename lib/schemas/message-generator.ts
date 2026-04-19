@@ -69,8 +69,9 @@ export type GenerateMessageLLMResponse = z.infer<
  * Response body from the API (wrapped in the common envelope on the wire).
  */
 export const GenerateMessageResponseSchema = z.object({
-  generationId: z.string(),
+  generationId: z.string().nullable(),
   replies: z.array(ReplySchema),
+  confidence: GeneratorConfidenceSchema.optional(),
 });
 export type GenerateMessageResponse = z.infer<
   typeof GenerateMessageResponseSchema
