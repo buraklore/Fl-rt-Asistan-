@@ -10,6 +10,7 @@ import {
   type UserProfileForPrompt,
 } from "@/lib/schemas";
 import { requireUser } from "@/lib/auth";
+import { requireCompleteProfile } from "@/lib/profile-gate";
 import { fail, ok } from "@/lib/http";
 
 export const runtime = "nodejs";
@@ -31,7 +32,7 @@ export async function GET(_req: NextRequest, { params }: Params) {
     .limit(1)
     .maybeSingle();
 
-  if (error) return fail(500, "Database Error", error.message);
+  if (error) return fail(500, "Veritabanı Hatası", error.message);
   return ok(data ?? null);
 }
 
@@ -39,6 +40,18 @@ export async function POST(_req: NextRequest, { params }: Params) {
   const authed = await requireUser();
   if (authed instanceof Response) return authed;
   const { user, supabase } = authed;
+
+  // Profile gate — AI only runs with complete user profile
+  const profileCheck = await requireCompleteProfile(user.id);
+  if (!profileCheck.complete) {
+    return fail(
+      412,
+      "Profil Tamamlanmamış",
+      `Skor hesaplamak için önce profilini tamamla. Eksikler: ${profileCheck.missingFields.join(", ")}`,
+      { missingFields: profileCheck.missingFields },
+    );
+  }
+
   const { targetId } = await params;
 
   const { data: target } = await supabase
@@ -47,13 +60,13 @@ export async function POST(_req: NextRequest, { params }: Params) {
     .eq("id", targetId)
     .is("deleted_at", null)
     .maybeSingle();
-  if (!target) return fail(404, "Not Found", "Hedef bulunamadı.");
+  if (!target) return fail(404, "Bulunamadı", "Hedef bulunamadı.");
 
   // Load the user's own profile for two-sided scoring
   const { data: userProfile } = await supabase
     .from("user_profiles")
     .select(
-      "display_name, gender, age_range, interests, communication_style, attachment_style, relationship_goal, raw_bio",
+      "display_name, gender, age_range, interests, communication_style, attachment_style, relationship_goal, raw_bio, own_dynamic_style, own_expression_style, own_relationship_energy, attracted_to_dynamic_styles, attracted_to_expression_styles, attracted_to_energies",
     )
     .eq("id", user.id)
     .maybeSingle();
@@ -85,6 +98,9 @@ export async function POST(_req: NextRequest, { params }: Params) {
     behaviors: target.behaviors ?? [],
     contextNotes: target.context_notes,
     analysis: null,
+    dynamicStyle: target.dynamic_style ?? null,
+    expressionStyle: target.expression_style ?? null,
+    relationshipEnergy: target.relationship_energy ?? null,
   };
 
   const userForPrompt: UserProfileForPrompt | null = userProfile
@@ -97,6 +113,12 @@ export async function POST(_req: NextRequest, { params }: Params) {
         attachmentStyle: userProfile.attachment_style ?? null,
         relationshipGoal: userProfile.relationship_goal ?? null,
         rawBio: userProfile.raw_bio ?? null,
+        ownDynamicStyle: userProfile.own_dynamic_style ?? null,
+        ownExpressionStyle: userProfile.own_expression_style ?? null,
+        ownRelationshipEnergy: userProfile.own_relationship_energy ?? null,
+        attractedToDynamicStyles: userProfile.attracted_to_dynamic_styles ?? [],
+        attractedToExpressionStyles: userProfile.attracted_to_expression_styles ?? [],
+        attractedToEnergies: userProfile.attracted_to_energies ?? [],
       }
     : null;
 
@@ -115,8 +137,8 @@ export async function POST(_req: NextRequest, { params }: Params) {
       }),
       messages: [{ role: "user", content: "Skoru hesapla." }],
       schema: RelationshipScoreLLMResponseSchema,
-      temperature: 0.3,
-      maxTokens: 600,
+      temperature: 0.2,
+      maxTokens: 2500,
     });
 
     const { data: saved, error } = await supabase
@@ -127,18 +149,19 @@ export async function POST(_req: NextRequest, { params }: Params) {
         risks: result.data.risks,
         strengths: result.data.strengths,
         summary: result.data.summary,
+        confidence: result.data.confidence,
       })
       .select()
       .single();
 
-    if (error) return fail(500, "Database Error", error.message);
-    return ok(saved);
+    if (error) return fail(500, "Veritabanı Hatası", error.message);
+    return ok({ ...saved, confidence: result.data.confidence });
   } catch (err) {
     console.error("[scores] failed:", err);
     const msg =
       err instanceof Error
         ? err.message
         : "AI sağlayıcısı beklenmedik bir cevap verdi.";
-    return fail(502, "AI Provider Error", msg);
+    return fail(502, "AI Sağlayıcı Hatası", msg);
   }
 }

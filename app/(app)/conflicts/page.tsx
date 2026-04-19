@@ -12,6 +12,7 @@ import {
   ErrorBanner,
   InfoBanner,
 } from "@/components/app/ui";
+import { ConfidenceBadge } from "@/components/app/confidence-badge";
 
 type Target = { id: string; name: string | null; relation: string };
 
@@ -23,6 +24,11 @@ type AnalysisResult = {
   rootCause: string;
   fixMessage: string;
   severity: number;
+  confidence?: {
+    overall: number;
+    dataGaps: string[];
+    explanation: string;
+  } | null;
 };
 
 const ESCALATED_LABELS: Record<string, string> = {
@@ -50,7 +56,12 @@ function ConflictsContent() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<AnalysisResult | null>(null);
+  const [contextNote, setContextNote] = useState("");
   const [copied, setCopied] = useState(false);
+  // Image upload state
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const [uploadedFilename, setUploadedFilename] = useState<string | null>(null);
 
   useEffect(() => {
     (async () => {
@@ -71,16 +82,21 @@ function ConflictsContent() {
     try {
       const res = await api.analyzeConflict({
         chatLog,
+        contextNote,
         targetId: targetId || undefined,
       });
       // Server returns the saved conflict record; extract analysis fields
-      const data = res.data as AnalysisResult & { fix_message?: string };
+      const data = res.data as AnalysisResult & {
+        fix_message?: string;
+        confidence?: AnalysisResult["confidence"];
+      };
       setResult({
         whoEscalated: (data as never as { who_escalated?: string }).who_escalated ?? data.whoEscalated,
         emotions: data.emotions,
         rootCause: (data as never as { root_cause?: string }).root_cause ?? data.rootCause,
         fixMessage: (data as never as { fix_message?: string }).fix_message ?? data.fixMessage,
         severity: data.severity,
+        confidence: data.confidence ?? null,
       });
     } catch (err) {
       if (err instanceof ApiError) {
@@ -102,6 +118,32 @@ function ConflictsContent() {
     await navigator.clipboard.writeText(result.fixMessage);
     setCopied(true);
     setTimeout(() => setCopied(false), 1500);
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadError(null);
+    setUploading(true);
+    setUploadedFilename(file.name);
+    try {
+      const res = await api.extractTranscriptFromImage(file);
+      const newText = res.data.transcript.trim();
+      // If textarea already had content, append; else replace
+      setChatLog((prev) => (prev.trim() ? `${prev}\n${newText}` : newText));
+    } catch (err) {
+      setUploadError(
+        err instanceof ApiError
+          ? err.problem.detail ?? err.problem.title ?? "Görüntü işlenemedi."
+          : "Görüntü işlenemedi. Tekrar dene veya manuel yaz.",
+      );
+      setUploadedFilename(null);
+    } finally {
+      setUploading(false);
+      // Reset input so the same file can be re-uploaded if needed
+      e.target.value = "";
+    }
   };
 
   return (
@@ -144,7 +186,61 @@ function ConflictsContent() {
           </div>
 
           <div>
+            <Label required>Bağlam — ne hakkında tartıştınız?</Label>
+            <Textarea
+              value={contextNote}
+              onChange={(e) => setContextNote(e.target.value)}
+              placeholder="Örn: Hafta sonu planı yapıyorduk, ben evde kalmak istiyordum o dışarı çıkmak istiyordu. Aslında son zamanlarda bu konuda sürtüşme yaşıyoruz — ben enerjimi toplamaya çalışıyorum, o sıkıldığını söylüyor."
+              rows={3}
+              maxLength={1000}
+            />
+            <p className="mt-1 text-xs text-ink-500">
+              {contextNote.length} / 1000 — en az 40 karakter. Transkript dışı bağlam AI analizini keskinleştirir.
+            </p>
+          </div>
+
+          <div>
             <Label required>Mesajlaşma transkripti</Label>
+
+            {/* Image upload zone — screenshot to transcript */}
+            <div className="mb-4 rounded-xl border border-dashed border-ink-700 bg-ink-900/30 p-4">
+              <p className="mb-3 text-xs text-ink-300">
+                Tartışmanın ekran görüntüsü var mı? AI otomatik çıkarsın.
+              </p>
+              <label
+                className={`inline-flex cursor-pointer items-center gap-2 rounded-full border px-4 py-2 text-xs transition ${
+                  uploading
+                    ? "cursor-wait border-ink-700 bg-ink-900 text-ink-500"
+                    : "border-brand-500/40 bg-brand-500/5 text-brand-400 hover:bg-brand-500/10"
+                }`}
+              >
+                <input
+                  type="file"
+                  accept="image/png,image/jpeg,image/webp"
+                  onChange={handleImageUpload}
+                  disabled={uploading}
+                  className="hidden"
+                />
+                {uploading
+                  ? "okunuyor..."
+                  : uploadedFilename
+                    ? "Başka ekran görüntüsü ekle"
+                    : "📷 Ekran görüntüsü yükle"}
+              </label>
+              {uploadedFilename && !uploading && (
+                <p className="mt-2 text-xs text-ink-400">
+                  ✓ <span className="text-ink-200">{uploadedFilename}</span>{" "}
+                  — transkript aşağıya eklendi. Düzenleyebilirsin.
+                </p>
+              )}
+              {uploadError && (
+                <p className="mt-2 text-xs text-red-400">{uploadError}</p>
+              )}
+              <p className="mt-2 text-[10px] text-ink-500">
+                PNG, JPEG veya WEBP · Maks 5 MB · Görüntü saklanmaz
+              </p>
+            </div>
+
             <Textarea
               value={chatLog}
               onChange={(e) => setChatLog(e.target.value)}
@@ -175,12 +271,17 @@ function ConflictsContent() {
               onClick={() => {
                 setResult(null);
                 setChatLog("");
+                setContextNote("");
               }}
               className="text-sm text-ink-400 hover:text-ink-200"
             >
               ← Yeni analiz
             </button>
           </div>
+
+          {result.confidence && (
+            <ConfidenceBadge confidence={result.confidence} />
+          )}
 
           <div className="grid gap-3 md:grid-cols-3">
             <SectionCard className="p-5">

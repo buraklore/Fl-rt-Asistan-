@@ -10,6 +10,7 @@ import {
 import { TargetActions } from "./actions";
 import { Big5Display } from "./big5-display";
 import { RecomputeScoreButton } from "@/components/app/recompute-score-button";
+import { ConfidenceBadge } from "@/components/app/confidence-badge";
 
 export const dynamic = "force-dynamic";
 
@@ -125,6 +126,9 @@ export default async function TargetDetailPage({ params }: Params) {
         <h2 className="mb-4 font-display text-2xl">Kişilik Analizi</h2>
         {hasAnalysis ? (
           <SectionCard className="space-y-6 p-8">
+            {target.confidence_detail && (
+              <ConfidenceBadge confidence={target.confidence_detail as never} />
+            )}
             <div>
               <p className="mb-1 text-[10px] font-semibold uppercase tracking-widest text-brand-400">
                 kişilik tipi

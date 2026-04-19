@@ -19,7 +19,7 @@ export async function GET(_req: NextRequest, { params }: Params) {
     .eq("id", id)
     .maybeSingle();
 
-  if (!session) return fail(404, "Not Found", "Oturum bulunamadı.");
+  if (!session) return fail(404, "Bulunamadı", "Oturum bulunamadı.");
 
   const { data: messages } = await supabase
     .from("chat_messages")

@@ -7,6 +7,7 @@ import {
   type UserProfileForPrompt,
 } from "@/lib/schemas";
 import { requireUser } from "@/lib/auth";
+import { requireCompleteProfile } from "@/lib/profile-gate";
 import { enforceQuota } from "@/lib/quota";
 import { fail, parseBody } from "@/lib/http";
 
@@ -17,15 +18,23 @@ type Params = { params: Promise<{ id: string }> };
 
 /**
  * POST a message to a chat session; returns an SSE stream with the
- * assistant response. Events:
- *   event: delta   data: {"text": "..."}
- *   event: done    data: {"messageId": "...", "fullText": "..."}
- *   event: error   data: {"message": "..."}
+ * assistant response.
  */
 export async function POST(request: NextRequest, { params }: Params) {
   const authed = await requireUser();
   if (authed instanceof Response) return authed;
   const { user, supabase } = authed;
+
+  const profileCheck = await requireCompleteProfile(user.id);
+  if (!profileCheck.complete) {
+    return fail(
+      412,
+      "Profil Tamamlanmamış",
+      `Koç sohbeti için önce profilini tamamla. Eksikler: ${profileCheck.missingFields.join(", ")}`,
+      { missingFields: profileCheck.missingFields },
+    );
+  }
+
   const { id: sessionId } = await params;
 
   const body = await parseBody(request, SendChatMessageRequestSchema);
@@ -40,7 +49,7 @@ export async function POST(request: NextRequest, { params }: Params) {
     .select("*, target:target_profiles(*)")
     .eq("id", sessionId)
     .maybeSingle();
-  if (!session) return fail(404, "Not Found", "Oturum bulunamadı.");
+  if (!session) return fail(404, "Bulunamadı", "Oturum bulunamadı.");
 
   // Persist user message
   await supabase
@@ -69,6 +78,9 @@ export async function POST(request: NextRequest, { params }: Params) {
         behaviors: session.target.behaviors ?? [],
         contextNotes: session.target.context_notes,
         analysis: null,
+        dynamicStyle: session.target.dynamic_style ?? null,
+        expressionStyle: session.target.expression_style ?? null,
+        relationshipEnergy: session.target.relationship_energy ?? null,
       }
     : null;
 
@@ -84,7 +96,7 @@ export async function POST(request: NextRequest, { params }: Params) {
   const { data: userRow } = await supabase
     .from("user_profiles")
     .select(
-      "display_name, gender, age_range, interests, communication_style, attachment_style, relationship_goal, raw_bio",
+      "display_name, gender, age_range, interests, communication_style, attachment_style, relationship_goal, raw_bio, own_dynamic_style, own_expression_style, own_relationship_energy, attracted_to_dynamic_styles, attracted_to_expression_styles, attracted_to_energies",
     )
     .eq("id", user.id)
     .maybeSingle();
@@ -99,6 +111,12 @@ export async function POST(request: NextRequest, { params }: Params) {
         attachmentStyle: userRow.attachment_style ?? null,
         relationshipGoal: userRow.relationship_goal ?? null,
         rawBio: userRow.raw_bio ?? null,
+        ownDynamicStyle: userRow.own_dynamic_style ?? null,
+        ownExpressionStyle: userRow.own_expression_style ?? null,
+        ownRelationshipEnergy: userRow.own_relationship_energy ?? null,
+        attractedToDynamicStyles: userRow.attracted_to_dynamic_styles ?? [],
+        attractedToExpressionStyles: userRow.attracted_to_expression_styles ?? [],
+        attractedToEnergies: userRow.attracted_to_energies ?? [],
       }
     : null;
 
@@ -128,8 +146,8 @@ export async function POST(request: NextRequest, { params }: Params) {
                 content: m.content,
               }),
             ),
-            maxTokens: 800,
-            temperature: 0.7,
+            maxTokens: 1500,
+            temperature: 0.6,
           },
           (chunk) => {
             if (chunk.type === "delta") write("delta", { text: chunk.text });

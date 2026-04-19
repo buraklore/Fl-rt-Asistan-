@@ -30,65 +30,107 @@ const GENDERS = [
   { key: "unspecified", label: "Belirtmek istemiyorum" },
 ] as const;
 
-const AGE_RANGES = ["18-24", "25-34", "35-44", "45+"] as const;
+const AGE_RANGES = [
+  { key: "18-24", label: "18-24" },
+  { key: "25-34", label: "25-34" },
+  { key: "35-44", label: "35-44" },
+  { key: "45+", label: "45+" },
+  { key: "bilmiyorum", label: "Bilmiyorum" },
+] as const;
+
+const DYNAMIC_STYLES = [
+  { key: "dominant-leading", label: "Dominant & Yönlendiren", desc: "İnisiyatif alan, yönü belirleyen, liderlik doğal gelen." },
+  { key: "dominant-caring", label: "Dominant & Destekleyen", desc: "Sorumluluk alan ama koruyarak — kontrol + şefkat." },
+  { key: "balanced-mutual", label: "Dengeli & Karşılıklı", desc: "Duruma göre liderlik eden ya da bırakan." },
+  { key: "yielding-follower", label: "Takip eden & Teslim olan", desc: "Güvendiği birinin liderliğinde rahat, akışa bırakan." },
+  { key: "independent-distant", label: "Bağımsız & Mesafeli", desc: "Alanını koruyan, kendi kendine yeten." },
+] as const;
+
+const EXPRESSION_STYLES = [
+  { key: "masculine", label: "Eril", desc: "Direkt, koruyucu, aksiyon odaklı." },
+  { key: "feminine", label: "Dişil", desc: "Sezgisel, besleyen, duygusal ifadeli." },
+  { key: "androgynous", label: "Androjen", desc: "İkisinin esnek dengesi." },
+] as const;
+
+const ENERGY_STYLES = [
+  { key: "intense-passionate", label: "Tutkulu & Yoğun", desc: "Her şeyi yoğun hisseden." },
+  { key: "calm-stable", label: "Sakin & Stabil", desc: "Dengeli, tutarlı, güven veren." },
+  { key: "playful-light", label: "Oyuncu & Hafif", desc: "Takılan, güldüren, ciddiyeti kıran." },
+  { key: "deep-intellectual", label: "Derin & Entelektüel", desc: "Anlamlı sohbet, zihinsel çekim." },
+] as const;
 
 export default function NewTargetPage() {
   const router = useRouter();
   const [name, setName] = useState("");
-  const [relation, setRelation] =
-    useState<(typeof RELATIONS)[number]["key"] | null>(null);
-  const [gender, setGender] =
-    useState<(typeof GENDERS)[number]["key"] | null>(null);
+  const [relation, setRelation] = useState<(typeof RELATIONS)[number]["key"] | null>(null);
+  const [gender, setGender] = useState<(typeof GENDERS)[number]["key"] | null>(null);
   const [ageRange, setAgeRange] = useState<string | null>(null);
-  const [interests, setInterests] = useState("");
-  const [behaviors, setBehaviors] = useState("");
+  const [interestsRaw, setInterestsRaw] = useState("");
+  const [behaviorsRaw, setBehaviorsRaw] = useState("");
   const [contextNotes, setContextNotes] = useState("");
+  const [dynamicStyle, setDynamicStyle] = useState<string | null>(null);
+  const [expressionStyle, setExpressionStyle] = useState<string | null>(null);
+  const [relationshipEnergy, setRelationshipEnergy] = useState<string | null>(null);
   const [autoAnalyze, setAutoAnalyze] = useState(true);
   const [loading, setLoading] = useState(false);
   const [analyzing, setAnalyzing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const canSubmit = relation !== null && !loading;
+  const interests = interestsRaw
+    .split(/[,\n]/g)
+    .map((s) => s.trim())
+    .filter((s) => s.length >= 4);
 
-  const submit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!relation) return;
-    setLoading(true);
+  const behaviors = behaviorsRaw
+    .split(/\n/g)
+    .map((s) => s.trim())
+    .filter((s) => s.length >= 15);
+
+  const canSubmit =
+    name.trim().length >= 2 &&
+    !!relation &&
+    !!gender &&
+    !!ageRange &&
+    interests.length >= 3 &&
+    behaviors.length >= 3 &&
+    contextNotes.trim().length >= 80 &&
+    !!dynamicStyle &&
+    !!expressionStyle &&
+    !!relationshipEnergy;
+
+  const submit = async () => {
+    if (!canSubmit) return;
     setError(null);
+    setLoading(true);
     try {
       const res = await api.createTarget({
-        name: name.trim() || undefined,
-        relation,
-        gender: gender ?? undefined,
-        ageRange: ageRange ?? undefined,
-        interests: interests
-          .split(",")
-          .map((s) => s.trim())
-          .filter(Boolean),
-        behaviors: behaviors
-          .split("\n")
-          .map((s) => s.trim())
-          .filter(Boolean),
-        contextNotes: contextNotes.trim() || undefined,
+        name: name.trim(),
+        relation: relation!,
+        gender: gender!,
+        ageRange: ageRange as never,
+        interests,
+        behaviors,
+        contextNotes: contextNotes.trim(),
+        dynamicStyle: dynamicStyle as never,
+        expressionStyle: expressionStyle as never,
+        relationshipEnergy: relationshipEnergy as never,
       });
-      const targetId = res.data.id;
+      const targetId = (res.data as { id: string }).id;
 
       if (autoAnalyze) {
-        // Wait for analysis so the detail page shows results, not empty tiles.
-        // Failure is non-blocking — user still gets their profile.
         setAnalyzing(true);
         try {
           await api.analyzeTarget(targetId);
-        } catch (err) {
-          console.warn("auto-analyze failed:", err);
+        } catch {
+          // Non-fatal — user can analyze manually later
         }
       }
-
       router.push(`/targets/${targetId}`);
-      router.refresh();
     } catch (err) {
       setError(
-        err instanceof ApiError ? err.problem.detail ?? err.problem.title : "Bir şeyler ters gitti.",
+        err instanceof ApiError
+          ? err.problem.detail ?? err.problem.title ?? "Hedef oluşturulamadı."
+          : "Bir şeyler ters gitti.",
       );
       setLoading(false);
       setAnalyzing(false);
@@ -97,155 +139,216 @@ export default function NewTargetPage() {
 
   return (
     <div className="mx-auto max-w-3xl px-6 py-12 md:px-10">
-      <Link
-        href="/targets"
-        className="mb-6 inline-block text-sm text-ink-400 hover:text-ink-200"
-      >
-        ← Hedefler
-      </Link>
-
+      <div className="mb-6">
+        <Link href="/targets" className="text-sm text-ink-400 hover:text-brand-400">
+          ← hedefler
+        </Link>
+      </div>
       <PageHeader
-        kicker="yeni profil —"
+        kicker="yeni hedef"
         title="Kim bu?"
-        description="Ne kadar çok detay verirsen, analiz o kadar keskin olur. Hiçbir alan zorunlu değil, en azı yeter."
+        description="Ne kadar çok detay verirsen, analiz o kadar keskin olur. Her alan zorunlu — AI doğru analiz için zengin veriye ihtiyaç duyar."
       />
 
-      <form onSubmit={submit} className="space-y-6">
-        <SectionCard className="space-y-6 p-6">
-          <div>
-            <Label>Takma ad (opsiyonel)</Label>
-            <Input
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="örn: 'M' veya 'Ayşe'"
-              maxLength={40}
-            />
-          </div>
+      <SectionCard className="space-y-8 p-6 md:p-8">
+        {/* BASICS */}
+        <div>
+          <Label required>İsim veya takma ad</Label>
+          <Input
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Örn: Ayşe"
+            maxLength={40}
+          />
+          <p className="mt-1 text-xs text-ink-500">En az 2 karakter.</p>
+        </div>
 
-          <div>
-            <Label required>İlişki türü</Label>
-            <div className="flex flex-wrap gap-2">
-              {RELATIONS.map((r) => (
-                <Chip
-                  key={r.key}
-                  active={relation === r.key}
-                  onClick={() => setRelation(r.key)}
-                >
-                  {r.label}
-                </Chip>
+        <div>
+          <Label required>Bu kişiyle ilişkin</Label>
+          <div className="flex flex-wrap gap-2">
+            {RELATIONS.map((r) => (
+              <Chip key={r.key} active={relation === r.key} onClick={() => setRelation(r.key)}>
+                {r.label}
+              </Chip>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <Label required>Cinsiyeti</Label>
+          <div className="flex flex-wrap gap-2">
+            {GENDERS.map((g) => (
+              <Chip key={g.key} active={gender === g.key} onClick={() => setGender(g.key)}>
+                {g.label}
+              </Chip>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <Label required>Yaş aralığı</Label>
+          <div className="flex flex-wrap gap-2">
+            {AGE_RANGES.map((a) => (
+              <Chip key={a.key} active={ageRange === a.key} onClick={() => setAgeRange(a.key)}>
+                {a.label}
+              </Chip>
+            ))}
+          </div>
+        </div>
+
+        {/* INTERESTS */}
+        <div>
+          <Label required>İlgi alanları (virgülle ayır)</Label>
+          <Textarea
+            value={interestsRaw}
+            onChange={(e) => setInterestsRaw(e.target.value)}
+            placeholder="Örn: yoga, gitar çalmak, kedisi Pamuk, arkeoloji, seyahat"
+            rows={3}
+            maxLength={600}
+          />
+          <p className="mt-1 text-xs text-ink-500">
+            {interests.length} geçerli — en az 3 gerekli, her biri 4+ karakter
+          </p>
+          {interests.length > 0 && (
+            <div className="mt-2 flex flex-wrap gap-2">
+              {interests.map((i, idx) => (
+                <span key={idx} className="rounded-full bg-brand-500/10 px-3 py-1 text-xs text-brand-400">
+                  {i}
+                </span>
               ))}
             </div>
-          </div>
+          )}
+        </div>
 
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div>
-              <Label>Cinsiyet</Label>
-              <div className="flex flex-wrap gap-2">
-                {GENDERS.map((g) => (
-                  <Chip
-                    key={g.key}
-                    active={gender === g.key}
-                    onClick={() =>
-                      setGender((c) => (c === g.key ? null : g.key))
-                    }
-                  >
-                    {g.label}
-                  </Chip>
-                ))}
-              </div>
-            </div>
-            <div>
-              <Label>Yaş aralığı</Label>
-              <div className="flex flex-wrap gap-2">
-                {AGE_RANGES.map((r) => (
-                  <Chip
-                    key={r}
-                    active={ageRange === r}
-                    onClick={() =>
-                      setAgeRange((c) => (c === r ? null : r))
-                    }
-                  >
-                    {r}
-                  </Chip>
-                ))}
-              </div>
-            </div>
-          </div>
-        </SectionCard>
+        {/* BEHAVIORS */}
+        <div>
+          <Label required>Davranış gözlemleri (her satıra bir tane)</Label>
+          <Textarea
+            value={behaviorsRaw}
+            onChange={(e) => setBehaviorsRaw(e.target.value)}
+            placeholder={"Örn:\nKişisel konularda açılmayı zor buluyor\nHafta sonları sosyal olmayı seviyor, hafta içi içine kapanık\nKariyerine çok odaklı, iş konusunda tutkulu"}
+            rows={6}
+            maxLength={2000}
+          />
+          <p className="mt-1 text-xs text-ink-500">
+            {behaviors.length} geçerli davranış — en az 3 gerekli, her biri 15+ karakter
+          </p>
+        </div>
 
-        <SectionCard className="space-y-6 p-6">
+        {/* CONTEXT */}
+        <div>
+          <Label required>Nasıl tanıştınız, bağlam</Label>
+          <Textarea
+            value={contextNotes}
+            onChange={(e) => setContextNotes(e.target.value)}
+            placeholder="Örn: Geçen ay bir arkadaşımın doğum gününde tanıştık. 3 haftadır konuşuyoruz, birkaç kez randevuya çıktık. İlk izlenim iyiydi ama son zamanlarda mesajları seyrekleşti."
+            rows={5}
+            maxLength={2000}
+          />
+          <p className="mt-1 text-xs text-ink-500">
+            {contextNotes.length} / 2000 — en az 80 karakter
+          </p>
+        </div>
+
+        {/* ARCHETYPE */}
+        <div className="space-y-6 rounded-xl border border-brand-500/20 bg-brand-500/5 p-5">
           <div>
-            <Label>İlgi alanları</Label>
-            <Input
-              value={interests}
-              onChange={(e) => setInterests(e.target.value)}
-              placeholder="virgülle ayır — örn: mimari, ramen, kedi"
-            />
-            <p className="mt-2 text-xs text-ink-500">
-              En az bir, en fazla 15
+            <p className="font-display italic text-brand-400 mb-2">arketip gözlemin —</p>
+            <p className="text-xs text-ink-400">
+              Bu kişiyi 3 boyutta tanımla. AI uyum analizinde senin profilin ile karşılaştırır.
             </p>
           </div>
 
           <div>
-            <Label>Davranışlar</Label>
-            <Textarea
-              value={behaviors}
-              onChange={(e) => setBehaviors(e.target.value)}
-              placeholder={
-                "her satıra bir davranış\n\nörn:\nderin konulardan kaçınıyor\nkısa cevaplar yazıyor\nmorning-person"
-              }
-              rows={5}
-            />
+            <Label required>Dinamik tarzı</Label>
+            <div className="space-y-2">
+              {DYNAMIC_STYLES.map((s) => (
+                <button
+                  key={s.key}
+                  type="button"
+                  onClick={() => setDynamicStyle(s.key)}
+                  className={`w-full rounded-lg border px-4 py-3 text-left transition ${
+                    dynamicStyle === s.key
+                      ? "border-brand-500 bg-brand-500/10"
+                      : "border-ink-700 bg-ink-900/40 hover:border-ink-600"
+                  }`}
+                >
+                  <p className={`text-sm font-medium ${dynamicStyle === s.key ? "text-brand-400" : "text-ink-100"}`}>
+                    {s.label}
+                  </p>
+                  <p className="mt-0.5 text-xs text-ink-400">{s.desc}</p>
+                </button>
+              ))}
+            </div>
           </div>
 
           <div>
-            <Label>Serbest not</Label>
-            <Textarea
-              value={contextNotes}
-              onChange={(e) => setContextNotes(e.target.value)}
-              placeholder="örn: hinge'de eşleştik, 2 kez buluştuk, iyi sohbet ettik ama sonra soğudu"
-              rows={3}
-              maxLength={1000}
-            />
+            <Label required>İfade tarzı</Label>
+            <div className="flex flex-wrap gap-2">
+              {EXPRESSION_STYLES.map((s) => (
+                <Chip
+                  key={s.key}
+                  active={expressionStyle === s.key}
+                  onClick={() => setExpressionStyle(s.key)}
+                >
+                  {s.label}
+                </Chip>
+              ))}
+            </div>
+            {expressionStyle && (
+              <p className="mt-2 text-xs text-ink-400">
+                {EXPRESSION_STYLES.find((s) => s.key === expressionStyle)?.desc}
+              </p>
+            )}
           </div>
 
-          <label className="flex cursor-pointer items-start gap-3">
-            <input
-              type="checkbox"
-              checked={autoAnalyze}
-              onChange={(e) => setAutoAnalyze(e.target.checked)}
-              className="mt-1 h-4 w-4 accent-brand-500"
-            />
-            <span className="text-sm text-ink-200">
-              <span className="font-medium text-ink-100">
-                Otomatik analiz et
-              </span>
-              <span className="mt-0.5 block text-xs text-ink-400">
-                Kaydetme sonrası AI kişilik analizi başlatılır (Big5, bağlanma
-                stili, çekim tetikleyicileri). Birkaç saniye sürer.
-              </span>
-            </span>
-          </label>
-        </SectionCard>
+          <div>
+            <Label required>Enerjisi</Label>
+            <div className="flex flex-wrap gap-2">
+              {ENERGY_STYLES.map((s) => (
+                <Chip
+                  key={s.key}
+                  active={relationshipEnergy === s.key}
+                  onClick={() => setRelationshipEnergy(s.key)}
+                >
+                  {s.label}
+                </Chip>
+              ))}
+            </div>
+            {relationshipEnergy && (
+              <p className="mt-2 text-xs text-ink-400">
+                {ENERGY_STYLES.find((s) => s.key === relationshipEnergy)?.desc}
+              </p>
+            )}
+          </div>
+        </div>
+
+        {/* AUTO-ANALYZE */}
+        <label className="flex cursor-pointer items-start gap-3 rounded-lg border border-ink-700 bg-ink-900/40 p-4">
+          <input
+            type="checkbox"
+            checked={autoAnalyze}
+            onChange={(e) => setAutoAnalyze(e.target.checked)}
+            className="mt-0.5"
+          />
+          <div>
+            <p className="text-sm font-medium text-ink-100">Kaydettikten sonra otomatik analiz et</p>
+            <p className="mt-1 text-xs text-ink-400">
+              AI Big5, bağlanma stili ve iletişim tarzını otomatik çıkarır. ~4 saniye.
+            </p>
+          </div>
+        </label>
 
         {error && <ErrorBanner message={error} />}
 
-        <div className="flex gap-3">
-          <Button type="submit" disabled={!canSubmit}>
-            {analyzing
-              ? "analiz ediliyor..."
-              : loading
-                ? "kaydediliyor..."
-                : "Oluştur"}
-          </Button>
-          <Link
-            href="/targets"
-            className="rounded-xl px-5 py-3 text-sm text-ink-300 hover:text-ink-100"
-          >
-            İptal
-          </Link>
-        </div>
-      </form>
+        <Button onClick={submit} disabled={!canSubmit || loading} fullWidth>
+          {analyzing
+            ? "analiz ediliyor..."
+            : loading
+              ? "kaydediliyor..."
+              : "Hedefi oluştur & analiz et →"}
+        </Button>
+      </SectionCard>
     </div>
   );
 }

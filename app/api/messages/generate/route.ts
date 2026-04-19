@@ -9,6 +9,7 @@ import {
   type UserProfileForPrompt,
 } from "@/lib/schemas";
 import { requireUser } from "@/lib/auth";
+import { requireCompleteProfile } from "@/lib/profile-gate";
 import { enforceQuota } from "@/lib/quota";
 import { fail, ok, parseBody } from "@/lib/http";
 
@@ -23,11 +24,22 @@ export async function POST(request: NextRequest) {
   if (authed instanceof Response) return authed;
   const { user, supabase } = authed;
 
-  // 2. Validate body
+  // 2. Profile gate — AI only runs with complete user profile
+  const profileCheck = await requireCompleteProfile(user.id);
+  if (!profileCheck.complete) {
+    return fail(
+      412,
+      "Profil Tamamlanmamış",
+      `AI analizi için önce profilini tamamla. Eksikler: ${profileCheck.missingFields.join(", ")}`,
+      { missingFields: profileCheck.missingFields },
+    );
+  }
+
+  // 3. Validate body
   const body = await parseBody(request, GenerateMessageRequestSchema);
   if (body instanceof Response) return body;
 
-  // 3. Quota check
+  // 4. Quota check
   const quota = await enforceQuota(user.id, "message_generate");
   if (!quota.ok) return quota.response;
 
@@ -60,6 +72,9 @@ export async function POST(request: NextRequest) {
                 confidence: t.analysis_confidence ?? 0.5,
               }
             : null,
+        dynamicStyle: t.dynamic_style ?? null,
+        expressionStyle: t.expression_style ?? null,
+        relationshipEnergy: t.relationship_energy ?? null,
       };
     }
   }
@@ -68,7 +83,7 @@ export async function POST(request: NextRequest) {
   const { data: userRow } = await supabase
     .from("user_profiles")
     .select(
-      "display_name, gender, age_range, interests, communication_style, attachment_style, relationship_goal, raw_bio",
+      "display_name, gender, age_range, interests, communication_style, attachment_style, relationship_goal, raw_bio, own_dynamic_style, own_expression_style, own_relationship_energy, attracted_to_dynamic_styles, attracted_to_expression_styles, attracted_to_energies",
     )
     .eq("id", user.id)
     .maybeSingle();
@@ -83,6 +98,12 @@ export async function POST(request: NextRequest) {
         attachmentStyle: userRow.attachment_style ?? null,
         relationshipGoal: userRow.relationship_goal ?? null,
         rawBio: userRow.raw_bio ?? null,
+        ownDynamicStyle: userRow.own_dynamic_style ?? null,
+        ownExpressionStyle: userRow.own_expression_style ?? null,
+        ownRelationshipEnergy: userRow.own_relationship_energy ?? null,
+        attractedToDynamicStyles: userRow.attracted_to_dynamic_styles ?? [],
+        attractedToExpressionStyles: userRow.attracted_to_expression_styles ?? [],
+        attractedToEnergies: userRow.attracted_to_energies ?? [],
       }
     : null;
 
@@ -105,7 +126,7 @@ export async function POST(request: NextRequest) {
       err instanceof Error
         ? err.message
         : "AI sağlayıcısı beklenmedik bir cevap verdi.";
-    return fail(502, "AI Provider Error", msg);
+    return fail(502, "AI Sağlayıcı Hatası", msg);
   }
 
   if (!result.ok) {
@@ -116,7 +137,7 @@ export async function POST(request: NextRequest) {
       verdict: "hard_block",
       reasons: result.reasons,
     });
-    return fail(403, "Moderation Blocked", result.message, {
+    return fail(403, "Güvenlik Kontrolü", result.message, {
       reasons: result.reasons,
     });
   }
@@ -148,6 +169,7 @@ export async function POST(request: NextRequest) {
     {
       generationId: saved?.id ?? null,
       replies: result.replies,
+      confidence: result.confidence,
     },
     {
       usage: quota.unlimited

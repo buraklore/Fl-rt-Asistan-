@@ -24,6 +24,6 @@ export async function POST(request: NextRequest, { params }: Params) {
     })
     .eq("id", id);
 
-  if (error) return fail(500, "Database Error", error.message);
+  if (error) return fail(500, "Veritabanı Hatası", error.message);
   return ok({ acked: true });
 }

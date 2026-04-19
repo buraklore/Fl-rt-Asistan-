@@ -16,12 +16,12 @@ const NAV_SECTIONS = [
   {
     label: "ana",
     items: [
-      { href: "/dashboard", label: "Dashboard", symbol: "◐" },
+      { href: "/dashboard", label: "Panel", symbol: "◐" },
       { href: "/targets", label: "Hedefler", symbol: "○" },
     ],
   },
   {
-    label: "tools",
+    label: "araçlar",
     items: [
       { href: "/generate", label: "Mesaj Üretici", symbol: "✻" },
       { href: "/chat", label: "AI Koç", symbol: "◊" },

@@ -8,6 +8,7 @@ import {
   type TargetProfileForPrompt,
 } from "@/lib/schemas";
 import { requireUser } from "@/lib/auth";
+import { requireCompleteProfile } from "@/lib/profile-gate";
 import { fail, ok } from "@/lib/http";
 
 export const runtime = "nodejs";
@@ -17,6 +18,16 @@ export async function GET() {
   const authed = await requireUser();
   if (authed instanceof Response) return authed;
   const { user, supabase } = authed;
+
+  const profileCheck = await requireCompleteProfile(user.id);
+  if (!profileCheck.complete) {
+    return fail(
+      412,
+      "Profil Tamamlanmamış",
+      `Günlük hook üretmek için önce profilini tamamla. Eksikler: ${profileCheck.missingFields.join(", ")}`,
+      { missingFields: profileCheck.missingFields },
+    );
+  }
 
   // Return today's delivery if we already made one
   const startOfDay = new Date();
@@ -77,6 +88,9 @@ export async function GET() {
     behaviors: target.behaviors ?? [],
     contextNotes: target.context_notes,
     analysis: null,
+    dynamicStyle: target.dynamic_style ?? null,
+    expressionStyle: target.expression_style ?? null,
+    relationshipEnergy: target.relationship_energy ?? null,
   };
 
   const provider = getLLM();
@@ -89,8 +103,8 @@ export async function GET() {
     }),
     messages: [{ role: "user", content: "Bugünün hook'unu üret." }],
     schema: HookLLMResponseSchema,
-    temperature: 0.8,
-    maxTokens: 300,
+    temperature: 0.7,
+    maxTokens: 800,
   });
 
   const { data: saved, error } = await supabase
@@ -104,7 +118,7 @@ export async function GET() {
     .select()
     .single();
 
-  if (error) return fail(500, "Database Error", error.message);
+  if (error) return fail(500, "Veritabanı Hatası", error.message);
   return ok({
     id: saved.id,
     category: saved.category,

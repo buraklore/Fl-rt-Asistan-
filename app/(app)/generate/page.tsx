@@ -15,6 +15,7 @@ import {
   ErrorBanner,
   InfoBanner,
 } from "@/components/app/ui";
+import { ConfidenceBadge } from "@/components/app/confidence-badge";
 
 const ALL_TONES: { key: Tone; label: string; desc: string }[] = [
   { key: "cool", label: "Sakin", desc: "dengeli, hafif nükteli" },
@@ -44,6 +45,11 @@ function GenerateContent() {
   const [context, setContext] = useState("");
   const [tones, setTones] = useState<Tone[]>(["cool", "flirty", "confident"]);
   const [replies, setReplies] = useState<Reply[] | null>(null);
+  const [confidence, setConfidence] = useState<{
+    overall: number;
+    dataGaps: string[];
+    explanation: string;
+  } | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [usageRemaining, setUsageRemaining] = useState<number | null>(null);
@@ -69,6 +75,7 @@ function GenerateContent() {
     setLoading(true);
     setError(null);
     setReplies(null);
+    setConfidence(null);
     try {
       const res = await api.generateMessage({
         incomingMessage: incoming,
@@ -77,6 +84,7 @@ function GenerateContent() {
         targetId: targetId || undefined,
       });
       setReplies(res.data.replies);
+      setConfidence(res.data.confidence ?? null);
       if (res.meta?.usage?.remaining !== undefined) {
         setUsageRemaining(res.meta.usage.remaining ?? null);
       }
@@ -183,6 +191,11 @@ function GenerateContent() {
               <p className="mb-4 font-display italic text-brand-400">
                 işte {replies.length} cevap —
               </p>
+              {confidence && (
+                <div className="mb-4">
+                  <ConfidenceBadge confidence={confidence} />
+                </div>
+              )}
               <div className="space-y-3">
                 {replies.map((r, i) => (
                   <ReplyCard key={i} reply={r} index={i} />

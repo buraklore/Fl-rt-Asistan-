@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
     .is("deleted_at", null)
     .maybeSingle();
 
-  if (!target) return fail(404, "Not Found", "Hedef bulunamadı.");
+  if (!target) return fail(404, "Bulunamadı", "Hedef bulunamadı.");
 
   const { data: session, error } = await supabase
     .from("chat_sessions")
@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
     .select()
     .single();
 
-  if (error) return fail(500, "Database Error", error.message);
+  if (error) return fail(500, "Veritabanı Hatası", error.message);
   return ok(session);
 }
 
@@ -52,6 +52,6 @@ export async function GET(request: NextRequest) {
   if (targetId) q = q.eq("target_id", targetId);
 
   const { data, error } = await q;
-  if (error) return fail(500, "Database Error", error.message);
+  if (error) return fail(500, "Veritabanı Hatası", error.message);
   return ok(data ?? []);
 }

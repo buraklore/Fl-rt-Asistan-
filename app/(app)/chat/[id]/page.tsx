@@ -132,7 +132,7 @@ export default function ChatSessionPage({ params }: Params) {
             ]);
             setStreamBuffer("");
           } else if (eventName === "error") {
-            setError(data.message ?? "Stream hatası");
+            setError(data.message ?? "Akış hatası oluştu.");
           }
         }
       }

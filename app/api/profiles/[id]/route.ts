@@ -20,8 +20,8 @@ export async function GET(_req: NextRequest, { params }: Params) {
     .is("deleted_at", null)
     .maybeSingle();
 
-  if (error) return fail(500, "Database Error", error.message);
-  if (!data) return fail(404, "Not Found", "Hedef bulunamadı.");
+  if (error) return fail(500, "Veritabanı Hatası", error.message);
+  if (!data) return fail(404, "Bulunamadı", "Hedef bulunamadı.");
   return ok(data);
 }
 
@@ -32,7 +32,7 @@ export async function PATCH(request: NextRequest, { params }: Params) {
   const { id } = await params;
 
   const body = await request.json().catch(() => null);
-  if (!body) return fail(400, "Invalid JSON");
+  if (!body) return fail(400, "Geçersiz JSON");
 
   const update: Record<string, unknown> = {};
   if (body.name !== undefined) update.name = body.name;
@@ -50,7 +50,7 @@ export async function PATCH(request: NextRequest, { params }: Params) {
     .select()
     .single();
 
-  if (error) return fail(500, "Database Error", error.message);
+  if (error) return fail(500, "Veritabanı Hatası", error.message);
   return ok(data);
 }
 
@@ -66,6 +66,6 @@ export async function DELETE(_req: NextRequest, { params }: Params) {
     .update({ deleted_at: new Date().toISOString() })
     .eq("id", id);
 
-  if (error) return fail(500, "Database Error", error.message);
+  if (error) return fail(500, "Veritabanı Hatası", error.message);
   return new Response(null, { status: 204 });
 }

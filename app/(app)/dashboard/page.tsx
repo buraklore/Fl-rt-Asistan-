@@ -1,3 +1,4 @@
+import { redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import {
   PageHeader,
@@ -8,6 +9,7 @@ import {
 } from "@/components/app/ui";
 import { DashboardHookCard } from "./hook-card";
 import { detectRealityCheck } from "@/lib/reality-check";
+import { checkProfileCompleteness } from "@/lib/schemas";
 import Link from "next/link";
 
 export const dynamic = "force-dynamic";
@@ -18,6 +20,17 @@ export default async function DashboardPage() {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) return null;
+
+  // Profile completeness gate — incomplete profiles can't use the app
+  const { data: gateProfile } = await supabase
+    .from("user_profiles")
+    .select(
+      "display_name, gender, age_range, interests, communication_style, attachment_style, relationship_goal, raw_bio, own_dynamic_style, own_expression_style, own_relationship_energy, attracted_to_dynamic_styles, attracted_to_expression_styles, attracted_to_energies",
+    )
+    .eq("id", user.id)
+    .maybeSingle();
+  const gateCheck = checkProfileCompleteness(gateProfile ?? {});
+  if (!gateCheck.complete) redirect("/onboarding");
 
   // Load initial data server-side for fast first render
   const [
@@ -49,13 +62,9 @@ export default async function DashboardPage() {
       .maybeSingle(),
   ]);
 
-  // "Profilini doldur" nudge — triggered when every signal field is empty.
-  // We don't pester users who filled even one meaningful slot.
-  const profileEmpty =
-    !myProfile?.raw_bio &&
-    !myProfile?.attachment_style &&
-    !myProfile?.relationship_goal &&
-    !myProfile?.communication_style;
+  // Profile is complete at this point (we redirected otherwise).
+  // The nudge below is kept for legacy compatibility but should never trigger.
+  const profileEmpty = false;
 
   const userName =
     user.user_metadata?.display_name || user.email?.split("@")[0] || "";

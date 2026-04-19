@@ -25,7 +25,7 @@ export async function GET() {
     .eq("id", user.id)
     .maybeSingle();
 
-  if (error) return fail(500, "Database Error", error.message);
+  if (error) return fail(500, "Veritabanı Hatası", error.message);
 
   if (!data) {
     // Trigger normally creates this, but if missing (legacy user), create empty.
@@ -67,6 +67,18 @@ export async function PUT(request: NextRequest) {
   if (body.relationshipGoal !== undefined)
     update.relationship_goal = body.relationshipGoal;
   if (body.rawBio !== undefined) update.raw_bio = body.rawBio;
+  if (body.ownDynamicStyle !== undefined)
+    update.own_dynamic_style = body.ownDynamicStyle;
+  if (body.ownExpressionStyle !== undefined)
+    update.own_expression_style = body.ownExpressionStyle;
+  if (body.ownRelationshipEnergy !== undefined)
+    update.own_relationship_energy = body.ownRelationshipEnergy;
+  if (body.attractedToDynamicStyles !== undefined)
+    update.attracted_to_dynamic_styles = body.attractedToDynamicStyles;
+  if (body.attractedToExpressionStyles !== undefined)
+    update.attracted_to_expression_styles = body.attractedToExpressionStyles;
+  if (body.attractedToEnergies !== undefined)
+    update.attracted_to_energies = body.attractedToEnergies;
 
   try {
     // Upsert — if the row doesn't exist yet (legacy user), create it.
@@ -76,13 +88,13 @@ export async function PUT(request: NextRequest) {
       .select()
       .single();
 
-    if (error) return fail(500, "Database Error", error.message);
+    if (error) return fail(500, "Veritabanı Hatası", error.message);
     return ok(data);
   } catch (err) {
     console.error("[user profile PUT] failed:", err);
     return fail(
       500,
-      "Update Failed",
+      "Güncelleme Başarısız",
       err instanceof Error ? err.message : "Profil güncellenemedi.",
     );
   }

@@ -28,7 +28,7 @@ export async function DELETE() {
   if (!serviceRoleKey || !supabaseUrl) {
     return fail(
       500,
-      "Configuration Error",
+      "Yapılandırma Hatası",
       "Silme şu anda sunucuda yapılandırılmamış. Lütfen privacy@rizzai.app ile iletişime geç.",
     );
   }
@@ -41,7 +41,7 @@ export async function DELETE() {
   // 1. Delete the auth.users row — FK cascades wipe everything else.
   const { error } = await admin.auth.admin.deleteUser(user.id);
   if (error) {
-    return fail(500, "Deletion Failed", error.message);
+    return fail(500, "Silme Başarısız", error.message);
   }
 
   // 2. Return 204 No Content — client should clear local session and redirect.
