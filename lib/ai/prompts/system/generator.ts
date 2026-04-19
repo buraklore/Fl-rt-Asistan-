@@ -1,7 +1,11 @@
-import type { TargetProfileForPrompt, Tone } from "@/lib/schemas";
+import type {
+  TargetProfileForPrompt,
+  UserProfileForPrompt,
+  Tone,
+} from "@/lib/schemas";
 import { BASE_SYSTEM_PROMPT } from "./base";
 
-export const GENERATOR_PROMPT_VERSION = "generator.v1";
+export const GENERATOR_PROMPT_VERSION = "generator.v2"; // v2: user profile injected
 
 const TONE_DEFINITIONS: Record<Tone, string> = {
   cool: "grounded, low-effort-looking, slightly witty. No eagerness. No emoji unless the incoming message used one.",
@@ -14,24 +18,26 @@ const TONE_DEFINITIONS: Record<Tone, string> = {
 /**
  * Build the full system prompt for a Message Generator call.
  *
- * Design notes:
- * - The JSON output schema is re-stated inline so the model sees it
- *   next to the constraints, not just in a separate "respond with JSON"
- *   instruction. This materially improves output compliance.
- * - Target profile is serialized as compact JSON — no prose rendering.
- *   The model reads structured data better than English sentences
- *   describing structured data.
- * - We explicitly forbid fabricating facts about the target. Hallucinated
- *   personal details are the #1 failure mode for this feature.
+ * v2: now receives `user` profile so replies can be calibrated to the
+ * user's own communication style (direct vs indirect, playful vs reserved).
+ * If the user has a defined style, the generator stays *within that voice*
+ * rather than inventing a persona. This is core to the product's value —
+ * we're not writing messages as a generic charismatic person, we're writing
+ * them as THIS user.
  */
 export function buildGeneratorSystemPrompt(args: {
   tones: Tone[];
+  user: UserProfileForPrompt | null;
   target: TargetProfileForPrompt | null;
   userNote: string | null;
 }): string {
   const toneBlock = args.tones
     .map((t) => `- "${t}": ${TONE_DEFINITIONS[t]}`)
     .join("\n");
+
+  const userProfileBlock = args.user
+    ? `USER PROFILE (the person sending the message — write in their voice):\n${JSON.stringify(args.user, null, 2)}`
+    : "USER PROFILE: not provided. Default to a natural, unremarkable voice.";
 
   const targetBlock = args.target
     ? `TARGET PROFILE (JSON):\n${JSON.stringify(args.target, null, 2)}`
@@ -46,7 +52,7 @@ export function buildGeneratorSystemPrompt(args: {
 TASK: Message Generator
 Given the last message the target sent to the user, produce one reply
 per requested tone. Replies must sound like something a real person
-in their twenties would actually send.
+in their twenties would actually send — AND they must sound like THIS user.
 
 CONSTRAINTS
 - 1–2 sentences per reply. Shorter is usually better.
@@ -54,9 +60,15 @@ CONSTRAINTS
 - Never fabricate facts about the target. If uncertain, stay generic.
 - Don't start every reply the same way across tones.
 - Don't use hashtags, marketing speak, or "let's" / "shall we".
+- If the USER profile specifies a communicationStyle, every reply must
+  plausibly sound like that person wrote it. Don't turn a reserved user
+  into a hyper-flirty one just because "flirty" was requested — adapt the
+  tone to their baseline voice.
 
 TONES
 ${toneBlock}
+
+${userProfileBlock}
 
 ${targetBlock}
 

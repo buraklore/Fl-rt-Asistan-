@@ -8,6 +8,7 @@ import {
   ConflictAnalysisLLMResponseSchema,
   type ConflictAnalysisLLMResponse,
   type TargetProfileForPrompt,
+  type UserProfileForPrompt,
 } from "@/lib/schemas";
 import { requireUser } from "@/lib/auth";
 import { enforceQuota } from "@/lib/quota";
@@ -48,33 +49,64 @@ export async function POST(request: NextRequest) {
     }
   }
 
-  const provider = getLLM();
+  // Load user's own profile so fix-message is written in their voice
+  const { data: userRow } = await supabase
+    .from("user_profiles")
+    .select(
+      "display_name, gender, age_range, interests, communication_style, attachment_style, relationship_goal, raw_bio",
+    )
+    .eq("id", user.id)
+    .maybeSingle();
 
-  const result = await provider.complete<ConflictAnalysisLLMResponse>({
-    system: buildConflictSystemPrompt(target),
-    messages: [
-      { role: "user", content: `Chat transcript:\n"""\n${body.chatLog}\n"""` },
-    ],
-    schema: ConflictAnalysisLLMResponseSchema,
-    temperature: 0.4,
-    maxTokens: 1200,
-  });
+  const userForPrompt: UserProfileForPrompt | null = userRow
+    ? {
+        displayName: userRow.display_name ?? null,
+        gender: userRow.gender ?? null,
+        ageRange: userRow.age_range ?? null,
+        interests: userRow.interests ?? [],
+        communicationStyle: userRow.communication_style ?? null,
+        attachmentStyle: userRow.attachment_style ?? null,
+        relationshipGoal: userRow.relationship_goal ?? null,
+        rawBio: userRow.raw_bio ?? null,
+      }
+    : null;
 
-  const { data: saved, error } = await supabase
-    .from("conflict_analyses")
-    .insert({
-      user_id: user.id,
-      target_id: body.targetId ?? null,
-      chat_log: body.chatLog,
-      who_escalated: result.data.whoEscalated,
-      emotions: result.data.emotions,
-      root_cause: result.data.rootCause,
-      fix_message: result.data.fixMessage,
-      severity: result.data.severity,
-    })
-    .select()
-    .single();
+  try {
+    const provider = getLLM();
 
-  if (error) return fail(500, "Database Error", error.message);
-  return ok(saved);
+    const result = await provider.complete<ConflictAnalysisLLMResponse>({
+      system: buildConflictSystemPrompt({ user: userForPrompt, target }),
+      messages: [
+        { role: "user", content: `Chat transcript:\n"""\n${body.chatLog}\n"""` },
+      ],
+      schema: ConflictAnalysisLLMResponseSchema,
+      temperature: 0.4,
+      maxTokens: 1200,
+    });
+
+    const { data: saved, error } = await supabase
+      .from("conflict_analyses")
+      .insert({
+        user_id: user.id,
+        target_id: body.targetId ?? null,
+        chat_log: body.chatLog,
+        who_escalated: result.data.whoEscalated,
+        emotions: result.data.emotions,
+        root_cause: result.data.rootCause,
+        fix_message: result.data.fixMessage,
+        severity: result.data.severity,
+      })
+      .select()
+      .single();
+
+    if (error) return fail(500, "Database Error", error.message);
+    return ok(saved);
+  } catch (err) {
+    console.error("[conflicts] failed:", err);
+    const msg =
+      err instanceof Error
+        ? err.message
+        : "AI sağlayıcısı beklenmedik bir cevap verdi.";
+    return fail(502, "AI Provider Error", msg);
+  }
 }

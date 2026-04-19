@@ -1,13 +1,21 @@
-import type { TargetProfileForPrompt } from "@/lib/schemas";
+import type {
+  TargetProfileForPrompt,
+  UserProfileForPrompt,
+} from "@/lib/schemas";
 import { BASE_SYSTEM_PROMPT } from "./base";
 
-export const CONFLICT_PROMPT_VERSION = "conflict.v1";
+export const CONFLICT_PROMPT_VERSION = "conflict.v2"; // v2: user profile injected
 
-export function buildConflictSystemPrompt(
-  target: TargetProfileForPrompt | null,
-): string {
-  const targetBlock = target
-    ? `TARGET PROFILE (JSON):\n${JSON.stringify(target, null, 2)}`
+export function buildConflictSystemPrompt(args: {
+  user: UserProfileForPrompt | null;
+  target: TargetProfileForPrompt | null;
+}): string {
+  const userBlock = args.user
+    ? `USER PROFILE (the person asking — the repair message will be written in their voice):\n${JSON.stringify(args.user, null, 2)}`
+    : "USER PROFILE: not provided. Repair message in a neutral, natural voice.";
+
+  const targetBlock = args.target
+    ? `TARGET PROFILE (JSON):\n${JSON.stringify(args.target, null, 2)}`
     : "TARGET PROFILE: unknown.";
 
   return `${BASE_SYSTEM_PROMPT}
@@ -29,15 +37,20 @@ ANALYSIS RULES
   unmet bid, pursuer-distancer, boundary violation, broken trust, etc.) —
   not a sidepick on who to blame.
 - severity 1 = minor friction, 5 = relationship-threatening rupture.
+- If USER profile specifies an attachment style, factor that into the root
+  cause (e.g., anxious user + avoidant target commonly produces
+  pursuer-distancer dynamics).
 
 FIX MESSAGE RULES
-- Written in the user's voice, not AI voice.
+- Written in the user's voice — reflect their communicationStyle if given.
 - Short. 1-3 sentences.
 - Names ONE thing to acknowledge and ONE thing to ask or offer.
 - Never grovels. Never demands. Never uses "I feel heard when..." therapy
   templates.
 - If severity ≥4 and the user clearly was in the wrong, the fix message
   should lead with genuine accountability.
+
+${userBlock}
 
 ${targetBlock}
 

@@ -6,6 +6,7 @@ import {
 } from "@/components/app/ui";
 import { SignOutButton } from "./signout-button";
 import { DeleteAccountButton } from "./delete-account-button";
+import { ProfileForm } from "./profile-form";
 
 export const dynamic = "force-dynamic";
 
@@ -38,6 +39,17 @@ export default async function SettingsPage() {
       />
 
       <div className="space-y-6">
+        {/* Profilim — en üstte, en kritik çünkü AI çıktılarını kalibre eder */}
+        <SectionCard className="border-brand-500/20 p-6">
+          <p className="mb-2 text-[10px] font-semibold uppercase tracking-widest text-brand-400">
+            profilim
+          </p>
+          <p className="mb-5 font-display text-2xl italic text-ink-100">
+            Sen kimsin?
+          </p>
+          <ProfileForm />
+        </SectionCard>
+
         {/* Account */}
         <SectionCard className="p-6">
           <p className="mb-4 text-[10px] font-semibold uppercase tracking-widest text-ink-400">

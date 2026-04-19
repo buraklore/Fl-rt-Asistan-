@@ -25,6 +25,7 @@ export default async function DashboardPage() {
     { data: recentGenerations },
     { count: totalGenerations },
     realityCheck,
+    { data: myProfile },
   ] = await Promise.all([
     supabase
       .from("target_profiles")
@@ -41,7 +42,20 @@ export default async function DashboardPage() {
       .from("message_generations")
       .select("*", { count: "exact", head: true }),
     detectRealityCheck(user.id),
+    supabase
+      .from("user_profiles")
+      .select("raw_bio, attachment_style, relationship_goal, communication_style")
+      .eq("id", user.id)
+      .maybeSingle(),
   ]);
+
+  // "Profilini doldur" nudge — triggered when every signal field is empty.
+  // We don't pester users who filled even one meaningful slot.
+  const profileEmpty =
+    !myProfile?.raw_bio &&
+    !myProfile?.attachment_style &&
+    !myProfile?.relationship_goal &&
+    !myProfile?.communication_style;
 
   const userName =
     user.user_metadata?.display_name || user.email?.split("@")[0] || "";
@@ -53,6 +67,27 @@ export default async function DashboardPage() {
         title="Dashboard."
         description="Günün hook'u, hedeflerin ve son üretimlerin — tek bakışta."
       />
+
+      {/* Profilini doldur — kullanıcı kendisini tanıtmadan AI çıktıları genel kalıyor */}
+      {profileEmpty && (
+        <section className="mb-6">
+          <div className="rounded-2xl border border-brand-500/30 bg-gradient-to-br from-brand-500/10 via-ink-900/60 to-ink-900/60 p-6">
+            <p className="mb-2 font-display italic text-brand-400">
+              önce seni tanıyalım —
+            </p>
+            <p className="mb-4 max-w-xl text-[15px] leading-relaxed text-ink-100">
+              Uyum skoru ve mesaj önerileri senin profiline göre kalibreleniyor.
+              Birkaç dakikanı ayır, AI sana çok daha doğru cevaplar versin.
+            </p>
+            <Link
+              href="/settings"
+              className="inline-flex rounded-full bg-brand-500 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-brand-600"
+            >
+              Profilimi doldur →
+            </Link>
+          </div>
+        </section>
+      )}
 
       {/* Reality check — obsessive-usage nudge (§14) */}
       {realityCheck.shouldShow && (

@@ -35,45 +35,54 @@ export async function POST(_req: NextRequest, { params }: Params) {
   if (loadErr) return fail(500, "Database Error", loadErr.message);
   if (!target) return fail(404, "Not Found", "Hedef bulunamadı.");
 
-  const provider = getLLM();
+  try {
+    const provider = getLLM();
 
-  const result = await provider.complete<AnalyzeTargetLLMResponse>({
-    system: buildAnalyzerSystemPrompt(),
-    messages: [
-      {
-        role: "user",
-        content: buildAnalyzerUserMessage({
-          relation: target.relation,
-          gender: target.gender,
-          ageRange: target.age_range,
-          interests: target.interests ?? [],
-          behaviors: target.behaviors ?? [],
-          contextNotes: target.context_notes,
-        }),
-      },
-    ],
-    schema: AnalyzeTargetLLMResponseSchema,
-    temperature: 0.5,
-    maxTokens: 800,
-  });
+    const result = await provider.complete<AnalyzeTargetLLMResponse>({
+      system: buildAnalyzerSystemPrompt(),
+      messages: [
+        {
+          role: "user",
+          content: buildAnalyzerUserMessage({
+            relation: target.relation,
+            gender: target.gender,
+            ageRange: target.age_range,
+            interests: target.interests ?? [],
+            behaviors: target.behaviors ?? [],
+            contextNotes: target.context_notes,
+          }),
+        },
+      ],
+      schema: AnalyzeTargetLLMResponseSchema,
+      temperature: 0.5,
+      maxTokens: 800,
+    });
 
-  const analysis = result.data;
+    const analysis = result.data;
 
-  const { data: updated, error: updateErr } = await supabase
-    .from("target_profiles")
-    .update({
-      personality_type: analysis.personalityType,
-      big5: analysis.big5,
-      attachment_style: analysis.attachmentStyle,
-      communication_style: analysis.communicationStyle,
-      attraction_triggers: analysis.attractionTriggers,
-      analysis_confidence: analysis.confidence,
-      analysis_version: (target.analysis_version ?? 0) + 1,
-    })
-    .eq("id", id)
-    .select()
-    .single();
+    const { data: updated, error: updateErr } = await supabase
+      .from("target_profiles")
+      .update({
+        personality_type: analysis.personalityType,
+        big5: analysis.big5,
+        attachment_style: analysis.attachmentStyle,
+        communication_style: analysis.communicationStyle,
+        attraction_triggers: analysis.attractionTriggers,
+        analysis_confidence: analysis.confidence,
+        analysis_version: (target.analysis_version ?? 0) + 1,
+      })
+      .eq("id", id)
+      .select()
+      .single();
 
-  if (updateErr) return fail(500, "Database Error", updateErr.message);
-  return ok(updated);
+    if (updateErr) return fail(500, "Database Error", updateErr.message);
+    return ok(updated);
+  } catch (err) {
+    console.error("[analyze] failed:", err);
+    const msg =
+      err instanceof Error
+        ? err.message
+        : "AI sağlayıcısı beklenmedik bir cevap verdi.";
+    return fail(502, "AI Provider Error", msg);
+  }
 }

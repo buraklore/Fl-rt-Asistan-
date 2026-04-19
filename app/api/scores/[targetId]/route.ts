@@ -7,6 +7,7 @@ import {
   RelationshipScoreLLMResponseSchema,
   type RelationshipScoreLLMResponse,
   type TargetProfileForPrompt,
+  type UserProfileForPrompt,
 } from "@/lib/schemas";
 import { requireUser } from "@/lib/auth";
 import { fail, ok } from "@/lib/http";
@@ -48,6 +49,15 @@ export async function POST(_req: NextRequest, { params }: Params) {
     .maybeSingle();
   if (!target) return fail(404, "Not Found", "Hedef bulunamadı.");
 
+  // Load the user's own profile for two-sided scoring
+  const { data: userProfile } = await supabase
+    .from("user_profiles")
+    .select(
+      "display_name, gender, age_range, interests, communication_style, attachment_style, relationship_goal, raw_bio",
+    )
+    .eq("id", user.id)
+    .maybeSingle();
+
   // Activity signals
   const weekAgo = new Date(Date.now() - 7 * 86_400_000).toISOString();
   const monthAgo = new Date(Date.now() - 30 * 86_400_000).toISOString();
@@ -77,35 +87,58 @@ export async function POST(_req: NextRequest, { params }: Params) {
     analysis: null,
   };
 
-  const provider = getLLM();
+  const userForPrompt: UserProfileForPrompt | null = userProfile
+    ? {
+        displayName: userProfile.display_name ?? null,
+        gender: userProfile.gender ?? null,
+        ageRange: userProfile.age_range ?? null,
+        interests: userProfile.interests ?? [],
+        communicationStyle: userProfile.communication_style ?? null,
+        attachmentStyle: userProfile.attachment_style ?? null,
+        relationshipGoal: userProfile.relationship_goal ?? null,
+        rawBio: userProfile.raw_bio ?? null,
+      }
+    : null;
 
-  const result = await provider.complete<RelationshipScoreLLMResponse>({
-    system: buildScorerSystemPrompt({
-      target: targetForPrompt,
-      recentActivity: {
-        generationsLast7Days: gens ?? 0,
-        conflictsLast30Days: conflicts ?? 0,
-        averageResponseLagHours: null,
-      },
-    }),
-    messages: [{ role: "user", content: "Compute the score." }],
-    schema: RelationshipScoreLLMResponseSchema,
-    temperature: 0.3,
-    maxTokens: 600,
-  });
+  try {
+    const provider = getLLM();
 
-  const { data: saved, error } = await supabase
-    .from("relationship_scores")
-    .insert({
-      target_id: targetId,
-      compatibility: result.data.compatibility,
-      risks: result.data.risks,
-      strengths: result.data.strengths,
-      summary: result.data.summary,
-    })
-    .select()
-    .single();
+    const result = await provider.complete<RelationshipScoreLLMResponse>({
+      system: buildScorerSystemPrompt({
+        user: userForPrompt,
+        target: targetForPrompt,
+        recentActivity: {
+          generationsLast7Days: gens ?? 0,
+          conflictsLast30Days: conflicts ?? 0,
+          averageResponseLagHours: null,
+        },
+      }),
+      messages: [{ role: "user", content: "Compute the score." }],
+      schema: RelationshipScoreLLMResponseSchema,
+      temperature: 0.3,
+      maxTokens: 600,
+    });
 
-  if (error) return fail(500, "Database Error", error.message);
-  return ok(saved);
+    const { data: saved, error } = await supabase
+      .from("relationship_scores")
+      .insert({
+        target_id: targetId,
+        compatibility: result.data.compatibility,
+        risks: result.data.risks,
+        strengths: result.data.strengths,
+        summary: result.data.summary,
+      })
+      .select()
+      .single();
+
+    if (error) return fail(500, "Database Error", error.message);
+    return ok(saved);
+  } catch (err) {
+    console.error("[scores] failed:", err);
+    const msg =
+      err instanceof Error
+        ? err.message
+        : "AI sağlayıcısı beklenmedik bir cevap verdi.";
+    return fail(502, "AI Provider Error", msg);
+  }
 }

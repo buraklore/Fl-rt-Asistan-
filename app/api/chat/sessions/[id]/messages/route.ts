@@ -4,6 +4,7 @@ import { streamChat } from "@/lib/ai/stream";
 import {
   SendChatMessageRequestSchema,
   type TargetProfileForPrompt,
+  type UserProfileForPrompt,
 } from "@/lib/schemas";
 import { requireUser } from "@/lib/auth";
 import { enforceQuota } from "@/lib/quota";
@@ -79,7 +80,30 @@ export async function POST(request: NextRequest, { params }: Params) {
     })),
   });
 
+  // Load user's own profile so coach can calibrate to their style
+  const { data: userRow } = await supabase
+    .from("user_profiles")
+    .select(
+      "display_name, gender, age_range, interests, communication_style, attachment_style, relationship_goal, raw_bio",
+    )
+    .eq("id", user.id)
+    .maybeSingle();
+
+  const userForPrompt: UserProfileForPrompt | null = userRow
+    ? {
+        displayName: userRow.display_name ?? null,
+        gender: userRow.gender ?? null,
+        ageRange: userRow.age_range ?? null,
+        interests: userRow.interests ?? [],
+        communicationStyle: userRow.communication_style ?? null,
+        attachmentStyle: userRow.attachment_style ?? null,
+        relationshipGoal: userRow.relationship_goal ?? null,
+        rawBio: userRow.raw_bio ?? null,
+      }
+    : null;
+
   const system = buildCoachSystemPrompt({
+    user: userForPrompt,
     target,
     memoryContext: contextBlock,
   });

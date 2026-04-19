@@ -2,6 +2,7 @@ import {
   GenerateMessageLLMResponseSchema,
   type GenerateMessageLLMResponse,
   type TargetProfileForPrompt,
+  type UserProfileForPrompt,
   type Tone,
 } from "@/lib/schemas";
 import type { LLMProvider } from "./providers";
@@ -15,6 +16,7 @@ import { preCallModeration } from "./safety/moderation";
 export type GenerateMessageServiceInput = {
   incomingMessage: string;
   tones: Tone[];
+  user: UserProfileForPrompt | null;
   target: TargetProfileForPrompt | null;
   userNote: string | null;
 };
@@ -42,9 +44,6 @@ export type GenerateMessageServiceResult =
 /**
  * Orchestration for the hero feature. The API module instantiates this
  * once at boot with a provider and calls `run` per request.
- *
- * Keeping this outside of the NestJS module tree means we can unit-test
- * the full Message Generator path without booting a Nest app.
  */
 export class MessageGeneratorService {
   constructor(private readonly provider: LLMProvider) {}
@@ -67,6 +66,7 @@ export class MessageGeneratorService {
 
     const system = buildGeneratorSystemPrompt({
       tones: input.tones,
+      user: input.user,
       target: input.target,
       userNote: input.userNote,
     });

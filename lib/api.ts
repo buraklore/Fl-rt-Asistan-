@@ -6,6 +6,7 @@ import type {
   CreateTargetRequest,
   AnalyzeConflictRequest,
   DailyHookDto,
+  UpdateUserProfileRequest,
 } from "@/lib/schemas";
 
 /**
@@ -108,5 +109,24 @@ export const api = {
     request<{ acked: boolean }>(`/api/hooks/${id}/ack`, {
       method: "POST",
       body: JSON.stringify({ action }),
+    }),
+
+  getMyProfile: () =>
+    request<{
+      id: string;
+      display_name: string | null;
+      gender: string | null;
+      age_range: string | null;
+      interests: string[] | null;
+      communication_style: string | null;
+      attachment_style: string | null;
+      relationship_goal: string | null;
+      raw_bio: string | null;
+    }>("/api/me/profile"),
+
+  updateMyProfile: (body: UpdateUserProfileRequest) =>
+    request<unknown>("/api/me/profile", {
+      method: "PUT",
+      body: JSON.stringify(body),
     }),
 };

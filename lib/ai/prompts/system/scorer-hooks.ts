@@ -1,11 +1,15 @@
-import type { TargetProfileForPrompt } from "@/lib/schemas";
+import type {
+  TargetProfileForPrompt,
+  UserProfileForPrompt,
+} from "@/lib/schemas";
 import { BASE_SYSTEM_PROMPT } from "./base";
 
 // ---------- Relationship Score ----------
 
-export const SCORER_PROMPT_VERSION = "scorer.v1";
+export const SCORER_PROMPT_VERSION = "scorer.v2"; // v2: user profile injected
 
 export function buildScorerSystemPrompt(args: {
+  user: UserProfileForPrompt | null;
   target: TargetProfileForPrompt | null;
   recentActivity: {
     generationsLast7Days: number;
@@ -15,19 +19,34 @@ export function buildScorerSystemPrompt(args: {
 }): string {
   return `${BASE_SYSTEM_PROMPT}
 
-TASK: Relationship Score
-Compute a compatibility 0-100 with top-3 risks and top-3 strengths,
-grounded in the target profile and recent activity signals.
+TASK: Relationship Score — compatibility between THE USER and THE TARGET.
+Compute a compatibility 0-100 with top-3 risks and top-3 strengths, grounded
+in BOTH profiles and recent activity. This is a two-sided score: it is about
+the *fit* between these two specific people, not just the target's general
+desirability.
 
 SCORING RULES
-- 80-100: strong alignment, consistent positive signals.
-- 60-79:  compatible but meaningful mismatch in at least one dimension.
-- 40-59:  workable with effort; noticeable friction or low certainty.
-- 20-39:  structural incompatibility (attachment, values, life stage).
-- 0-19:   misalignment severe enough to recommend stepping back.
+- 80-100: strong alignment on attachment style, communication, goals, values.
+- 60-79:  compatible but meaningful mismatch in one dimension (attachment/goal/pace).
+- 40-59:  workable with explicit effort; friction in multiple dimensions.
+- 20-39:  structural incompatibility (e.g., anxious↔avoidant, different goals).
+- 0-19:   severe mismatch; recommend stepping back.
 
-- Risks must cite evidence from the profile or activity signals.
-- Don't invent data. If unknown, confidence stays moderate.
+COMPATIBILITY HEURISTICS — use these unless profiles strongly contradict:
+- Anxious ↔ avoidant pair: mark as a risk, not a deal-breaker.
+- Mismatched relationship goals (e.g., "dating" ↔ "long-term"): major risk.
+- Overlapping interests: mild strength; rarely decisive alone.
+- Communication style mismatch (direct ↔ indirect): risk with moderate severity.
+
+- Risks must cite specific evidence from EITHER profile OR recent activity.
+- Don't invent data. If either profile is mostly empty, keep confidence
+  moderate and flag that in the summary.
+
+${
+  args.user
+    ? `USER PROFILE (JSON) — this is the person asking:\n${JSON.stringify(args.user, null, 2)}`
+    : "USER PROFILE: not provided. Score with lower confidence, skip user-side risks/strengths."
+}
 
 ${
   args.target
@@ -43,7 +62,7 @@ OUTPUT — STRICT JSON:
   "compatibility": 0-100,
   "risks":    [{ "label": "...", "severity": 1-5, "evidence": "..." }],
   "strengths":[{ "label": "...", "evidence": "..." }],
-  "summary": "<one sentence overall read>"
+  "summary": "<one sentence overall read of the fit>"
 }
 `;
 }
