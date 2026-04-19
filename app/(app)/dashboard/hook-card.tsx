@@ -108,21 +108,34 @@ export function DashboardHookCard({ hasTargets }: { hasTargets: boolean }) {
     }[loadingPhase];
 
     return (
-      <div className="relative overflow-hidden rounded-2xl border border-brand-500/20 bg-gradient-to-br from-brand-500/5 via-ink-900/60 to-ink-900/60 p-8">
-        <div className="pointer-events-none absolute -right-8 -top-8 font-display text-[10rem] italic leading-none text-brand-500/5">
-          &ldquo;
-        </div>
+      <div
+        className="relative overflow-hidden rounded-[20px] border border-brand-500/20 px-10 pb-8 pt-[34px] backdrop-blur-[8px]"
+        style={{
+          background:
+            "linear-gradient(135deg, rgba(225,29,72,0.12) 0%, rgba(225,29,72,0.04) 42%, rgba(31,16,35,0.5) 100%)",
+        }}
+      >
+        <span
+          aria-hidden
+          className="pointer-events-none absolute select-none font-display italic leading-none text-brand-400"
+          style={{
+            top: -34,
+            right: 28,
+            fontSize: 280,
+            opacity: 0.1,
+          }}
+        >
+          &rdquo;
+        </span>
         <div className="relative">
-          <p className="mb-2 text-[10px] font-semibold uppercase tracking-widest text-brand-400">
+          <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.25em] text-brand-400">
             günün hook&apos;u
           </p>
-          <p className="mb-2 font-display text-2xl italic text-ink-300">
+          <p className="mb-2 font-display text-[32px] italic leading-snug text-ink-300">
             hazırlanıyor
             <span className="inline-block animate-pulse">…</span>
           </p>
-          <p className="text-sm italic text-ink-500">
-            {phaseText}
-          </p>
+          <p className="text-sm italic text-ink-500">{phaseText}</p>
         </div>
       </div>
     );
@@ -155,43 +168,72 @@ export function DashboardHookCard({ hasTargets }: { hasTargets: boolean }) {
   }
 
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-brand-500/30 bg-gradient-to-br from-brand-500/10 via-ink-900/60 to-ink-900/60 p-8">
+    <div
+      className="relative overflow-hidden rounded-[20px] border border-brand-500/35 px-10 pb-8 pt-[34px] backdrop-blur-[8px]"
+      style={{
+        background:
+          "linear-gradient(135deg, rgba(225,29,72,0.24) 0%, rgba(225,29,72,0.08) 42%, rgba(31,16,35,0.5) 100%)",
+      }}
+    >
+      <span
+        aria-hidden
+        className="pointer-events-none absolute select-none font-display italic leading-none text-brand-400"
+        style={{
+          top: -34,
+          right: 28,
+          fontSize: 280,
+          opacity: 0.1,
+        }}
+      >
+        &rdquo;
+      </span>
+
       <button
         onClick={dismiss}
         aria-label="Kapat"
-        className="absolute right-4 top-4 z-10 text-ink-500 transition hover:text-ink-200"
+        className="absolute right-4 top-4 z-10 flex h-7 w-7 items-center justify-center rounded-full border border-ink-700 bg-ink-900/70 text-[12px] text-ink-300 transition hover:border-ink-600 hover:text-ink-100"
       >
         ✕
       </button>
-      <div className="pointer-events-none absolute -right-8 -top-8 font-display text-[10rem] italic leading-none text-brand-500/10">
-        &ldquo;
+
+      <div className="relative mb-5 flex flex-wrap items-center gap-[10px] pr-[60px]">
+        <span className="text-[10px] font-semibold uppercase tracking-[0.25em] text-brand-400">
+          GÜNÜN HOOK&apos;U
+        </span>
+        <span className="text-[10px] text-ink-600">·</span>
+        <span className="text-[10px] font-semibold uppercase tracking-[0.25em] text-ink-400">
+          {CATEGORY_LABELS[hook.category] ?? hook.category}
+        </span>
+        {hook.targetName && (
+          <>
+            <span className="text-[10px] text-ink-600">·</span>
+            <span className="text-[10px] font-semibold uppercase tracking-[0.25em] text-ink-400">
+              {hook.targetName} için
+            </span>
+          </>
+        )}
       </div>
-      <div className="relative">
-        <p className="mb-2 text-[10px] font-semibold uppercase tracking-widest text-brand-400">
-          günün hook&apos;u · {CATEGORY_LABELS[hook.category] ?? hook.category}
-          {hook.targetName && (
-            <>
-              <span className="mx-2 text-ink-500">·</span>
-              <span className="text-ink-300 normal-case tracking-normal">
-                {hook.targetName} için
-              </span>
-            </>
-          )}
-        </p>
-        <p className="mb-6 font-display text-2xl leading-snug text-ink-100 sm:text-3xl">
-          {hook.text}
-        </p>
-        <div className="flex items-center gap-3">
-          <Button onClick={copy} size="sm" variant="primary">
-            {copied ? "Kopyalandı ✓" : "Kopyala"}
-          </Button>
-          <Link
-            href="/generate"
-            className="text-sm text-ink-400 hover:text-ink-200"
-          >
-            veya üret →
-          </Link>
-        </div>
+
+      <p
+        className="relative mb-7 max-w-[760px] font-display italic leading-[1.15] tracking-tight text-ink-100"
+        style={{ fontSize: 42 }}
+      >
+        {hook.text}
+      </p>
+
+      <div className="relative flex flex-wrap items-center gap-[18px]">
+        <button
+          onClick={copy}
+          className="rounded-full bg-brand-500 px-5 py-2.5 text-sm font-medium text-white shadow-lg shadow-brand-500/20 transition hover:bg-brand-600"
+        >
+          {copied ? "Kopyalandı ✓" : "Kopyala"}
+        </button>
+        <Link
+          href="/generate"
+          className="text-[13px] text-ink-200 hover:text-ink-100"
+        >
+          veya üret →
+        </Link>
       </div>
     </div>
   );
