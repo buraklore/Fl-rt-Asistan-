@@ -23,6 +23,16 @@ export default async function InsightsPage() {
 
   const targetIds = (targets ?? []).map((t) => t.id);
 
+  type ScoreRow = {
+    id: string;
+    target_id: string;
+    compatibility: number;
+    risks: unknown;
+    strengths: unknown;
+    computed_at: string;
+    summary?: string | null;
+  };
+
   const { data: scores } =
     targetIds.length > 0
       ? await supabase
@@ -30,11 +40,11 @@ export default async function InsightsPage() {
           .select("*")
           .in("target_id", targetIds)
           .order("computed_at", { ascending: false })
-      : { data: [] };
+      : { data: [] as ScoreRow[] };
 
   // Pick latest score per target
-  const latestByTarget = new Map<string, (typeof scores)[0]>();
-  for (const s of scores ?? []) {
+  const latestByTarget = new Map<string, ScoreRow>();
+  for (const s of (scores ?? []) as ScoreRow[]) {
     if (!latestByTarget.has(s.target_id)) latestByTarget.set(s.target_id, s);
   }
 
