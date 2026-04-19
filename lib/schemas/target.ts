@@ -1,10 +1,10 @@
 import { z } from "zod";
 
 export const GenderSchema = z.enum([
-  "MALE",
-  "FEMALE",
-  "NONBINARY",
-  "UNSPECIFIED",
+  "male",
+  "female",
+  "nonbinary",
+  "unspecified",
 ]);
 export type Gender = z.infer<typeof GenderSchema>;
 
