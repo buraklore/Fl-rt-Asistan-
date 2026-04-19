@@ -16,7 +16,7 @@ export default function LandingPage() {
         }}
       >
         <div className="mx-auto max-w-6xl px-6 pb-24 pt-20 sm:pt-32">
-          <div className="stagger">
+          <div className="relative">
             <p className="mb-8 text-[11px] font-semibold uppercase tracking-[0.3em] text-brand-400">
               — beta · sadece davetliye özel
             </p>
