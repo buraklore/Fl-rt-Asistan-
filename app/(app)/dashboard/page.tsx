@@ -150,7 +150,7 @@ export default async function DashboardPage() {
 
       {/* Daily Hook — hero */}
       <section className="mb-10">
-        <DashboardHookCard />
+        <DashboardHookCard hasTargets={(targets ?? []).length > 0} />
       </section>
 
       {/* Stats row */}
