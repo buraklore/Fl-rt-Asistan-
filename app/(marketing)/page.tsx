@@ -284,7 +284,7 @@ function MockupPlaceholder({
         maxWidth: width,
         height,
         background:
-          "linear-gradient(180deg, rgba(225,29,72,0.06), rgba(31,16,35,0.4))",
+          "linear-gradient(180deg, rgba(225,29,72,0.06), rgba(17,17,24,0.4))",
       }}
     >
       <div
