@@ -6,13 +6,37 @@ import type { DailyHookDto } from "@/lib/schemas";
 import { Button } from "@/components/app/ui";
 import Link from "next/link";
 
-export function DashboardHookCard() {
+/**
+ * Dashboard's hero card showing today's "hook" — a proactive suggestion
+ * for something the user can send to one of their targets.
+ *
+ * Two optimization layers:
+ *  1. If the user has NO targets, we don't even call the API — we render
+ *     the empty state immediately with zero network roundtrip.
+ *  2. When we DO call the API, the first hit of the day triggers an AI
+ *     generation (3-5sec). We show an engaging "preparing" state instead
+ *     of a dead skeleton so the wait doesn't feel like a hang.
+ */
+export function DashboardHookCard({ hasTargets }: { hasTargets: boolean }) {
   const [hook, setHook] = useState<DailyHookDto | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(hasTargets); // only load if targets exist
+  const [loadingPhase, setLoadingPhase] = useState<"reading" | "thinking" | "writing">(
+    "reading",
+  );
   const [copied, setCopied] = useState(false);
   const [dismissed, setDismissed] = useState(false);
 
   useEffect(() => {
+    // Fast path — no targets, nothing to fetch
+    if (!hasTargets) {
+      setLoading(false);
+      return;
+    }
+
+    // Progressive loading messages so 3-5sec wait feels purposeful
+    const t1 = setTimeout(() => setLoadingPhase("thinking"), 800);
+    const t2 = setTimeout(() => setLoadingPhase("writing"), 2400);
+
     (async () => {
       try {
         const res = await api.getTodayHook();
@@ -21,9 +45,16 @@ export function DashboardHookCard() {
         if (!(err instanceof ApiError)) console.error(err);
       } finally {
         setLoading(false);
+        clearTimeout(t1);
+        clearTimeout(t2);
       }
     })();
-  }, []);
+
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+    };
+  }, [hasTargets]);
 
   const copy = async () => {
     if (!hook) return;
@@ -39,12 +70,60 @@ export function DashboardHookCard() {
     setDismissed(true);
   };
 
-  if (loading) {
+  // No targets → clear, zero-delay empty state
+  if (!hasTargets) {
     return (
-      <div className="rounded-2xl border border-ink-800 bg-ink-900/40 p-8">
-        <div className="h-4 w-24 animate-pulse rounded bg-ink-800" />
-        <div className="mt-4 h-8 w-3/4 animate-pulse rounded bg-ink-800" />
-        <div className="mt-3 h-4 w-1/2 animate-pulse rounded bg-ink-800" />
+      <div className="relative overflow-hidden rounded-2xl border border-brand-500/20 bg-gradient-to-br from-brand-500/5 via-ink-900/60 to-ink-900/60 p-8">
+        <div className="pointer-events-none absolute -right-8 -top-8 font-display text-[10rem] italic leading-none text-brand-500/5">
+          ✻
+        </div>
+        <div className="relative">
+          <p className="mb-3 font-display text-lg italic text-brand-400">
+            günlük dürtme —
+          </p>
+          <h3 className="mb-3 font-display text-2xl text-ink-100">
+            Önce bir hedef oluştur.
+          </h3>
+          <p className="mb-6 max-w-md text-sm leading-relaxed text-ink-300">
+            Hedef ekledikten sonra her sabah sana özel bir açılış mesajı
+            önerisi burada görünür.
+          </p>
+          <Link
+            href="/targets/new"
+            className="inline-flex rounded-xl bg-brand-500 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-brand-600"
+          >
+            Hedef oluştur →
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  // Loading — engaging progressive state
+  if (loading) {
+    const phaseText = {
+      reading: "profilini okuyor…",
+      thinking: "sana uygun bir açılış düşünüyor…",
+      writing: "yazıyor…",
+    }[loadingPhase];
+
+    return (
+      <div className="relative overflow-hidden rounded-2xl border border-brand-500/20 bg-gradient-to-br from-brand-500/5 via-ink-900/60 to-ink-900/60 p-8">
+        <div className="pointer-events-none absolute -right-8 -top-8 font-display text-[10rem] italic leading-none text-brand-500/5">
+          &ldquo;
+        </div>
+        <div className="relative">
+          <p className="mb-2 text-[10px] font-semibold uppercase tracking-widest text-brand-400">
+            günün hook&apos;u
+          </p>
+          <p className="mb-2 font-display text-2xl italic text-ink-300">
+            hazırlanıyor
+            <span className="inline-block animate-pulse">…</span>
+          </p>
+          <p className="text-sm italic text-ink-500">
+            {phaseText}
+          </p>
+        </div>
       </div>
     );
   }
@@ -55,19 +134,9 @@ export function DashboardHookCard() {
         <p className="mb-3 font-display italic text-lg text-brand-400">
           günlük dürtme —
         </p>
-        <h3 className="mb-3 font-display text-2xl text-ink-100">
-          Önce bir hedef oluştur.
-        </h3>
-        <p className="mb-6 text-sm text-ink-300">
-          Hedef ekledikten sonra her sabah sana özel bir açılış mesajı önerisi
-          burada görünür.
+        <p className="text-sm text-ink-300">
+          Bugün için hazırlanmadı. Daha sonra tekrar dene.
         </p>
-        <Link
-          href="/targets/new"
-          className="inline-flex rounded-xl bg-brand-500 px-5 py-2.5 text-sm font-medium text-white hover:bg-brand-600"
-        >
-          Hedef oluştur →
-        </Link>
       </div>
     );
   }
