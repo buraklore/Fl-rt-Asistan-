@@ -24,7 +24,7 @@ const NAV_SECTIONS = [
     label: "araçlar",
     items: [
       { href: "/generate", label: "Mesaj Üretici", symbol: "✻" },
-      { href: "/chat", label: "AI Koç", symbol: "◊" },
+      { href: "/chat", label: "Koç", symbol: "◊" },
       { href: "/conflicts", label: "Çatışma Onarımı", symbol: "⟁" },
       { href: "/insights", label: "Analiz", symbol: "◢" },
     ],
@@ -49,7 +49,7 @@ export function AppShell({
       {/* Mobile top bar */}
       <div className="sticky top-0 z-30 flex items-center justify-between border-b border-ink-800 bg-ink-950/80 px-4 py-3 backdrop-blur-lg md:hidden">
         <Link href="/dashboard" className="font-display text-lg">
-          Rizz<span className="italic text-brand-500">AI</span>
+          Flört<span className="italic text-brand-500"> asistanı</span>
         </Link>
         <button
           onClick={() => setMobileOpen((v) => !v)}
@@ -75,7 +75,7 @@ export function AppShell({
               className="font-display text-xl tracking-tight"
               onClick={() => setMobileOpen(false)}
             >
-              Rizz<span className="italic text-brand-500">AI</span>
+              Flört<span className="italic text-brand-500"> asistanı</span>
             </Link>
             {mobileOpen && (
               <button

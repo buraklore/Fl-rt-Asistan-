@@ -58,7 +58,7 @@ function SignInContent() {
             href="/"
             className="text-xl font-display tracking-tight transition hover:opacity-80"
           >
-            Rizz<span className="italic text-brand-500">AI</span>
+            Flört<span className="italic text-brand-500"> asistanı</span>
           </Link>
           <div className="my-auto max-w-sm">
             <blockquote className="font-display text-4xl italic leading-tight text-ink-100">
@@ -71,7 +71,7 @@ function SignInContent() {
           </div>
         </div>
         <div className="pointer-events-none absolute -right-20 bottom-0 font-display italic text-[18rem] leading-none text-brand-500/5">
-          rizz
+          flört
         </div>
       </aside>
 
@@ -81,7 +81,7 @@ function SignInContent() {
             href="/"
             className="mb-8 inline-block text-xl font-display tracking-tight md:hidden"
           >
-            Rizz<span className="italic text-brand-500">AI</span>
+            Flört<span className="italic text-brand-500"> asistanı</span>
           </Link>
 
           <p className="mb-3 font-display italic text-xl text-brand-400">

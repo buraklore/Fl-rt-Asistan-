@@ -29,7 +29,7 @@ export async function DELETE() {
     return fail(
       500,
       "Yapılandırma Hatası",
-      "Silme şu anda sunucuda yapılandırılmamış. Lütfen privacy@rizzai.app ile iletişime geç.",
+      "Silme şu anda sunucuda yapılandırılmamış. Lütfen destek@flortasistani.app ile iletişime geç.",
     );
   }
 

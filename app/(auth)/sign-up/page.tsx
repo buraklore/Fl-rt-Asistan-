@@ -72,7 +72,7 @@ export default function SignUpPage() {
             href="/"
             className="mb-8 inline-block text-xl font-display tracking-tight md:hidden"
           >
-            Rizz<span className="italic text-brand-500">AI</span>
+            Flört<span className="italic text-brand-500"> asistanı</span>
           </Link>
 
           <p className="mb-3 font-display italic text-xl text-brand-400">

@@ -17,10 +17,10 @@ const body = Geist({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://rizzai.app"),
+  metadataBase: new URL("https://flortasistani.app"),
   title: {
-    default: "RizzAI — Yapay Zeka İlişki Koçu",
-    template: "%s · RizzAI",
+    default: "Flört Asistanı — Özel İlişki Koçun",
+    template: "%s · Flört Asistanı",
   },
   description:
     "Crush'ından gelen mesaja saniyeler içinde kopyala-yapıştır hazır cevaplar. Üç tonda, kişiye özel, gerçekten insan gibi.",
@@ -28,20 +28,19 @@ export const metadata: Metadata = {
     "ilişki koçu",
     "flört tavsiyesi",
     "mesajlaşma yardımı",
-    "yapay zeka",
     "crush cevap",
-    "rizz",
+    "flört asistanı",
   ],
   openGraph: {
     type: "website",
     locale: "tr_TR",
-    title: "RizzAI — Yapay Zeka İlişki Koçu",
+    title: "Flört Asistanı — Özel İlişki Koçun",
     description: "Crush'ının mesajına nasıl cevap verileceğini biliyor.",
-    siteName: "RizzAI",
+    siteName: "Flört Asistanı",
   },
   twitter: {
     card: "summary_large_image",
-    title: "RizzAI",
+    title: "Flört Asistanı",
     description: "Ne yazacağını zaten biliyor.",
   },
   robots: { index: true, follow: true },

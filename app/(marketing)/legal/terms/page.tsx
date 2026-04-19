@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Kullanım Şartları — RizzAI",
+  title: "Kullanım Şartları — Flört Asistanı",
   description:
-    "RizzAI'yi kullanırken geçerli kurallar, haklar ve sorumluluklar.",
+    "Flört Asistanı'yi kullanırken geçerli kurallar, haklar ve sorumluluklar.",
 };
 
 export default function TermsPage() {
@@ -22,7 +22,7 @@ export default function TermsPage() {
       <div className="space-y-10 text-[15px] leading-relaxed text-ink-200">
         <Section title="Kabul">
           <p>
-            RizzAI&apos;yi kullanarak bu şartları kabul etmiş olursun. Kabul
+            Flört Asistanı&apos;yi kullanarak bu şartları kabul etmiş olursun. Kabul
             etmezsen, uygulamayı kullanmamalısın.
           </p>
         </Section>
@@ -44,8 +44,8 @@ export default function TermsPage() {
 
         <Section title="İçerik ve kullanım">
           <p>
-            RizzAI sana mesaj önerileri, ilişki analizi ve koçluk tavsiyeleri
-            üretir. Bu çıktılar yapay zeka tarafından üretilir; profesyonel
+            Flört Asistanı sana mesaj önerileri, ilişki analizi ve koçluk tavsiyeleri
+            üretir. Bu çıktılar koç tarafından üretilir; profesyonel
             psikolojik, hukuki veya tıbbi tavsiye yerine geçmez. Kritik
             kararlar için yetkili uzmanlara danış.
           </p>
@@ -84,13 +84,13 @@ export default function TermsPage() {
 
         <Section title="Fikri mülkiyet">
           <p>
-            RizzAI ürünü, markası, kodu ve tasarımı Anthropic tarafından
-            değil, RizzAI&apos;yi geliştiren taraf tarafından sahiplenilir.
+            Flört Asistanı ürünü, markası, kodu ve tasarımı bu uygulamayı
+            geliştiren taraf tarafından sahiplenilir.
             Uygulamayı geri mühendislik yapmaya, kopyalamaya veya izinsiz
             dağıtmaya çalışamazsın.
           </p>
           <p>
-            AI tarafından üretilen çıktılar senin kullanımın içindir — onları
+            koç tarafından üretilen çıktılar senin kullanımın içindir — onları
             kopyalayıp kullanabilir, düzenleyebilirsin. Ancak bu çıktıların
             tescilli, benzersiz veya telif hakkıyla korunduğunu iddia edemezsin.
           </p>
@@ -98,7 +98,7 @@ export default function TermsPage() {
 
         <Section title="Sorumluluk sınırı">
           <p>
-            RizzAI &quot;olduğu gibi&quot; sunulur. Çıktıların doğruluğu, uygunluğu
+            Flört Asistanı &quot;olduğu gibi&quot; sunulur. Çıktıların doğruluğu, uygunluğu
             veya belirli bir amaca uygunluğu garanti edilmez. İlişkisel
             sonuçlardan — mesaj göndermek, bir tartışmayı çözmek, bir ilişkiyi
             bitirmek — sen sorumlusun. Yasal olarak izin verilen en geniş
@@ -132,10 +132,10 @@ export default function TermsPage() {
           <p>
             Sorularını{" "}
             <a
-              href="mailto:legal@rizzai.app"
+              href="mailto:destek@flortasistani.app"
               className="text-brand-400 underline"
             >
-              legal@rizzai.app
+              destek@flortasistani.app
             </a>{" "}
             adresine gönder.
           </p>

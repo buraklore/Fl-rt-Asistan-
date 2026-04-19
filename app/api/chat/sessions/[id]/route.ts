@@ -29,3 +29,26 @@ export async function GET(_req: NextRequest, { params }: Params) {
 
   return ok({ session, messages: messages ?? [] });
 }
+
+/**
+ * DELETE /api/chat/sessions/[id]
+ * Silme kararı verildiğinde: oturumu + mesajları + semantik hafızayı (memory
+ * embeddings) tamamen temizler, böylece koç sonraki sohbetlerde eski konulara
+ * referans vermez.
+ */
+export async function DELETE(_req: NextRequest, { params }: Params) {
+  const authed = await requireUser();
+  if (authed instanceof Response) return authed;
+  const { supabase } = authed;
+  const { id } = await params;
+
+  // Mesajlar (FK cascade ile de silinir ama açıkça yapalım, RLS safer)
+  await supabase.from("chat_messages").delete().eq("session_id", id);
+  // Semantik hafıza kayıtları (memory_chunks tablosu varsa)
+  await supabase.from("memory_chunks").delete().eq("session_id", id);
+  // Oturum
+  const { error } = await supabase.from("chat_sessions").delete().eq("id", id);
+
+  if (error) return fail(500, "Silme Başarısız", error.message);
+  return ok({ deleted: true });
+}

@@ -148,10 +148,18 @@ function ConflictsContent() {
 
   return (
     <div className="mx-auto max-w-4xl px-6 py-12 md:px-10">
+      <div className="mb-4">
+        <a
+          href="/conflicts/history"
+          className="text-sm text-ink-400 hover:text-brand-400"
+        >
+          geçmiş kayıtları →
+        </a>
+      </div>
       <PageHeader
         kicker="tartışma mı oldu —"
         title="Çatışma Onarımı"
-        description="Transkripti yapıştır. AI kimin tırmandırdığını, altta yatan sebebi ve onarım mesajını çıkarır."
+        description="Transkripti yapıştır. Koç kimin tırmandırdığını, altta yatan sebebi ve onarım mesajını çıkarır."
       />
 
       {!result && (
@@ -195,7 +203,7 @@ function ConflictsContent() {
               maxLength={1000}
             />
             <p className="mt-1 text-xs text-ink-500">
-              {contextNote.length} / 1000 — en az 40 karakter. Transkript dışı bağlam AI analizini keskinleştirir.
+              {contextNote.length} / 1000 — en az 40 karakter. Transkript dışı bağlam analizini keskinleştirir.
             </p>
           </div>
 
@@ -205,7 +213,7 @@ function ConflictsContent() {
             {/* Image upload zone — screenshot to transcript */}
             <div className="mb-4 rounded-xl border border-dashed border-ink-700 bg-ink-900/30 p-4">
               <p className="mb-3 text-xs text-ink-300">
-                Tartışmanın ekran görüntüsü var mı? AI otomatik çıkarsın.
+                Tartışmanın ekran görüntüsü var mı? otomatik çıkarılsın.
               </p>
               <label
                 className={`inline-flex cursor-pointer items-center gap-2 rounded-full border px-4 py-2 text-xs transition ${

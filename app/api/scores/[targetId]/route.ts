@@ -36,6 +36,25 @@ export async function GET(_req: NextRequest, { params }: Params) {
   return ok(data ?? null);
 }
 
+/**
+ * DELETE /api/scores/[targetId]
+ * Bu hedefin tüm skor geçmişini siler. Sonra yeni recompute temiz başlar.
+ */
+export async function DELETE(_req: NextRequest, { params }: Params) {
+  const authed = await requireUser();
+  if (authed instanceof Response) return authed;
+  const { supabase } = authed;
+  const { targetId } = await params;
+
+  const { error } = await supabase
+    .from("relationship_scores")
+    .delete()
+    .eq("target_id", targetId);
+
+  if (error) return fail(500, "Silme Başarısız", error.message);
+  return ok({ deleted: true });
+}
+
 export async function POST(_req: NextRequest, { params }: Params) {
   const authed = await requireUser();
   if (authed instanceof Response) return authed;
@@ -161,7 +180,7 @@ export async function POST(_req: NextRequest, { params }: Params) {
     const msg =
       err instanceof Error
         ? err.message
-        : "AI sağlayıcısı beklenmedik bir cevap verdi.";
-    return fail(502, "AI Sağlayıcı Hatası", msg);
+        : "Analiz servisi beklenmedik bir cevap verdi.";
+    return fail(502, "Analiz Servisi Hatası", msg);
   }
 }

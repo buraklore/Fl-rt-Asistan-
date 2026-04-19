@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Gizlilik Politikası — RizzAI",
+  title: "Gizlilik Politikası — Flört Asistanı",
   description:
     "Hangi verileri topluyoruz, nasıl kullanıyoruz, nasıl koruyoruz. Şeffaf ve sade.",
 };
@@ -22,7 +22,7 @@ export default function PrivacyPage() {
       <div className="space-y-10 text-[15px] leading-relaxed text-ink-200">
         <Section title="Kısa özet">
           <p>
-            RizzAI ilişki koçluğu aracıdır. Sana yardımcı olmak için senin
+            Flört Asistanı ilişki koçluğu aracıdır. Sana yardımcı olmak için senin
             yazdıklarını, oluşturduğun hedef profillerini ve sohbet
             geçmişini saklar. Bu veriler sadece seninle ilişkilendirilmiş
             şekilde, sana hizmet sunmak için kullanılır. Üçüncü taraflara
@@ -55,9 +55,9 @@ export default function PrivacyPage() {
 
         <Section title="Verileri nasıl kullanıyoruz">
           <p>
-            Girdiğin bilgileri AI sağlayıcımıza (Anthropic) gönderiyoruz. Bu,
-            ürünün çalışması için zorunludur; içeriğin AI tarafından işlenmeden
-            cevap üretemeyiz. Anthropic, API aracılığıyla gönderilen verileri
+            Girdiğin bilgileri analiz servisimize gönderiyoruz. Bu,
+            ürünün çalışması için zorunludur; içeriğin analiz sistemi tarafından
+            işlenmeden cevap üretemeyiz. Analiz servisimiz, gönderilen verileri
             model eğitimi için kullanmama taahhüdü altındadır.
           </p>
           <p>
@@ -82,10 +82,10 @@ export default function PrivacyPage() {
             verilerinin kalıcı olarak silineceği bir talep başlatır.
             Sorularını veya taleplerini{" "}
             <a
-              href="mailto:privacy@rizzai.app"
+              href="mailto:destek@flortasistani.app"
               className="text-brand-400 underline"
             >
-              privacy@rizzai.app
+              destek@flortasistani.app
             </a>{" "}
             adresine gönderebilirsin.
           </p>
@@ -103,7 +103,7 @@ export default function PrivacyPage() {
 
         <Section title="Çocuklar">
           <p>
-            RizzAI 18 yaşın altındaki bireyler için tasarlanmamıştır. 18
+            Flört Asistanı 18 yaşın altındaki bireyler için tasarlanmamıştır. 18
             yaşından küçük olduğunu fark edersek hesabını kapatır ve verilerini
             sileriz. Uygulamayı kullanırken hedef profil olarak 18 yaş altı
             bireyleri tanımlayamazsın; bu tür istekler sistem tarafından
@@ -123,10 +123,10 @@ export default function PrivacyPage() {
           <p>
             Her türlü gizlilik sorusu için:{" "}
             <a
-              href="mailto:privacy@rizzai.app"
+              href="mailto:destek@flortasistani.app"
               className="text-brand-400 underline"
             >
-              privacy@rizzai.app
+              destek@flortasistani.app
             </a>
           </p>
         </Section>

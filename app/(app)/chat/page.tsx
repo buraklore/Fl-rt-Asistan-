@@ -7,6 +7,7 @@ import {
   SectionCard,
 } from "@/components/app/ui";
 import { NewChatButton } from "./new-chat-button";
+import { DeleteChatButton } from "./delete-chat-button";
 
 export const dynamic = "force-dynamic";
 
@@ -32,7 +33,7 @@ export default async function ChatListPage() {
     <div className="mx-auto max-w-5xl px-6 py-12 md:px-10">
       <PageHeader
         kicker="hafızalı sohbet —"
-        title="AI Koç"
+        title="Koç"
         description="Her hedef için kalıcı bir oturum. Koç, önceki konuşmalarınızı hatırlar ve kişiye göre öneri verir."
         action={
           targetList.length > 0 ? (
@@ -66,29 +67,33 @@ export default async function ChatListPage() {
               relation: string;
             } | null;
             return (
-              <Link
+              <div
                 key={s.id}
-                href={`/chat/${s.id}`}
-                className="group block rounded-2xl border border-ink-800 bg-ink-900/40 p-5 transition hover:border-brand-500/40"
+                className="group relative rounded-2xl border border-ink-800 bg-ink-900/40 p-5 transition hover:border-brand-500/40"
               >
-                <div className="mb-1 flex items-baseline justify-between">
-                  <span className="font-display text-lg text-ink-100">
-                    {target?.name ?? "İsimsiz"}
-                  </span>
-                  <span className="text-xs text-ink-500">
-                    {formatDate(s.created_at)}
-                  </span>
+                <Link href={`/chat/${s.id}`} className="block">
+                  <div className="mb-1 flex items-baseline justify-between pr-16">
+                    <span className="font-display text-lg text-ink-100">
+                      {target?.name ?? "İsimsiz"}
+                    </span>
+                    <span className="text-xs text-ink-500">
+                      {formatDate(s.created_at)}
+                    </span>
+                  </div>
+                  {s.title ? (
+                    <p className="line-clamp-1 text-sm text-ink-300 pr-16">
+                      {s.title}
+                    </p>
+                  ) : (
+                    <p className="text-sm italic text-ink-500">
+                      başlık henüz yok
+                    </p>
+                  )}
+                </Link>
+                <div className="absolute right-3 top-3 opacity-0 transition group-hover:opacity-100">
+                  <DeleteChatButton sessionId={s.id} />
                 </div>
-                {s.title ? (
-                  <p className="line-clamp-1 text-sm text-ink-300">
-                    {s.title}
-                  </p>
-                ) : (
-                  <p className="text-sm italic text-ink-500">
-                    başlık henüz yok
-                  </p>
-                )}
-              </Link>
+              </div>
             );
           })}
         </div>

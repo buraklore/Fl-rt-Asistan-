@@ -8,7 +8,7 @@ export function MarketingFooter() {
           {/* Brand column */}
           <div className="md:col-span-2">
             <div className="mb-4 text-2xl font-display tracking-tight">
-              Rizz<span className="italic text-brand-500">AI</span>
+              Flört<span className="italic text-brand-500"> asistanı</span>
             </div>
             <p className="max-w-sm text-sm leading-relaxed text-ink-300">
               Yapay zeka ilişki koçu.{" "}
@@ -41,7 +41,7 @@ export function MarketingFooter() {
         </div>
 
         <div className="mt-12 flex flex-col items-start justify-between gap-4 border-t border-ink-800 pt-8 text-xs text-ink-400 sm:flex-row sm:items-center">
-          <span>© 2026 RizzAI. Sınırlarımızla birlikte.</span>
+          <span>© 2026 Flört Asistanı. Sınırlarımızla birlikte.</span>
           <span className="font-display italic">
             yapılırken kahvesiz içilmedi.
           </span>

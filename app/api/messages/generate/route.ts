@@ -125,8 +125,8 @@ export async function POST(request: NextRequest) {
     const msg =
       err instanceof Error
         ? err.message
-        : "AI sağlayıcısı beklenmedik bir cevap verdi.";
-    return fail(502, "AI Sağlayıcı Hatası", msg);
+        : "Analiz servisi beklenmedik bir cevap verdi.";
+    return fail(502, "Analiz Servisi Hatası", msg);
   }
 
   if (!result.ok) {

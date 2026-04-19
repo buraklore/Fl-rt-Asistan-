@@ -14,7 +14,7 @@ import {
 } from "@/components/app/ui";
 
 /**
- * RizzAI Onboarding — 7 mandatory steps, no skipping.
+ * Flört Asistanı Onboarding — 7 mandatory steps, no skipping.
  *
  * Steps:
  *   [1/7] Basics  — display name + gender + age range
@@ -270,7 +270,7 @@ export default function OnboardingPage() {
         <>
           <h1 className="mb-4 font-display text-4xl sm:text-5xl">Seni tanıyalım.</h1>
           <p className="mb-10 text-ink-300">
-            AI&apos;nin sana göre doğru analiz yapabilmesi için bütün alanlar zorunlu.
+            koçun sana göre doğru analiz yapabilmesi için bütün alanlar zorunlu.
           </p>
           <SectionCard className="space-y-6 p-6">
             <div>
@@ -314,7 +314,7 @@ export default function OnboardingPage() {
         <>
           <h1 className="mb-4 font-display text-4xl sm:text-5xl">Ne peşindesin?</h1>
           <p className="mb-10 text-ink-300">
-            Ana hedefin AI&apos;nin tavsiyelerinin çerçevesini belirler.
+            Ana hedefin koçun tavsiyelerinin çerçevesini belirler.
           </p>
           <SectionCard className="space-y-4 p-6">
             {GOALS.map((g) => (
@@ -349,7 +349,7 @@ export default function OnboardingPage() {
           <h1 className="mb-4 font-display text-4xl sm:text-5xl">Nasıl iletişim kurarsın?</h1>
           <p className="mb-10 text-ink-300">
             Direkt mi dolaylı mı, espirili mi ciddi mi, kısa mı uzun mu yazan
-            birisin? AI senin sesinle mesaj üretebilmek için bilmek zorunda.
+            birisin? koç senin sesinle mesaj üretebilmek için bilmek zorunda.
           </p>
           <SectionCard className="space-y-4 p-6">
             <div>
@@ -506,7 +506,7 @@ export default function OnboardingPage() {
           <h1 className="mb-4 font-display text-4xl sm:text-5xl">Arketipin.</h1>
           <p className="mb-10 text-ink-300">
             Üç boyutta — hem <span className="text-brand-400">kendin</span>,
-            hem <span className="text-brand-400">hoşlandığın tip</span>. AI bu eşleşmeyi
+            hem <span className="text-brand-400">hoşlandığın tip</span>. koç bu eşleşmeyi
             uyum analizinde direkt kullanır.
           </p>
           <SectionCard className="space-y-8 p-6">
@@ -649,7 +649,7 @@ export default function OnboardingPage() {
           <h1 className="mb-4 font-display text-4xl sm:text-5xl">Kendin hakkında.</h1>
           <p className="mb-10 text-ink-300">
             Kim olduğun, neye değer verdiğin, nasıl bir ilişki aradığın — serbest yaz.
-            Her AI çağrısında sana özel kalibrasyon için kullanılır.
+            Her koçluk sürecinde sana özel kalibrasyon için kullanılır.
           </p>
           <SectionCard className="space-y-4 p-6">
             <div>

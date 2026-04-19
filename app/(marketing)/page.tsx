@@ -22,7 +22,7 @@ export default function LandingPage() {
             </h1>
 
             <p className="mt-10 max-w-xl text-lg leading-relaxed text-ink-200 sm:text-xl">
-              RizzAI, crush&apos;ından gelen mesajı okur ve üç farklı tonda
+              Flört Asistanı, crush&apos;ından gelen mesajı okur ve üç farklı tonda
               kopyala-yapıştır hazır cevaplar üretir.{" "}
               <span className="text-ink-100">
                 Düşünmeyi bırak, yaz.
@@ -55,7 +55,7 @@ export default function LandingPage() {
 
         {/* Floating editorial detail — decorative serif */}
         <div className="pointer-events-none absolute -right-20 top-1/2 hidden -translate-y-1/2 font-display italic text-[14rem] text-brand-500/5 lg:block">
-          rizz
+          flört
         </div>
       </section>
 
@@ -132,7 +132,7 @@ export default function LandingPage() {
             Sınırlarımız var.
           </h3>
           <p className="relative mx-auto max-w-2xl text-base leading-relaxed text-ink-200">
-            RizzAI manipülasyon aracı değil. Reşit olmayan, sarhoş ya da
+            Flört Asistanı manipülasyon aracı değil. Reşit olmayan, sarhoş ya da
             açıkça uzaklaşmış birine yönelik içerik üretmiyoruz. Sağlıklı
             iletişim için tasarlandı — kısa yol için değil.
           </p>
@@ -166,7 +166,7 @@ const ACTS = [
   },
   {
     title: "Sürdürme",
-    desc: "Sohbetin ritmini kaybetmeden devam et. Hafızalı AI koç onun kişiliğini öğrenir, senin tarzını tanır.",
+    desc: "Sohbetin ritmini kaybetmeden devam et. Hafızalı koç onun kişiliğini öğrenir, senin tarzını tanır.",
   },
   {
     title: "Onarım",

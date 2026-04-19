@@ -147,7 +147,7 @@ export default function NewTargetPage() {
       <PageHeader
         kicker="yeni hedef"
         title="Kim bu?"
-        description="Ne kadar çok detay verirsen, analiz o kadar keskin olur. Her alan zorunlu — AI doğru analiz için zengin veriye ihtiyaç duyar."
+        description="Ne kadar çok detay verirsen, analiz o kadar keskin olur. Her alan zorunlu — doğru analiz için zengin veriye ihtiyaç duyar."
       />
 
       <SectionCard className="space-y-8 p-6 md:p-8">
@@ -255,7 +255,7 @@ export default function NewTargetPage() {
           <div>
             <p className="font-display italic text-brand-400 mb-2">arketip gözlemin —</p>
             <p className="text-xs text-ink-400">
-              Bu kişiyi 3 boyutta tanımla. AI uyum analizinde senin profilin ile karşılaştırır.
+              Bu kişiyi 3 boyutta tanımla. uyum analizinde senin profilin ile karşılaştırır.
             </p>
           </div>
 
@@ -334,7 +334,7 @@ export default function NewTargetPage() {
           <div>
             <p className="text-sm font-medium text-ink-100">Kaydettikten sonra otomatik analiz et</p>
             <p className="mt-1 text-xs text-ink-400">
-              AI Big5, bağlanma stili ve iletişim tarzını otomatik çıkarır. ~4 saniye.
+              Koç Big5, bağlanma stili ve iletişim tarzını otomatik çıkarır. ~4 saniye.
             </p>
           </div>
         </label>

@@ -183,7 +183,7 @@ export function ProfileForm() {
   return (
     <div className="space-y-6">
       <p className="text-sm text-ink-300">
-        Profili istediğin zaman güncelleyebilirsin. Her değişiklik AI çıktılarını
+        Profili istediğin zaman güncelleyebilirsin. Her değişiklik koçun çıktılarını
         daha doğru hale getirir.
       </p>
 
@@ -363,7 +363,7 @@ export function ProfileForm() {
         <Textarea
           value={rawBio}
           onChange={(e) => setRawBio(e.target.value)}
-          placeholder="Kim olduğun, ne önemsediğin, nasıl bir ilişki aradığın — serbest yaz. AI bunu okur ve sana göre ayarlar."
+          placeholder="Kim olduğun, ne önemsediğin, nasıl bir ilişki aradığın — serbest yaz. koç bunu okur ve sana göre ayarlar."
           rows={6}
           maxLength={2000}
         />

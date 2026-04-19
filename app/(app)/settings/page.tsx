@@ -39,7 +39,7 @@ export default async function SettingsPage() {
       />
 
       <div className="space-y-6">
-        {/* Profilim — en üstte, en kritik çünkü AI çıktılarını kalibre eder */}
+        {/* Profilim — en üstte, en kritik çünkü koçun çıktılarını kalibre eder */}
         <SectionCard className="border-brand-500/20 p-6">
           <p className="mb-2 text-[10px] font-semibold uppercase tracking-widest text-brand-400">
             profilim

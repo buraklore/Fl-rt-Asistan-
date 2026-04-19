@@ -9,6 +9,6 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ["/sign-in", "/sign-up", "/reset", "/api/"],
       },
     ],
-    sitemap: "https://rizzai.app/sitemap.xml",
+    sitemap: "https://flortasistani.app/sitemap.xml",
   };
 }

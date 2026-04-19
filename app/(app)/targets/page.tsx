@@ -31,7 +31,7 @@ export default async function TargetsPage() {
       <PageHeader
         kicker="kim — hangi bağlam —"
         title="Hedefler."
-        description="İlgilendiğin her kişi için ayrı bir profil. RizzAI cevaplarını onun kişiliğine göre kalibre eder."
+        description="İlgilendiğin her kişi için ayrı bir profil. Flört Asistanı cevaplarını onun kişiliğine göre kalibre eder."
         action={
           <ButtonLink href="/targets/new">+ Yeni hedef</ButtonLink>
         }
@@ -40,7 +40,7 @@ export default async function TargetsPage() {
       {list.length === 0 ? (
         <EmptyState
           title="Henüz hedef yok"
-          description="İlk hedefini ekle — AI o kişiye özel cevaplar üretmeye başlasın."
+          description="İlk hedefini ekle — koç o kişiye özel cevaplar üretmeye başlasın."
           action={<ButtonLink href="/targets/new">Hedef oluştur</ButtonLink>}
         />
       ) : (

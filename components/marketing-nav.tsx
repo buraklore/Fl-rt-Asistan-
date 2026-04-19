@@ -14,7 +14,7 @@ export function MarketingNav() {
           href="/"
           className="text-xl font-display tracking-tight transition hover:opacity-80"
         >
-          Rizz<span className="italic text-brand-500">AI</span>
+          Flört<span className="italic text-brand-500"> asistanı</span>
         </Link>
 
         <div className="hidden items-center gap-8 md:flex">

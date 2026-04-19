@@ -6,7 +6,7 @@ import { MarketingFooter } from "@/components/marketing-footer";
 export const metadata: Metadata = {
   title: "Ücretlendirme",
   description:
-    "RizzAI ücretsiz başlar. Premium aylık 149 TL, yıllık 699 TL. İstediğin zaman iptal et.",
+    "Flört Asistanı ücretsiz başlar. Premium aylık 149 TL, yıllık 699 TL. İstediğin zaman iptal et.",
 };
 
 export default function PricingPage() {

@@ -7,6 +7,7 @@ import {
 import {
   AnalyzeTargetLLMResponseSchema,
   type AnalyzeTargetLLMResponse,
+  type UserProfileForPrompt,
 } from "@/lib/schemas";
 import { requireUser } from "@/lib/auth";
 import { requireCompleteProfile } from "@/lib/profile-gate";
@@ -47,11 +48,39 @@ export async function POST(_req: NextRequest, { params }: Params) {
   if (loadErr) return fail(500, "Veritabanı Hatası", loadErr.message);
   if (!target) return fail(404, "Bulunamadı", "Hedef bulunamadı.");
 
+  // Load user profile so coaching advice is personalized
+  const { data: userRow } = await supabase
+    .from("user_profiles")
+    .select(
+      "display_name, gender, age_range, interests, communication_style, attachment_style, relationship_goal, raw_bio, own_dynamic_style, own_expression_style, own_relationship_energy, attracted_to_dynamic_styles, attracted_to_expression_styles, attracted_to_energies",
+    )
+    .eq("id", user.id)
+    .maybeSingle();
+
+  const userForPrompt: UserProfileForPrompt | null = userRow
+    ? {
+        displayName: userRow.display_name ?? null,
+        gender: userRow.gender ?? null,
+        ageRange: userRow.age_range ?? null,
+        interests: userRow.interests ?? [],
+        communicationStyle: userRow.communication_style ?? null,
+        attachmentStyle: userRow.attachment_style ?? null,
+        relationshipGoal: userRow.relationship_goal ?? null,
+        rawBio: userRow.raw_bio ?? null,
+        ownDynamicStyle: userRow.own_dynamic_style ?? null,
+        ownExpressionStyle: userRow.own_expression_style ?? null,
+        ownRelationshipEnergy: userRow.own_relationship_energy ?? null,
+        attractedToDynamicStyles: userRow.attracted_to_dynamic_styles ?? [],
+        attractedToExpressionStyles: userRow.attracted_to_expression_styles ?? [],
+        attractedToEnergies: userRow.attracted_to_energies ?? [],
+      }
+    : null;
+
   try {
     const provider = getLLM();
 
     const result = await provider.complete<AnalyzeTargetLLMResponse>({
-      system: buildAnalyzerSystemPrompt(),
+      system: buildAnalyzerSystemPrompt({ user: userForPrompt }),
       messages: [
         {
           role: "user",
@@ -62,12 +91,15 @@ export async function POST(_req: NextRequest, { params }: Params) {
             interests: target.interests ?? [],
             behaviors: target.behaviors ?? [],
             contextNotes: target.context_notes,
+            dynamicStyle: target.dynamic_style,
+            expressionStyle: target.expression_style,
+            relationshipEnergy: target.relationship_energy,
           }),
         },
       ],
       schema: AnalyzeTargetLLMResponseSchema,
       temperature: 0.3,
-      maxTokens: 2500,
+      maxTokens: 3500, // bumped for coaching advice
     });
 
     const analysis = result.data;
@@ -82,6 +114,7 @@ export async function POST(_req: NextRequest, { params }: Params) {
         attraction_triggers: analysis.attractionTriggers,
         analysis_confidence: analysis.confidence,
         confidence_detail: analysis.confidenceDetail,
+        coaching_advice: analysis.coachingAdvice,
         analysis_version: (target.analysis_version ?? 0) + 1,
       })
       .eq("id", id)
@@ -99,7 +132,7 @@ export async function POST(_req: NextRequest, { params }: Params) {
     const msg =
       err instanceof Error
         ? err.message
-        : "AI sağlayıcısı beklenmedik bir cevap verdi.";
-    return fail(502, "AI Sağlayıcı Hatası", msg);
+        : "Analiz servisi beklenmedik bir cevap verdi.";
+    return fail(502, "Analiz Servisi Hatası", msg);
   }
 }

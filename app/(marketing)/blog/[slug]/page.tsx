@@ -139,7 +139,7 @@ export default async function BlogPostPage({ params }: Props) {
             Yazıda bahsedilen her şey için —
           </p>
           <p className="mb-6 text-base text-ink-200">
-            RizzAI, cevabı senin için yazıyor.
+            Flört Asistanı, cevabı senin için yazıyor.
           </p>
           <Link
             href="/generate"

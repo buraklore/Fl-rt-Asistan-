@@ -1,8 +1,8 @@
 {
-  "name": "rizzai",
+  "name": "flort-asistani",
   "version": "0.1.0",
   "private": true,
-  "description": "RizzAI — AI Relationship Coach (Next.js + Supabase)",
+  "description": "Flört Asistanı — AI Relationship Coach (Next.js + Supabase)",
   "scripts": {
     "dev": "next dev --turbopack -p 3000",
     "build": "next build",

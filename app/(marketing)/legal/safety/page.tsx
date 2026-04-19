@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Güvenlik ve Etik — RizzAI",
+  title: "Güvenlik ve Etik — Flört Asistanı",
   description:
     "Manipülasyon değil, iletişim aracı. Koyduğumuz sınırlar ve nedenleri.",
 };
@@ -16,7 +16,7 @@ export default function SafetyPage() {
         Güvenlik ve Etik
       </h1>
       <p className="mb-12 text-lg text-ink-300">
-        RizzAI manipülasyon aracı değil. İletişim yardımcısı.
+        Flört Asistanı manipülasyon aracı değil. İletişim yardımcısı.
       </p>
 
       <div className="space-y-10 text-[15px] leading-relaxed text-ink-200">
@@ -50,11 +50,11 @@ export default function SafetyPage() {
         <Section title="Bu sınırlar nerede uygulanır">
           <p>
             <strong className="text-ink-100">Çağrı öncesi:</strong> girdi
-            moderasyon katmanından geçer. Açıkça tehlikeli istekler AI&apos;ye
+            moderasyon katmanından geçer. Açıkça tehlikeli istekler sisteme
             bile gönderilmez.
           </p>
           <p>
-            <strong className="text-ink-100">Çağrı sırası:</strong> AI sistem
+            <strong className="text-ink-100">Çağrı sırası:</strong> Sistem
             promptları bu kuralları kodlar. Model, talimatların aksine bir
             şey üretmeye çalışıldığında reddeder.
           </p>
@@ -102,10 +102,10 @@ export default function SafetyPage() {
             Yukarıdaki sınırlar bunun somut karşılığı. Bir gün ihlal edildiğini
             fark edersen{" "}
             <a
-              href="mailto:safety@rizzai.app"
+              href="mailto:destek@flortasistani.app"
               className="text-brand-400 underline"
             >
-              safety@rizzai.app
+              destek@flortasistani.app
             </a>{" "}
             adresine bildir.
           </p>
@@ -114,7 +114,7 @@ export default function SafetyPage() {
         <Section title="Eğer zarar görüyorsan">
           <p>
             Eğer şu an birinden zarar görüyorsan, bir yakınlık ilişkisinden
-            çıkamıyorsan veya kendinle ilgili endişeli hissediyorsan, RizzAI
+            çıkamıyorsan veya kendinle ilgili endişeli hissediyorsan, Flört Asistanı
             bunun için doğru araç değil. Türkiye&apos;de{" "}
             <strong className="text-ink-100">183 (Alo Sosyal Destek)</strong>{" "}
             hattını arayabilir veya{" "}

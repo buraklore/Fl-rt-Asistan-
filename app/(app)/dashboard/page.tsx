@@ -39,16 +39,19 @@ export default async function DashboardPage() {
     { count: totalGenerations },
     realityCheck,
     { data: myProfile },
+    { count: totalChats },
+    { count: totalConflicts },
+    { data: allScores },
   ] = await Promise.all([
     supabase
       .from("target_profiles")
-      .select("id, name, relation, updated_at, personality_type")
+      .select("id, name, relation, updated_at, personality_type, analysis_confidence")
       .is("deleted_at", null)
       .order("updated_at", { ascending: false })
       .limit(4),
     supabase
       .from("message_generations")
-      .select("id, incoming_message, replies, created_at")
+      .select("id, incoming_message, replies, created_at, target_id")
       .order("created_at", { ascending: false })
       .limit(3),
     supabase
@@ -60,7 +63,28 @@ export default async function DashboardPage() {
       .select("raw_bio, attachment_style, relationship_goal, communication_style")
       .eq("id", user.id)
       .maybeSingle(),
+    supabase
+      .from("chat_sessions")
+      .select("*", { count: "exact", head: true }),
+    supabase
+      .from("conflict_analyses")
+      .select("*", { count: "exact", head: true })
+      .eq("user_id", user.id),
+    supabase
+      .from("relationship_scores")
+      .select("compatibility"),
   ]);
+
+  // Average compatibility across all scored targets
+  const avgScore =
+    allScores && allScores.length > 0
+      ? Math.round(
+          allScores.reduce(
+            (sum, s) => sum + (s.compatibility ?? 0),
+            0,
+          ) / allScores.length,
+        )
+      : null;
 
   // Profile is complete at this point (we redirected otherwise).
   // The nudge below is kept for legacy compatibility but should never trigger.
@@ -77,7 +101,7 @@ export default async function DashboardPage() {
         description="Günün hook'u, hedeflerin ve son üretimlerin — tek bakışta."
       />
 
-      {/* Profilini doldur — kullanıcı kendisini tanıtmadan AI çıktıları genel kalıyor */}
+      {/* Profilini doldur — kullanıcı kendisini tanıtmadan koçun çıktıları genel kalıyor */}
       {profileEmpty && (
         <section className="mb-6">
           <div className="rounded-2xl border border-brand-500/30 bg-gradient-to-br from-brand-500/10 via-ink-900/60 to-ink-900/60 p-6">
@@ -86,7 +110,7 @@ export default async function DashboardPage() {
             </p>
             <p className="mb-4 max-w-xl text-[15px] leading-relaxed text-ink-100">
               Uyum skoru ve mesaj önerileri senin profiline göre kalibreleniyor.
-              Birkaç dakikanı ayır, AI sana çok daha doğru cevaplar versin.
+              Birkaç dakikanı ayır, sana çok daha doğru cevaplar versin.
             </p>
             <Link
               href="/settings"
@@ -141,8 +165,16 @@ export default async function DashboardPage() {
           value={totalGenerations ?? 0}
           subtext="toplam mesaj"
         />
-        <StatTile label="sohbet" value="—" subtext="koç seansı" />
-        <StatTile label="skor" value="—" subtext="ortalama uyum" />
+        <StatTile
+          label="sohbet"
+          value={totalChats ?? 0}
+          subtext="koç seansı"
+        />
+        <StatTile
+          label="skor"
+          value={avgScore !== null ? avgScore : "—"}
+          subtext={avgScore !== null ? "ortalama uyum" : "henüz skor yok"}
+        />
       </section>
 
       {/* Targets */}
@@ -160,7 +192,7 @@ export default async function DashboardPage() {
         {(targets ?? []).length === 0 ? (
           <EmptyState
             title="Henüz hedef yok"
-            description="İlgilendiğin kişiyi tanıt — RizzAI daha kişisel cevaplar üretebilir."
+            description="İlgilendiğin kişiyi tanıt — Flört Asistanı daha kişisel cevaplar üretebilir."
             action={
               <ButtonLink href="/targets/new">İlk hedefini oluştur</ButtonLink>
             }
@@ -171,11 +203,11 @@ export default async function DashboardPage() {
               <Link
                 key={t.id}
                 href={`/targets/${t.id}`}
-                className="group rounded-2xl border border-ink-800 bg-ink-900/40 p-5 transition hover:border-ink-700"
+                className="group rounded-2xl border border-ink-800 bg-ink-900/40 p-5 transition hover:border-brand-500/40 hover:bg-ink-900/60"
               >
                 <div className="mb-3 flex items-start justify-between">
                   <div>
-                    <p className="font-display text-xl">
+                    <p className="font-display text-xl text-ink-100">
                       {t.name ?? "İsimsiz"}
                     </p>
                     <p className="mt-0.5 text-xs uppercase tracking-widest text-ink-400">
@@ -187,13 +219,20 @@ export default async function DashboardPage() {
                   </span>
                 </div>
                 {t.personality_type ? (
-                  <p className="text-sm text-ink-300">
-                    <span className="italic text-brand-400">
+                  <div>
+                    <p className="text-sm italic leading-relaxed text-brand-400">
                       {t.personality_type}
-                    </span>
-                  </p>
+                    </p>
+                    {typeof t.analysis_confidence === "number" && (
+                      <p className="mt-2 text-[10px] uppercase tracking-widest text-ink-500">
+                        analiz güveni — %{Math.round(t.analysis_confidence * 100)}
+                      </p>
+                    )}
+                  </div>
                 ) : (
-                  <p className="text-sm text-ink-500">Henüz analiz edilmedi</p>
+                  <p className="text-sm italic text-ink-500">
+                    henüz analiz edilmedi — tıkla + analiz et
+                  </p>
                 )}
               </Link>
             ))}
@@ -215,31 +254,43 @@ export default async function DashboardPage() {
             href="/generate"
             symbol="✻"
             title="Mesaj Üretici"
-            desc="Üç tonda cevap üret"
+            desc="Gelen mesaja cevap veya ilk mesajı yaz"
+            stat={`${totalGenerations ?? 0} üretim`}
           />
           <ToolTile
             href="/chat"
             symbol="◊"
-            title="AI Koç"
+            title="Koç"
             desc="Hafızalı sohbet asistanı"
+            stat={`${totalChats ?? 0} oturum`}
           />
           <ToolTile
             href="/conflicts"
             symbol="⟁"
             title="Çatışma Onarımı"
             desc="Tartışma analizi + onarım mesajı"
+            stat={`${totalConflicts ?? 0} analiz`}
           />
           <ToolTile
             href="/insights"
             symbol="◢"
-            title="Analiz"
-            desc="İlişki skoru ve derinlemesine analiz"
+            title="Analiz Paneli"
+            desc="Tüm hedeflerinin uyum skorları"
+            stat={avgScore !== null ? `ort. %${avgScore}` : "—"}
           />
           <ToolTile
             href="/targets/new"
             symbol="○"
             title="Yeni Hedef"
             desc="Birini tanıt, analiz et"
+            stat="3-4 dk"
+          />
+          <ToolTile
+            href="/settings"
+            symbol="✦"
+            title="Profilim"
+            desc="Kendi profilini güncelle"
+            stat="ayarlar"
           />
         </div>
       </section>
@@ -284,20 +335,32 @@ function ToolTile({
   symbol,
   title,
   desc,
+  stat,
 }: {
   href: string;
   symbol: string;
   title: string;
   desc: string;
+  stat?: string;
 }) {
   return (
     <Link
       href={href}
-      className="group rounded-2xl border border-ink-800 bg-ink-900/40 p-5 transition hover:border-brand-500/50"
+      className="group relative flex h-full flex-col rounded-2xl border border-ink-800 bg-ink-900/40 p-5 transition hover:border-brand-500/50 hover:bg-ink-900/60"
     >
-      <p className="mb-3 text-3xl text-brand-500">{symbol}</p>
+      <div className="mb-3 flex items-start justify-between">
+        <p className="text-3xl text-brand-500">{symbol}</p>
+        {stat && (
+          <span className="rounded-full border border-ink-700 bg-ink-900/80 px-2.5 py-0.5 text-[10px] uppercase tracking-widest text-ink-400">
+            {stat}
+          </span>
+        )}
+      </div>
       <p className="mb-1 font-display text-lg text-ink-100">{title}</p>
-      <p className="text-sm text-ink-400">{desc}</p>
+      <p className="flex-1 text-sm text-ink-400">{desc}</p>
+      <span className="mt-3 text-xs text-ink-500 transition group-hover:text-brand-400">
+        aç →
+      </span>
     </Link>
   );
 }

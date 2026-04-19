@@ -64,7 +64,7 @@ export async function POST(request: NextRequest) {
     return fail(
       500,
       "Yapılandırma Hatası",
-      "AI servisi hazır değil. Daha sonra tekrar dene.",
+      "Analiz servisi hazır değil. Daha sonra tekrar dene.",
     );
   }
 
@@ -145,8 +145,8 @@ export async function POST(request: NextRequest) {
     const msg =
       err instanceof Error
         ? err.message
-        : "AI sağlayıcısı cevap vermedi.";
-    return fail(502, "AI Sağlayıcı Hatası", msg);
+        : "Analiz servisi cevap vermedi.";
+    return fail(502, "Analiz Servisi Hatası", msg);
   }
 }
 

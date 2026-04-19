@@ -1,4 +1,4 @@
-# RizzAI
+# Flört Asistanı
 
 Yapay zeka ilişki koçu. Next.js 15 + Supabase + Anthropic Claude.
 
@@ -11,7 +11,7 @@ Yapay zeka ilişki koçu. Next.js 15 + Supabase + Anthropic Claude.
 ### 1. Supabase projesini kur
 
 1. [supabase.com](https://supabase.com) → **New Project**
-2. Proje adı: `rizzai`, güçlü bir DB şifresi seç, bölge: `Frankfurt` (Türkiye için en yakın)
+2. Proje adı: `flort-asistani`, güçlü bir DB şifresi seç, bölge: `Frankfurt` (Türkiye için en yakın)
 3. 2-3 dakika bekle, DB hazırlansın
 4. **Project Settings → API** sekmesine git, şu üçünü kopyala:
    - `Project URL` → `NEXT_PUBLIC_SUPABASE_URL`
@@ -39,7 +39,7 @@ Yapay zeka ilişki koçu. Next.js 15 + Supabase + Anthropic Claude.
 ### 4. Lokal geliştirme
 
 ```bash
-unzip rizzai-web.zip && cd rizzai-web
+unzip flort-asistani-web.zip && cd flort-asistani-web
 npm install
 cp .env.example .env.local
 # .env.local içindeki 4 anahtarı doldur:
@@ -65,12 +65,12 @@ npm run dev
 ### 1. Projeyi GitHub'a yükle
 
 ```bash
-cd rizzai-web
+cd flort-asistani-web
 git init
 git add .
 git commit -m "initial commit"
 # GitHub'da yeni repo oluştur, sonra:
-git remote add origin https://github.com/KULLANICI-ADIN/rizzai.git
+git remote add origin https://github.com/KULLANICI-ADIN/flort-asistani.git
 git branch -M main
 git push -u origin main
 ```
@@ -78,7 +78,7 @@ git push -u origin main
 ### 2. Vercel'e bağla
 
 1. [vercel.com](https://vercel.com) → **Add New → Project**
-2. GitHub'daki `rizzai` repo'sunu seç → **Import**
+2. GitHub'daki `flort-asistani` repo'sunu seç → **Import**
 3. **Environment Variables** alanında şunları ekle:
 
    | Key | Değer |
@@ -104,7 +104,7 @@ Google/Apple giriş kullanacaksan:
 ## Proje yapısı
 
 ```
-rizzai/
+flort-asistani/
 ├── app/
 │   ├── (marketing)/           public sayfalar — landing, pricing, blog, how-it-works
 │   ├── (auth)/                sign-in, sign-up, /auth/callback

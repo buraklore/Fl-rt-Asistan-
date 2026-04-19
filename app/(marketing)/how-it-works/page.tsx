@@ -6,7 +6,7 @@ import { MarketingFooter } from "@/components/marketing-footer";
 export const metadata: Metadata = {
   title: "Nasıl çalışır",
   description:
-    "RizzAI'nin hafıza odaklı AI sistemi, kişilik analizörü ve mesaj üreticisi nasıl çalışıyor?",
+    "Flört Asistanı'nin hafıza odaklı koçluk sistemi, kişilik analizörü ve mesaj üreticisi nasıl çalışıyor?",
 };
 
 export default function HowItWorksPage() {
@@ -25,7 +25,7 @@ export default function HowItWorksPage() {
           <span className="italic">Chatbot değil.</span>
         </h1>
         <p className="mt-10 max-w-2xl text-lg leading-relaxed text-ink-200">
-          Çoğu AI her konuşmayı sıfırdan başlatır. RizzAI öyle değil. Her
+          Benzer asistanlar her konuşmayı sıfırdan başlatır. Flört Asistanı öyle değil. Her
           etkileşim iki profili zenginleştirir:{" "}
           <span className="callout">seni</span> ve{" "}
           <span className="callout">onu</span>. Uzun kullandıkça daha iyi tanır.
@@ -92,7 +92,7 @@ export default function HowItWorksPage() {
           <PrincipleCard
             kind="yes"
             title="Özgünlüğünü korumak"
-            desc="Senin tarzını öğrenir. Sonuçlar sana benzer, bir AI'ya değil."
+            desc="Senin tarzını öğrenir. Sonuçlar sana benzer, bir koça değil."
           />
           <PrincipleCard
             kind="no"
@@ -162,7 +162,7 @@ const STEPS = [
     title: "Önce ikinizi tanır.",
     body: "Sen hakkında: iletişim tarzın, hedefin, senaryon. Onun hakkında: ilgi alanları, davranışları, nasıl tanıştığınız. Toplamda 90 saniye.",
     detail:
-      "Verileri yapılandırılmış olarak saklarız — kişilik tipi, bağlanma stili, iletişim stili, çekim tetikleyicileri. Her AI çağrısında bu profiller bağlam olarak gönderilir. Modele 'kim' ve 'kim için' yazdığımızı söyler.",
+      "Verileri yapılandırılmış olarak saklarız — kişilik tipi, bağlanma stili, iletişim stili, çekim tetikleyicileri. Her koçluk sürecinde bu profiller bağlam olarak gönderilir. Modele 'kim' ve 'kim için' yazdığımızı söyler.",
   },
   {
     tag: "üretim",
@@ -176,7 +176,7 @@ const STEPS = [
     title: "Her etkileşim onu daha iyi hale getirir.",
     body: "Hangi tonu kopyaladığını, hangi mesajın işe yaradığını, sohbetin nasıl evrildiğini hatırlar. Zamanla, sana özel hale gelir.",
     detail:
-      "Semantik hafıza (pgvector embeddings) + son-N verbatim turlar + eski geçmişin otomatik özeti. Token bütçesini aşmadan hedefle olan tüm tarihçeni AI'ya sunarız.",
+      "Semantik hafıza (pgvector embeddings) + son-N verbatim turlar + eski geçmişin otomatik özeti. Token bütçesini aşmadan hedefle olan tüm tarihçeni koçluk sürecine aktarırız.",
   },
   {
     tag: "onarım",

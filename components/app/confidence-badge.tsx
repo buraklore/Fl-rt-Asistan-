@@ -9,7 +9,7 @@ export type Confidence = {
 };
 
 /**
- * Visual honesty layer. Every AI output is tagged with a confidence badge
+ * Visual honesty layer. Every analysis output is tagged with a confidence badge
  * that the user can tap to see why the confidence is what it is, plus a
  * specific list of data gaps they can fill to improve future outputs.
  *
@@ -92,7 +92,7 @@ export function ConfidenceBadge({ confidence }: { confidence: Confidence }) {
                 ))}
               </ul>
               <p className="mt-2 text-[10px] italic text-ink-500">
-                Bu alanları doldurup tekrar çalıştırırsan AI daha keskin analiz üretir.
+                Bu alanları doldurup tekrar çalıştırırsan analizler daha keskin analiz üretir.
               </p>
             </div>
           )}
