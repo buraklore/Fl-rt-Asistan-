@@ -22,8 +22,8 @@ export async function POST(request: NextRequest) {
       relation: body.relation,
       gender: body.gender ?? null,
       age_range: body.ageRange ?? null,
-      interests: body.interests,
-      behaviors: body.behaviors,
+      interests: body.interests ?? [],
+      behaviors: body.behaviors ?? [],
       context_notes: body.contextNotes ?? null,
     })
     .select()
