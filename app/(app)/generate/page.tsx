@@ -269,7 +269,7 @@ function GenerateContent() {
                       style={{
                         background: active
                           ? "rgba(225,29,72,0.12)"
-                          : "rgba(31,16,35,0.4)",
+                          : "rgba(17,17,24,0.4)",
                       }}
                     >
                       <div
@@ -444,7 +444,7 @@ function GenerateContent() {
           {usageRemaining !== null && (
             <div
               className="rounded-2xl border border-ink-800 p-5 backdrop-blur-[8px]"
-              style={{ background: "rgba(31,16,35,0.4)" }}
+              style={{ background: "rgba(17,17,24,0.4)" }}
             >
               <p className="text-[10px] font-semibold uppercase tracking-[0.3em] text-ink-500">
                 kalan kota
