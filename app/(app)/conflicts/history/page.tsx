@@ -93,12 +93,20 @@ export default function ConflictsHistoryPage() {
   }
 
   return (
-    <div className="mx-auto max-w-4xl px-6 py-12 md:px-10">
-      <PageHeader
-        kicker="geçmiş —"
-        title="Çatışma Kayıtların"
-        description="Daha önce analiz ettiğin tartışmalar. Dilediğini silebilirsin."
-      />
+    <div className="mx-auto max-w-[900px] px-10 py-12 pb-20">
+      <Link
+        href="/conflicts"
+        className="text-[13px] text-ink-400 hover:text-ink-200"
+      >
+        ← yeni analiz
+      </Link>
+      <div className="mt-3">
+        <PageHeader
+          kicker="kayıtlar —"
+          title="Çatışma Kayıtların."
+          description="Tüm geçmiş analizlerin burada. Her biri onarım mesajını ve kök sebep özetini saklar."
+        />
+      </div>
 
       {error && <ErrorBanner message={error} />}
 
@@ -108,56 +116,68 @@ export default function ConflictsHistoryPage() {
           description="Bir tartışma yaşadığında transkripti yapıştır, beraber çözümü çıkaralım."
         />
       ) : (
-        <div className="space-y-3">
+        <div className="grid gap-3">
           {items.map((c) => (
-            <SectionCard key={c.id} className="p-5">
+            <div
+              key={c.id}
+              className="rounded-2xl border border-ink-800 bg-ink-900/40 p-[22px]"
+            >
               <div className="flex items-start justify-between gap-4">
-                <div className="flex-1 min-w-0">
-                  <div className="mb-2 flex flex-wrap items-baseline gap-3">
-                    <span className="font-display text-lg text-ink-100">
+                <div className="min-w-0 flex-1">
+                  <div className="mb-[10px] flex flex-wrap items-center gap-3">
+                    <p
+                      className="font-display text-ink-100"
+                      style={{ fontSize: 22 }}
+                    >
                       {c.target?.name ?? "Genel"}
+                    </p>
+                    <span className="text-[11px] text-ink-500">
+                      · {formatDate(c.created_at)}
                     </span>
-                    <span className="text-xs text-ink-500">
-                      {formatDate(c.created_at)}
-                    </span>
-                    <span className="rounded-full border border-ink-700 px-2 py-0.5 text-[10px] uppercase tracking-wider text-ink-400">
-                      tırmandıran: {ESCALATED_LABELS[c.who_escalated] ?? c.who_escalated}
-                    </span>
-                    <span className="rounded-full border border-brand-500/30 px-2 py-0.5 text-[10px] uppercase tracking-wider text-brand-400">
-                      {c.severity} / 5 ciddiyet
+                    <span
+                      className="rounded-full px-[10px] py-[3px] text-[10px] font-semibold uppercase tracking-[0.2em] text-brand-300"
+                      style={{
+                        border: "1px solid rgba(225,29,72,0.3)",
+                        background: "rgba(225,29,72,0.1)",
+                      }}
+                    >
+                      ciddiyet {c.severity}/5
                     </span>
                   </div>
-                  <p className="text-sm text-ink-300">{c.root_cause}</p>
+                  <p className="text-[14px] leading-[1.55] text-ink-300">
+                    {c.root_cause}
+                  </p>
                 </div>
-                <button
-                  onClick={() => handleDelete(c.id)}
-                  disabled={deleting === c.id}
-                  className={`shrink-0 rounded-full px-3 py-1 text-xs transition ${
-                    confirmingId === c.id
-                      ? "bg-red-500/20 text-red-400"
-                      : "border border-ink-700 text-ink-400 hover:border-red-500/40 hover:text-red-400"
-                  }`}
-                >
-                  {deleting === c.id
-                    ? "siliniyor..."
-                    : confirmingId === c.id
-                      ? "emin misin?"
-                      : "sil"}
-                </button>
+                {confirmingId === c.id ? (
+                  <div className="flex shrink-0 gap-[6px]">
+                    <button
+                      onClick={() => setConfirmingId(null)}
+                      className="rounded-full border border-ink-700 px-3 py-[6px] text-[12px] text-ink-300"
+                    >
+                      iptal
+                    </button>
+                    <button
+                      onClick={() => handleDelete(c.id)}
+                      disabled={deleting === c.id}
+                      className="rounded-full px-3 py-[6px] text-[12px] text-white"
+                      style={{ background: "#EF4444" }}
+                    >
+                      {deleting === c.id ? "…" : "sil"}
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => handleDelete(c.id)}
+                    className="shrink-0 rounded-[8px] border border-ink-800 px-[10px] py-[6px] text-[12px] text-ink-400 transition hover:border-ink-700 hover:text-ink-200"
+                  >
+                    sil
+                  </button>
+                )}
               </div>
-            </SectionCard>
+            </div>
           ))}
         </div>
       )}
-
-      <div className="mt-8">
-        <Link
-          href="/conflicts"
-          className="text-sm text-brand-400 hover:text-brand-300"
-        >
-          → Yeni çatışma analiz et
-        </Link>
-      </div>
     </div>
   );
 }
