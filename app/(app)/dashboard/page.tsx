@@ -281,7 +281,8 @@ export default async function DashboardPage() {
           <div className="flex flex-col gap-[10px]">
             {recentGenerations.map((g) => {
               const firstReply = Array.isArray(g.replies) ? g.replies[0] : null;
-              const targetName = (g.target as { name: string } | null)?.name;
+              const targetName =
+                (Array.isArray(g.target) ? g.target[0] : g.target)?.name ?? null;
               return (
                 <SectionCard key={g.id} className="p-[22px]">
                   <div className="mb-2 flex items-center justify-between gap-4">
