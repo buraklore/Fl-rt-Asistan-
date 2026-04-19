@@ -53,7 +53,7 @@ export default async function SettingsPage({
   );
 }
 
-function HesapTab({ user }: { user: { email: string | undefined; created_at: string | undefined } }) {
+function HesapTab({ user }: { user: { email?: string; created_at?: string } }) {
   return (
     <div className="grid gap-5">
       <AccountCard label="e-posta" value={user.email ?? "—"} buttonLabel="e-postayı değiştir" />
