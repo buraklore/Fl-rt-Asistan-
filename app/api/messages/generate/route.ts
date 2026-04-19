@@ -72,7 +72,7 @@ export async function POST(request: NextRequest) {
 
   const result = await generator.run({
     incomingMessage: body.incomingMessage,
-    tones: body.tones,
+    tones: body.tones ?? ["cool", "flirty", "confident"],
     target,
     userNote: body.context ?? null,
   });
