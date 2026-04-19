@@ -24,10 +24,10 @@ const RELATIONS = [
 ] as const;
 
 const GENDERS = [
-  { key: "FEMALE", label: "Kadın" },
-  { key: "MALE", label: "Erkek" },
-  { key: "NONBINARY", label: "Non-binary" },
-  { key: "UNSPECIFIED", label: "Belirtmek istemiyorum" },
+  { key: "female", label: "Kadın" },
+  { key: "male", label: "Erkek" },
+  { key: "nonbinary", label: "Non-binary" },
+  { key: "unspecified", label: "Belirtmek istemiyorum" },
 ] as const;
 
 const AGE_RANGES = ["18-24", "25-34", "35-44", "45+"] as const;
