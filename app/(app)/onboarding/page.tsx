@@ -251,24 +251,51 @@ export default function OnboardingPage() {
     setQuizOpen(false);
   };
 
+  const stepMeta = [
+    { title: "Seni tanıyalım.", kicker: "temel bilgi" },
+    { title: "Ne peşindesin?", kicker: "niyet" },
+    { title: "İletişim sesin.", kicker: "senin sesin" },
+    { title: "Bağlanma stilin.", kicker: "içeride ne oluyor" },
+    { title: "İlgi alanların.", kicker: "kim olduğun" },
+    { title: "Arketipin.", kicker: "arketip" },
+    { title: "Kendin — senin sesin.", kicker: "bio" },
+  ][step - 1];
+
   return (
-    <div className="mx-auto max-w-2xl px-6 py-12 md:px-10">
-      <div className="mb-8 flex items-center gap-2">
-        {[1, 2, 3, 4, 5, 6, 7].map((n) => (
-          <div
-            key={n}
-            className={`h-1 flex-1 rounded-full transition ${
-              n <= step ? "bg-brand-500" : "bg-ink-800"
-            }`}
-          />
-        ))}
+    <div className="flex min-h-screen flex-col bg-ink-950">
+      {/* Top bar */}
+      <div className="flex items-center justify-between border-b border-ink-800 px-6 py-6 sm:px-12">
+        <div className="font-display text-[20px] text-ink-100">
+          Flört<span className="italic text-brand-500"> asistanı</span>
+        </div>
       </div>
 
-      <p className="mb-3 font-display italic text-brand-400">adım {step}/7 —</p>
+      {/* Progress */}
+      <div className="px-6 pt-5 sm:px-12">
+        <div className="mx-auto flex max-w-[600px] items-center gap-3">
+          <div className="h-[3px] flex-1 overflow-hidden rounded-sm bg-ink-800">
+            <div
+              className="h-full transition-all duration-500"
+              style={{
+                width: `${(step / 7) * 100}%`,
+                background: "linear-gradient(90deg, #BE123C, #F17A92)",
+              }}
+            />
+          </div>
+          <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-brand-400">
+            {step} / 7
+          </span>
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="flex flex-1 items-start justify-center px-6 py-14">
+        <div className="w-full max-w-[600px]">
 
       {step === 1 && (
         <>
-          <h1 className="mb-4 font-display text-4xl sm:text-5xl">Seni tanıyalım.</h1>
+          <p className="mb-3 font-display italic text-brand-400" style={{ fontSize: 18 }}>adım 1 / 7 · {stepMeta.kicker}</p>
+          <h1 className="mb-4 font-display tracking-tight" style={{ fontSize: 52, lineHeight: 1.05, letterSpacing: "-0.02em" }}>{stepMeta.title}</h1>
           <p className="mb-10 text-ink-300">
             koçun sana göre doğru analiz yapabilmesi için bütün alanlar zorunlu.
           </p>
@@ -677,6 +704,8 @@ export default function OnboardingPage() {
           </SectionCard>
         </>
       )}
+        </div>
+      </div>
     </div>
   );
 }
