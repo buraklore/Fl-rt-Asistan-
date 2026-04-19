@@ -147,20 +147,20 @@ function ConflictsContent() {
   };
 
   return (
-    <div className="mx-auto max-w-4xl px-6 py-12 md:px-10">
-      <div className="mb-4">
-        <a
-          href="/conflicts/history"
-          className="text-sm text-ink-400 hover:text-brand-400"
-        >
-          geçmiş kayıtları →
-        </a>
+    <div className="mx-auto max-w-[820px] px-10 py-12 pb-20">
+      <a
+        href="/conflicts/history"
+        className="text-[13px] text-ink-400 hover:text-ink-200"
+      >
+        geçmiş kayıtları →
+      </a>
+      <div className="mt-3">
+        <PageHeader
+          kicker="onarım —"
+          title="Çatışma Onarımı."
+          description="Tartışmayı yükle, koç kök sebebi bulup onarım mesajını yazsın."
+        />
       </div>
-      <PageHeader
-        kicker="tartışma mı oldu —"
-        title="Çatışma Onarımı"
-        description="Transkripti yapıştır. Koç kimin tırmandırdığını, altta yatan sebebi ve onarım mesajını çıkarır."
-      />
 
       {!result && (
         <SectionCard className="space-y-6 p-6">
@@ -272,16 +272,18 @@ function ConflictsContent() {
       )}
 
       {result && (
-        <div className="space-y-6">
+        <div className="space-y-5">
           <div className="flex items-baseline justify-between">
-            <p className="font-display italic text-brand-400">analiz —</p>
+            <p className="font-display italic text-brand-400" style={{ fontSize: 22 }}>
+              analiz —
+            </p>
             <button
               onClick={() => {
                 setResult(null);
                 setChatLog("");
                 setContextNote("");
               }}
-              className="text-sm text-ink-400 hover:text-ink-200"
+              className="text-[13px] text-ink-400 hover:text-ink-200"
             >
               ← Yeni analiz
             </button>
@@ -291,72 +293,120 @@ function ConflictsContent() {
             <ConfidenceBadge confidence={result.confidence} />
           )}
 
-          <div className="grid gap-3 md:grid-cols-3">
-            <SectionCard className="p-5">
-              <p className="mb-2 text-[10px] font-semibold uppercase tracking-widest text-ink-400">
+          {/* 3 stat tiles */}
+          <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
+            <div className="rounded-2xl border border-ink-800 bg-ink-900/40 p-5">
+              <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.25em] text-ink-400">
                 ciddiyet
               </p>
-              <p className="font-display text-4xl text-brand-400">
+              <p
+                className="font-display text-ink-100"
+                style={{ fontSize: 26, lineHeight: 1.1, letterSpacing: "-0.02em" }}
+              >
                 {result.severity}
-                <span className="text-xl text-ink-500"> / 5</span>
+                <span className="text-ink-500"> / 5</span>
               </p>
-            </SectionCard>
-            <SectionCard className="p-5">
-              <p className="mb-2 text-[10px] font-semibold uppercase tracking-widest text-ink-400">
-                kim tırmandırdı
+              <p className="mt-2 text-[11px] text-ink-400">
+                {result.severity >= 4
+                  ? "yüksek"
+                  : result.severity >= 3
+                  ? "orta-yüksek"
+                  : "orta"}
               </p>
-              <p className="font-display text-xl italic text-ink-100">
+            </div>
+            <div className="rounded-2xl border border-ink-800 bg-ink-900/40 p-5">
+              <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.25em] text-ink-400">
+                tetikleyen
+              </p>
+              <p
+                className="font-display text-ink-100"
+                style={{ fontSize: 26, lineHeight: 1.1, letterSpacing: "-0.02em" }}
+              >
                 {ESCALATED_LABELS[result.whoEscalated] ?? result.whoEscalated}
               </p>
-            </SectionCard>
-            <SectionCard className="p-5">
-              <p className="mb-2 text-[10px] font-semibold uppercase tracking-widest text-ink-400">
-                duygular
+              <p className="mt-2 text-[11px] text-ink-400">
+                {result.whoEscalated === "both" ? "karşılıklı yük" : "yük taşıyan"}
               </p>
-              <div className="flex flex-wrap gap-1">
+            </div>
+            <div className="rounded-2xl border border-ink-800 bg-ink-900/40 p-5">
+              <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.25em] text-ink-400">
+                duygu yoğunluğu
+              </p>
+              <p
+                className="font-display text-ink-100"
+                style={{ fontSize: 26, lineHeight: 1.1, letterSpacing: "-0.02em" }}
+              >
+                {[
+                  ...(result.emotions?.user ?? []),
+                  ...(result.emotions?.target ?? []),
+                ].length}{" "}
+                tema
+              </p>
+              <p className="mt-2 text-[11px] leading-[1.4] text-ink-400">
                 {[
                   ...(result.emotions?.user ?? []),
                   ...(result.emotions?.target ?? []),
                 ]
-                  .slice(0, 4)
-                  .map((e, i) => (
-                    <span
-                      key={i}
-                      className="rounded-full bg-ink-800 px-2 py-0.5 text-xs text-ink-200"
-                      title={e.evidence}
-                    >
-                      {e.label}
-                    </span>
-                  ))}
-              </div>
-            </SectionCard>
+                  .slice(0, 3)
+                  .map((e) => e.label)
+                  .join(" · ") || "—"}
+              </p>
+            </div>
           </div>
 
-          <SectionCard className="p-6">
-            <p className="mb-3 text-[10px] font-semibold uppercase tracking-widest text-brand-400">
-              kök sebep
+          {/* Kök sebep — italic 28px */}
+          <div
+            className="rounded-[20px] border p-7"
+            style={{
+              borderColor: "rgba(225,29,72,0.25)",
+              background:
+                "linear-gradient(145deg, rgba(225,29,72,0.08), rgba(17,17,24,0.6))",
+            }}
+          >
+            <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-brand-400">
+              — kök sebep
             </p>
-            <p className="text-base leading-relaxed text-ink-100">
+            <p
+              className="mt-[14px] font-display italic text-ink-100"
+              style={{ fontSize: 28, lineHeight: 1.2, letterSpacing: "-0.01em" }}
+            >
               {result.rootCause}
             </p>
-          </SectionCard>
+          </div>
 
-          <SectionCard className="border-brand-500/30 bg-gradient-to-br from-brand-500/5 to-transparent p-6">
-            <div className="mb-4 flex items-center justify-between">
-              <p className="text-[10px] font-semibold uppercase tracking-widest text-brand-400">
-                onarım mesajı
+          {/* Onarım mesajı — gold accent gradient */}
+          <div
+            className="rounded-[20px] border p-7"
+            style={{
+              borderColor: "rgba(245,158,11,0.25)",
+              background:
+                "linear-gradient(145deg, rgba(245,158,11,0.08), rgba(17,17,24,0.7))",
+            }}
+          >
+            <div className="mb-[14px] flex items-center justify-between gap-3">
+              <p
+                className="text-[11px] font-semibold uppercase tracking-[0.3em]"
+                style={{ color: "#F59E0B" }}
+              >
+                — onarım mesajı
               </p>
               <button
                 onClick={copy}
-                className="rounded-full border border-brand-500/40 px-3 py-1 text-xs text-brand-400 hover:bg-brand-500/10"
+                className="rounded-full border border-ink-700 bg-ink-900/60 px-[14px] py-[6px] text-[12px] text-ink-200 transition hover:border-ink-600"
               >
                 {copied ? "Kopyalandı ✓" : "Kopyala"}
               </button>
             </div>
-            <p className="font-display text-xl leading-relaxed text-ink-100">
+            <p
+              className="text-ink-100"
+              style={{ fontSize: 16, lineHeight: 1.7 }}
+            >
               {result.fixMessage}
             </p>
-          </SectionCard>
+            <p className="mt-3 text-[12px] italic text-ink-400">
+              tonu ayarla → sakin · sıcak · net · suç yüklemeden
+            </p>
+          </div>
 
           <InfoBanner>
             Bu mesajı direkt göndermek zorunda değilsin — tonu düşünüp
